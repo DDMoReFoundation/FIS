@@ -1,0 +1,26 @@
+<assembly>
+	<id>exec</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+        <fileSet>
+            <directory>target</directory>
+            <outputDirectory>fis</outputDirectory>
+            <includes>
+                <include>fis*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>target/../src/main/scripts</directory>
+            <outputDirectory>fis</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <excludes>
+                <exclude>startup.sh</exclude>
+            </excludes>
+        </fileSet>
+	</fileSets>
+</assembly>

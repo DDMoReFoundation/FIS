@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:task="http://www.springframework.org/schema/task"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/data/jpa
+	    http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+        
+    <context:annotation-config/>
+	<bean class="eu.ddmore.miflocal.configuration.FISPropertyPlaceholderConfigurer">
+        <property name="ignoreResourceNotFound" value="true" />
+        <property name="systemPropertiesModeName"><value>SYSTEM_PROPERTIES_MODE_OVERRIDE</value></property>
+        <property name="locations">
+            <list>
+                <value>classpath:application.properties</value>
+                <value>file:${FIS_HOME}/config.properties</value>
+            </list>
+        </property>
+    </bean>
+	
+	<jpa:repositories base-package="eu.ddmore.miflocal.repository" />
+	
+	<bean id="localJobService" class="eu.ddmore.miflocal.service.LocalJobService" />
+
+    <bean id="nmTranJobResourcePublisher" class="eu.ddmore.miflocal.controllers.NmTranJobResourcePublisher" >
+        <property name="publishInputsScript" value="${fis.publishInputs}"></property>
+    </bean>
+    
+    <bean id="nmTranJobResourceRetriever" class="eu.ddmore.miflocal.controllers.NmTranJobResourceRetriever" >
+        <property name="retrieveOutputsScript" value="${fis.retrieveOutputs}"></property>
+    </bean>
+    
+    <mvc:annotation-driven conversion-service="conversionService" />
+    <bean id="conversionService"
+          class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <set>
+                <bean class="eu.ddmore.miflocal.controllers.converters.StringToSubmissionRequestConverter"/>
+                <bean class="eu.ddmore.miflocal.controllers.converters.SubmissionRequestToStringConverter"/>
+                <bean class="eu.ddmore.miflocal.controllers.converters.LocalJobToStringConverter"/>
+            </set>
+        </property>
+    </bean>
+	
+    <bean id="submitController" class="eu.ddmore.miflocal.controllers.SubmitController">
+    	<property name="localJobService" ref="localJobService" />
+        <property name="mifClient" ref="mifRestClient" />
+        <property name="jobResourcePublisher" ref="nmTranJobResourcePublisher" />
+        <property name="environmentSetupScript" value="${nonmem.setup.script}" />
+        <property name="converterToolboxPath" value="${converter.toolbox.executable}" />
+	</bean>
+    
+    <bean id="jobsController" class="eu.ddmore.miflocal.controllers.JobsController">
+        <property name="localJobService" ref="localJobService" />
+    </bean>
+	
+    <bean id="mifRestClient" class="com.mango.mif.MIFHttpRestClient" scope="singleton">
+        <constructor-arg>
+            <value>${mif.url}</value>
+        </constructor-arg>
+    </bean>
+    
+    <bean id="remoteJobStatusPoller" class="eu.ddmore.miflocal.service.RemoteJobStatusPoller">
+        <property name="localJobService" ref="localJobService" />
+        <property name="mifClient" ref="mifRestClient" />
+        <property name="jobResourceRetriever" ref="nmTranJobResourceRetriever" />
+    </bean>
+    
+    <task:annotation-driven executor="globalExecutor" scheduler="globalScheduler"/>
+    
+    <task:executor id="globalExecutor" pool-size="1"/>
+    
+    <task:scheduler id="globalScheduler" pool-size="1"/>
+    
+    <bean id="dataSource"
+        class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+        <property name="driverClass" value="org.h2.Driver" />
+        <property name="jdbcUrl" value="jdbc:h2:file:${fis.db.file};LOCK_TIMEOUT=10000" />
+        <property name="username" value="${fis.db.user}" />
+        <property name="password" value="${fis.db.password}" />
+        <property name="idleConnectionTestPeriodInMinutes" value="60"/>
+        <property name="idleMaxAgeInMinutes" value="240"/>
+        <property name="maxConnectionsPerPartition" value="30"/>
+        <property name="minConnectionsPerPartition" value="10"/>
+        <property name="partitionCount" value="3"/>
+        <property name="acquireIncrement" value="5"/>
+        <property name="statementsCacheSize" value="100"/>
+        <property name="releaseHelperThreads" value="3"/>
+        
+    </bean>
+        <!-- Enable annotation style of managing transactions -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+    
+    <bean class="org.springframework.orm.jpa.JpaTransactionManager"
+          id="transactionManager">
+        <property name="entityManagerFactory"
+                  ref="entityManagerFactory" />
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+        </property>
+    </bean>
+ 
+    <bean id="entityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="packagesToScan" value="eu.ddmore.miflocal.domain"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="generateDdl" value="true" />
+                <property name="showSql" value="false"/>
+                <property name="databasePlatform" value="org.hibernate.dialect.H2Dialect"/>
+                <property name="database" value="HSQL"/>
+            </bean>
+        </property>
+        <property name="jpaProperties">
+            <value>
+                hibernate.generate_statistics = false
+            </value>
+        </property>
+    </bean>
+    
+</beans>
