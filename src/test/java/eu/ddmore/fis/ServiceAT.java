@@ -30,15 +30,17 @@ import eu.ddmore.fis.domain.SubmissionResponse;
 /**
  * Verifies that standalone service fulfils functional requirements
  */
-public class ServiceAT {
+public class ServiceAT extends SystemPropertiesAware {
     private static final Logger LOG = Logger.getLogger(ServiceAT.class);
-    private static final String NONMEM_COMMAND = "C:\\mats_working_files\\PKPDstick_72\\nm_7.2.0_g\\util\\nmfe72.bat";
-    private final TEISHttpRestClient teisClient = new TEISHttpRestClient("http://localhost:9010/");
-
+    private String nonmemExecutable;
+    private TEISHttpRestClient teisClient;
+    
     @Rule
     public TemporaryFolder folder= new TemporaryFolder();
     @Before
     public void setUp() throws Exception {
+        nonmemExecutable = System.getProperty("nonmem.executable");
+        teisClient = new TEISHttpRestClient(System.getProperty("fis.url"));
     }
 
     @Test
@@ -47,7 +49,7 @@ public class ServiceAT {
         Preconditions.checkArgument(scriptFile.exists(), "Script file does not exist");
         FileUtils.copyDirectory(scriptFile.getParentFile(), folder.getRoot());
         SubmissionRequest submissionRequest = new SubmissionRequest();
-        submissionRequest.setCommand(NONMEM_COMMAND);
+        submissionRequest.setCommand(nonmemExecutable);
         submissionRequest.setExecutionFile(scriptFile.getName());
         submissionRequest.setWorkingDirectory(folder.getRoot().getAbsolutePath());
         SubmissionResponse response = teisClient.submitRequest(submissionRequest);
@@ -77,7 +79,7 @@ public class ServiceAT {
         Preconditions.checkArgument(scriptFile.exists(), "Script file does not exist");
         FileUtils.copyDirectory(scriptFile.getParentFile(), folder.getRoot());
         SubmissionRequest submissionRequest = new SubmissionRequest();
-        submissionRequest.setCommand(NONMEM_COMMAND);
+        submissionRequest.setCommand(nonmemExecutable);
         submissionRequest.setExecutionFile(scriptFile.getName());
         submissionRequest.setWorkingDirectory(folder.getRoot().getAbsolutePath());
         SubmissionResponse response = teisClient.submitRequest(submissionRequest);
@@ -106,7 +108,7 @@ public class ServiceAT {
         Preconditions.checkArgument(scriptFile.exists(), "Script file does not exist");
         FileUtils.copyDirectory(scriptFile.getParentFile(), folder.getRoot());
         SubmissionRequest submissionRequest = new SubmissionRequest();
-        submissionRequest.setCommand(NONMEM_COMMAND);
+        submissionRequest.setCommand(nonmemExecutable);
         submissionRequest.setExecutionFile(scriptFile.getName());
         submissionRequest.setWorkingDirectory(folder.getRoot().getAbsolutePath());
         SubmissionResponse response = teisClient.submitRequest(submissionRequest);

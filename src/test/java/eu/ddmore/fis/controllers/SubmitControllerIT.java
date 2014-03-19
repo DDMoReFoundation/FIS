@@ -21,6 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.google.common.base.Preconditions;
 import static org.junit.Assert.*;
 
+import eu.ddmore.fis.SystemPropertiesAware;
 import eu.ddmore.fis.domain.LocalJobStatus;
 import eu.ddmore.fis.domain.SubmissionRequest;
 import eu.ddmore.fis.domain.SubmissionResponse;
@@ -28,7 +29,7 @@ import eu.ddmore.fis.domain.SubmissionResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath:META-INF/application-context.xml"})
-public class SubmitControllerIT {
+public class SubmitControllerIT  extends SystemPropertiesAware {
 
     private static final Logger LOG = Logger.getLogger(SubmitControllerIT.class);
     
@@ -41,11 +42,10 @@ public class SubmitControllerIT {
 	@Autowired
 	JobsController jobsController;
 
-	private static final String NONMEM_COMMAND = "C:\\mats_working_files\\PKPDstick_72\\nm_7.2.0_g\\util\\nmfe72.bat";
+	private String nonmemExecutable;
 	@Before
 	public void setUp() {
-	    System.setProperty("mango.mif.invoker.shell", "cmd.exe /C");
-	    System.setProperty("mango.mif.invoker.tmp.file.ext",".bat");
+        nonmemExecutable = System.getProperty("nonmem.executable");
 	}
 	
 	@Test
@@ -54,7 +54,7 @@ public class SubmitControllerIT {
         Preconditions.checkArgument(scriptFile.exists(), "Script file does not exist");
         FileUtils.copyDirectory(scriptFile.getParentFile(), folder.getRoot());
         SubmissionRequest submissionRequest = new SubmissionRequest();
-        submissionRequest.setCommand(NONMEM_COMMAND);
+        submissionRequest.setCommand(nonmemExecutable);
         submissionRequest.setExecutionFile(scriptFile.getName());
         submissionRequest.setWorkingDirectory(folder.getRoot().getAbsolutePath());
         
