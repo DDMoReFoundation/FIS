@@ -22,8 +22,8 @@ import eu.ddmore.fis.domain.SubmissionResponse;
 /**
  * TEISHttpRestClient for interacting with TES IS REST services.
  */
-public class TEISHttpRestClient {
-    private static final Logger log = Logger.getLogger(TEISHttpRestClient.class);
+public class FISHttpRestClient {
+    private static final Logger log = Logger.getLogger(FISHttpRestClient.class);
     private String endPoint;
     private HttpClient client;
     
@@ -31,7 +31,7 @@ public class TEISHttpRestClient {
      * 
      * @param endPoint - TES endpoint
      */
-    public TEISHttpRestClient(String endPoint) {
+    public FISHttpRestClient(String endPoint) {
         this.endPoint = endPoint;
         client = new HttpClient();
     }

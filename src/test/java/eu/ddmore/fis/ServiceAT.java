@@ -33,14 +33,14 @@ import eu.ddmore.fis.domain.SubmissionResponse;
 public class ServiceAT extends SystemPropertiesAware {
     private static final Logger LOG = Logger.getLogger(ServiceAT.class);
     private String nonmemExecutable;
-    private TEISHttpRestClient teisClient;
+    private FISHttpRestClient teisClient;
     
     @Rule
     public TemporaryFolder folder= new TemporaryFolder();
     @Before
     public void setUp() throws Exception {
         nonmemExecutable = System.getProperty("nonmem.executable");
-        teisClient = new TEISHttpRestClient(System.getProperty("fis.url"));
+        teisClient = new FISHttpRestClient(System.getProperty("fis.url"));
     }
 
     @Test

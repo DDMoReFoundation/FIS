@@ -30,7 +30,7 @@ public class RemoteJobStatusPoller {
     
     @Scheduled(fixedRate=5000)
     public void retrieveJobStatuses() {
-        LOG.debug("Updating job statuses");
+        LOG.trace("Updating job statuses");
         List<LocalJob> runningJobs = localJobService.getUncompletedJobs();
         for(LocalJob job : runningJobs) {
             updateJobStatus(job);
