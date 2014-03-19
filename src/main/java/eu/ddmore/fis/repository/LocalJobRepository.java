@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.miflocal.repository;
+package eu.ddmore.fis.repository;
 
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import eu.ddmore.miflocal.domain.LocalJob;
-import eu.ddmore.miflocal.domain.LocalJobStatus;
+import eu.ddmore.fis.domain.LocalJob;
+import eu.ddmore.fis.domain.LocalJobStatus;
 
 @Repository
 public interface LocalJobRepository extends CrudRepository<LocalJob, String>{

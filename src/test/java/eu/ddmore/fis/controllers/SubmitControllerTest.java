@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.miflocal.controllers;
+package eu.ddmore.fis.controllers;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.junit.Assert.*;
@@ -17,7 +17,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.mango.mif.client.domain.ExecutionRequestAttributeName;
 import com.mango.mif.domain.ExecutionRequest;
 
-import eu.ddmore.miflocal.domain.LocalJob;
+import eu.ddmore.fis.domain.LocalJob;
 
 
 @RunWith(MockitoJUnitRunner.class)

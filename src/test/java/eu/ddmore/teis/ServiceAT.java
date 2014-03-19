@@ -22,10 +22,10 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.common.base.Preconditions;
 
-import eu.ddmore.miflocal.controllers.SubmitControllerIT;
-import eu.ddmore.miflocal.domain.LocalJobStatus;
-import eu.ddmore.miflocal.domain.SubmissionRequest;
-import eu.ddmore.miflocal.domain.SubmissionResponse;
+import eu.ddmore.fis.controllers.SubmitControllerIT;
+import eu.ddmore.fis.domain.LocalJobStatus;
+import eu.ddmore.fis.domain.SubmissionRequest;
+import eu.ddmore.fis.domain.SubmissionResponse;
 
 /**
  * Verifies that standalone service fulfils functional requirements

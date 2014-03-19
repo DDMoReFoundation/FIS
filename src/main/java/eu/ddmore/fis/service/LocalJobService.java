@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.miflocal.service;
+package eu.ddmore.fis.service;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,9 +15,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
-import eu.ddmore.miflocal.domain.LocalJob;
-import eu.ddmore.miflocal.domain.LocalJobStatus;
-import eu.ddmore.miflocal.repository.LocalJobRepository;
+import eu.ddmore.fis.domain.LocalJob;
+import eu.ddmore.fis.domain.LocalJobStatus;
+import eu.ddmore.fis.repository.LocalJobRepository;
 /**
  * Service responsible for handling job entities
  */

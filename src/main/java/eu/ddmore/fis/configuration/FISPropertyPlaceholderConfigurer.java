@@ -1,4 +1,4 @@
-package eu.ddmore.miflocal.configuration;
+package eu.ddmore.fis.configuration;
 
 import java.util.Map.Entry;
 import java.util.Properties;

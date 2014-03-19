@@ -20,7 +20,7 @@
         http://www.springframework.org/schema/mvc/spring-mvc.xsd">
         
     <context:annotation-config/>
-	<bean class="eu.ddmore.miflocal.configuration.FISPropertyPlaceholderConfigurer">
+	<bean class="eu.ddmore.fis.configuration.FISPropertyPlaceholderConfigurer">
         <property name="ignoreResourceNotFound" value="true" />
         <property name="systemPropertiesModeName"><value>SYSTEM_PROPERTIES_MODE_OVERRIDE</value></property>
         <property name="locations">
@@ -31,15 +31,15 @@
         </property>
     </bean>
 	
-	<jpa:repositories base-package="eu.ddmore.miflocal.repository" />
+	<jpa:repositories base-package="eu.ddmore.fis.repository" />
 	
-	<bean id="localJobService" class="eu.ddmore.miflocal.service.LocalJobService" />
+	<bean id="localJobService" class="eu.ddmore.fis.service.LocalJobService" />
 
-    <bean id="nmTranJobResourcePublisher" class="eu.ddmore.miflocal.controllers.NmTranJobResourcePublisher" >
+    <bean id="nmTranJobResourcePublisher" class="eu.ddmore.fis.controllers.NmTranJobResourcePublisher" >
         <property name="publishInputsScript" value="${fis.publishInputs}"></property>
     </bean>
     
-    <bean id="nmTranJobResourceRetriever" class="eu.ddmore.miflocal.controllers.NmTranJobResourceRetriever" >
+    <bean id="nmTranJobResourceRetriever" class="eu.ddmore.fis.controllers.NmTranJobResourceRetriever" >
         <property name="retrieveOutputsScript" value="${fis.retrieveOutputs}"></property>
     </bean>
     
@@ -48,14 +48,14 @@
           class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <set>
-                <bean class="eu.ddmore.miflocal.controllers.converters.StringToSubmissionRequestConverter"/>
-                <bean class="eu.ddmore.miflocal.controllers.converters.SubmissionRequestToStringConverter"/>
-                <bean class="eu.ddmore.miflocal.controllers.converters.LocalJobToStringConverter"/>
+                <bean class="eu.ddmore.fis.controllers.converters.StringToSubmissionRequestConverter"/>
+                <bean class="eu.ddmore.fis.controllers.converters.SubmissionRequestToStringConverter"/>
+                <bean class="eu.ddmore.fis.controllers.converters.LocalJobToStringConverter"/>
             </set>
         </property>
     </bean>
 	
-    <bean id="submitController" class="eu.ddmore.miflocal.controllers.SubmitController">
+    <bean id="submitController" class="eu.ddmore.fis.controllers.SubmitController">
     	<property name="localJobService" ref="localJobService" />
         <property name="mifClient" ref="mifRestClient" />
         <property name="jobResourcePublisher" ref="nmTranJobResourcePublisher" />
@@ -63,7 +63,7 @@
         <property name="converterToolboxPath" value="${converter.toolbox.executable}" />
 	</bean>
     
-    <bean id="jobsController" class="eu.ddmore.miflocal.controllers.JobsController">
+    <bean id="jobsController" class="eu.ddmore.fis.controllers.JobsController">
         <property name="localJobService" ref="localJobService" />
     </bean>
 	
@@ -73,7 +73,7 @@
         </constructor-arg>
     </bean>
     
-    <bean id="remoteJobStatusPoller" class="eu.ddmore.miflocal.service.RemoteJobStatusPoller">
+    <bean id="remoteJobStatusPoller" class="eu.ddmore.fis.service.RemoteJobStatusPoller">
         <property name="localJobService" ref="localJobService" />
         <property name="mifClient" ref="mifRestClient" />
         <property name="jobResourceRetriever" ref="nmTranJobResourceRetriever" />
@@ -116,7 +116,7 @@
     <bean id="entityManagerFactory"
           class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />
-        <property name="packagesToScan" value="eu.ddmore.miflocal.domain"/>
+        <property name="packagesToScan" value="eu.ddmore.fis.domain"/>
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
                 <property name="generateDdl" value="true" />

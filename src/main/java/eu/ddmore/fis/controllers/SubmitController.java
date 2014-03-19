@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.miflocal.controllers;
+package eu.ddmore.fis.controllers;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -21,10 +21,10 @@ import com.mango.mif.MIFHttpRestClient;
 import com.mango.mif.domain.ExecutionRequest;
 import com.mango.mif.domain.ExecutionRequestBuilder;
 
-import eu.ddmore.miflocal.domain.LocalJob;
-import eu.ddmore.miflocal.domain.SubmissionRequest;
-import eu.ddmore.miflocal.domain.SubmissionResponse;
-import eu.ddmore.miflocal.service.LocalJobService;
+import eu.ddmore.fis.domain.LocalJob;
+import eu.ddmore.fis.domain.SubmissionRequest;
+import eu.ddmore.fis.domain.SubmissionResponse;
+import eu.ddmore.fis.service.LocalJobService;
 
 @Controller
 @RequestMapping("/submit")

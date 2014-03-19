@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.miflocal.controllers;
+package eu.ddmore.fis.controllers;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,8 +14,8 @@ import com.mango.mif.core.exec.ExecutionException;
 import com.mango.mif.core.exec.InvokerResult;
 import com.mango.mif.core.exec.ce.CeInvoker;
 
-import eu.ddmore.miflocal.domain.LocalJob;
-import eu.ddmore.miflocal.domain.LocalJobStatus;
+import eu.ddmore.fis.domain.LocalJob;
+import eu.ddmore.fis.domain.LocalJobStatus;
 
 /**
  * Retrieves NM-TRAN results

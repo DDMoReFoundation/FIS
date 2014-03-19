@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.miflocal.controllers;
+package eu.ddmore.fis.controllers;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -21,9 +21,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.google.common.base.Preconditions;
 import static org.junit.Assert.*;
 
-import eu.ddmore.miflocal.domain.LocalJobStatus;
-import eu.ddmore.miflocal.domain.SubmissionRequest;
-import eu.ddmore.miflocal.domain.SubmissionResponse;
+import eu.ddmore.fis.domain.LocalJobStatus;
+import eu.ddmore.fis.domain.SubmissionRequest;
+import eu.ddmore.fis.domain.SubmissionResponse;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

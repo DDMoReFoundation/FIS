@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.miflocal.service;
+package eu.ddmore.fis.service;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -16,9 +16,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.Lists;
 
-import eu.ddmore.miflocal.domain.LocalJob;
-import eu.ddmore.miflocal.domain.LocalJobStatus;
-import eu.ddmore.miflocal.repository.LocalJobRepository;
+import eu.ddmore.fis.domain.LocalJob;
+import eu.ddmore.fis.domain.LocalJobStatus;
+import eu.ddmore.fis.repository.LocalJobRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LocalJobServiceTest {

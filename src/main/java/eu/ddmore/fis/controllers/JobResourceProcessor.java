@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.miflocal.controllers;
+package eu.ddmore.fis.controllers;
 
-import eu.ddmore.miflocal.domain.LocalJob;
+import eu.ddmore.fis.domain.LocalJob;
 
 /**
  * Responsible for processing job resources.

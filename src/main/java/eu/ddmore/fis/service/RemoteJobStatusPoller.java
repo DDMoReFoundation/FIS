@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.miflocal.service;
+package eu.ddmore.fis.service;
 
 import java.util.List;
 
@@ -12,9 +12,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import com.mango.mif.MIFHttpRestClient;
 import com.mango.mif.MIFJobStatusHelper;
 
-import eu.ddmore.miflocal.controllers.JobResourceProcessor;
-import eu.ddmore.miflocal.domain.LocalJob;
-import eu.ddmore.miflocal.domain.LocalJobStatus;
+import eu.ddmore.fis.controllers.JobResourceProcessor;
+import eu.ddmore.fis.domain.LocalJob;
+import eu.ddmore.fis.domain.LocalJobStatus;
 
 /**
  * A background task being responsible for monitoring MIF jobs

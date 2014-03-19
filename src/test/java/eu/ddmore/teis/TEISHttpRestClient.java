@@ -14,10 +14,10 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.common.base.Joiner;
 
-import eu.ddmore.miflocal.domain.LocalJob;
-import eu.ddmore.miflocal.domain.LocalJobStatus;
-import eu.ddmore.miflocal.domain.SubmissionRequest;
-import eu.ddmore.miflocal.domain.SubmissionResponse;
+import eu.ddmore.fis.domain.LocalJob;
+import eu.ddmore.fis.domain.LocalJobStatus;
+import eu.ddmore.fis.domain.SubmissionRequest;
+import eu.ddmore.fis.domain.SubmissionResponse;
 
 /**
  * TEISHttpRestClient for interacting with TES IS REST services.
