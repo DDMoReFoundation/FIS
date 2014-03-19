@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.teis;
+package eu.ddmore.fis;
 
 import javax.ws.rs.core.MediaType;
 

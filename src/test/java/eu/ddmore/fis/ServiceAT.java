@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.teis;
+package eu.ddmore.fis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
