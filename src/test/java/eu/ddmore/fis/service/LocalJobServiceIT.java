@@ -3,24 +3,27 @@
  ******************************************************************************/
 package eu.ddmore.fis.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.joda.time.DateTime;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import eu.ddmore.fis.SystemPropertiesAware;
 import eu.ddmore.fis.domain.LocalJob;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"classpath:META-INF/application-context.xml"})
+@ContextConfiguration(locations = {"classpath:META-INF/application-context.xml"})
 @Transactional
 @TransactionConfiguration(defaultRollback = true)
-public class LocalJobServiceIT {
+@Ignore("shutdown and health endpoints are not available in the testing context")
+public class LocalJobServiceIT extends SystemPropertiesAware {
 
 	@Autowired
 	LocalJobService localJobService;

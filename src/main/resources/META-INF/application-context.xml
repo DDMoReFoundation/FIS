@@ -35,13 +35,17 @@
 	
 	<bean id="localJobService" class="eu.ddmore.fis.service.LocalJobService" />
 
+    <bean id="invoker" class="com.mango.mif.core.exec.ce.CeInvoker" />
+    
     <bean id="nmTranJobResourcePublisher" class="eu.ddmore.fis.controllers.NmTranJobResourcePublisher" >
         <property name="publishInputsScript" value="${fis.publishInputs}"/>
         <property name="converterToolboxExecutable" value="${converter.toolbox.executable}" />
+        <property name="invoker" ref="invoker" />
     </bean>
     
     <bean id="nmTranJobResourceRetriever" class="eu.ddmore.fis.controllers.NmTranJobResourceRetriever" >
         <property name="retrieveOutputsScript" value="${fis.retrieveOutputs}"></property>
+        <property name="invoker" ref="invoker" />
     </bean>
     
     <mvc:annotation-driven conversion-service="conversionService" />

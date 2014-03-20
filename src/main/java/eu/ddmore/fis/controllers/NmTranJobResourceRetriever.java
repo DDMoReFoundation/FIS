@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.mango.mif.core.exec.ExecutionException;
+import com.mango.mif.core.exec.Invoker;
 import com.mango.mif.core.exec.InvokerResult;
 import com.mango.mif.core.exec.ce.CeInvoker;
 
@@ -25,7 +26,8 @@ import eu.ddmore.fis.domain.LocalJobStatus;
 public class NmTranJobResourceRetriever implements JobResourceProcessor {
     private static final Logger LOG = Logger.getLogger(NmTranJobResourceRetriever.class);
     private String retrieveOutputsScript;
-    
+
+    private Invoker invoker;
     @Override
     public LocalJob process(LocalJob job) {
         final File jobDir = new File(job.getWorkingDirectory(), job.getId());
@@ -35,7 +37,6 @@ public class NmTranJobResourceRetriever implements JobResourceProcessor {
             throw new RuntimeException("Error when copying job files", e);
         }
 
-        CeInvoker invoker = new CeInvoker();
         InvokerResult invokerResult;
         try {
             invokerResult = invoker.execute(String.format("%s \"%s\" \"%s\" \"%s\"", retrieveOutputsScript, job.getWorkingDirectory(), jobDir, job.getStatus()));
@@ -61,5 +62,14 @@ public class NmTranJobResourceRetriever implements JobResourceProcessor {
     
     public String getRetrieveOutputsScript() {
         return retrieveOutputsScript;
+    }
+
+    @Required
+    public void setInvoker(Invoker invoker) {
+        this.invoker = invoker;
+    }
+    
+    public Invoker getInvoker() {
+        return invoker;
     }
 }

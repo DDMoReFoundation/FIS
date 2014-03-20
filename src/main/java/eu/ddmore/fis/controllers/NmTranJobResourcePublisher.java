@@ -8,12 +8,13 @@ import java.io.FileFilter;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.mango.mif.core.exec.ExecutionException;
+import com.mango.mif.core.exec.Invoker;
 import com.mango.mif.core.exec.InvokerResult;
-import com.mango.mif.core.exec.ce.CeInvoker;
 
 import eu.ddmore.fis.domain.LocalJob;
 
@@ -29,6 +30,9 @@ public class NmTranJobResourcePublisher implements JobResourceProcessor {
     
     private String converterToolboxExecutable;
     
+    private String mdlFileExtension = "mdl";
+    private String pharmmlFileExtension = "xml";
+    private Invoker invoker;
     @Override
     public LocalJob process(LocalJob job) {
         final File jobDir = new File(job.getWorkingDirectory(), job.getId());
@@ -42,6 +46,10 @@ public class NmTranJobResourcePublisher implements JobResourceProcessor {
             });
             
             executeScript(job.getWorkingDirectory(), jobDir, job.getControlFile());
+            String origControlFile = job.getControlFile();
+            if(origControlFile.endsWith(mdlFileExtension)) {
+                job.setControlFile(StringUtils.removeEndIgnoreCase(origControlFile, mdlFileExtension) + pharmmlFileExtension);
+            }
             
         } catch (IOException e) {
             throw new RuntimeException("Error when copying job files", e);
@@ -50,7 +58,6 @@ public class NmTranJobResourcePublisher implements JobResourceProcessor {
     }
 
     private void executeScript(String workingDirectory, File jobDir, String modelFile) {
-        CeInvoker invoker = new CeInvoker();
         InvokerResult invokerResult;
         try {
             invokerResult = invoker.execute(String.format("%s \"%s\" \"%s\" \"%s\"", publishInputsScript, workingDirectory, jobDir, modelFile));
@@ -81,5 +88,14 @@ public class NmTranJobResourcePublisher implements JobResourceProcessor {
     
     public String getConverterToolboxExecutable() {
         return converterToolboxExecutable;
+    }
+    
+    @Required
+    public void setInvoker(Invoker invoker) {
+        this.invoker = invoker;
+    }
+    
+    public Invoker getInvoker() {
+        return invoker;
     }
 }

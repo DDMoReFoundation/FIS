@@ -2,6 +2,10 @@
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis.controllers;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -19,7 +24,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.base.Preconditions;
-import static org.junit.Assert.*;
 
 import eu.ddmore.fis.SystemPropertiesAware;
 import eu.ddmore.fis.domain.LocalJobStatus;
@@ -29,6 +33,7 @@ import eu.ddmore.fis.domain.SubmissionResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath:META-INF/application-context.xml"})
+@Ignore("shutdown and health endpoints are not available in the testing context")
 public class SubmitControllerIT  extends SystemPropertiesAware {
 
     private static final Logger LOG = Logger.getLogger(SubmitControllerIT.class);

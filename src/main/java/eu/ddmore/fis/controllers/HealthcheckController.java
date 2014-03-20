@@ -28,7 +28,7 @@ public class HealthcheckController {
 	private MIFHttpRestClient mifClient;
 	
     @RequestMapping(method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
-    public @ResponseBody String shutdown() {
+    public @ResponseBody String healthcheck() {
         if(!mifClient.healthcheck()) {
             return "MIF is not running";
         }
