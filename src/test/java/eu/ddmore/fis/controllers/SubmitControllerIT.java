@@ -25,6 +25,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.base.Preconditions;
 
+import eu.ddmore.fis.CommonIntegrationTestContextConfiguration;
 import eu.ddmore.fis.SystemPropertiesAware;
 import eu.ddmore.fis.domain.LocalJobStatus;
 import eu.ddmore.fis.domain.SubmissionRequest;
@@ -32,8 +33,7 @@ import eu.ddmore.fis.domain.SubmissionResponse;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({"classpath:META-INF/application-context.xml"})
-@Ignore("shutdown and health endpoints are not available in the testing context")
+@ContextConfiguration(classes = {CommonIntegrationTestContextConfiguration.class})
 public class SubmitControllerIT  extends SystemPropertiesAware {
 
     private static final Logger LOG = Logger.getLogger(SubmitControllerIT.class);
