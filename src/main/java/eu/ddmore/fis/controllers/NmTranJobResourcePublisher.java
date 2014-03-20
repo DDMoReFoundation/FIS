@@ -27,6 +27,8 @@ public class NmTranJobResourcePublisher implements JobResourceProcessor {
     
     private String publishInputsScript;
     
+    private String converterToolboxExecutable;
+    
     @Override
     public LocalJob process(LocalJob job) {
         final File jobDir = new File(job.getWorkingDirectory(), job.getId());
@@ -39,7 +41,7 @@ public class NmTranJobResourcePublisher implements JobResourceProcessor {
                 }
             });
             
-            executeScript(job.getWorkingDirectory(), jobDir);
+            executeScript(job.getWorkingDirectory(), jobDir, job.getControlFile());
             
         } catch (IOException e) {
             throw new RuntimeException("Error when copying job files", e);
@@ -47,11 +49,11 @@ public class NmTranJobResourcePublisher implements JobResourceProcessor {
         return job;
     }
 
-    private void executeScript(String workingDirectory, File jobDir) {
+    private void executeScript(String workingDirectory, File jobDir, String modelFile) {
         CeInvoker invoker = new CeInvoker();
         InvokerResult invokerResult;
         try {
-            invokerResult = invoker.execute(String.format("%s \"%s\" \"%s\"", publishInputsScript, workingDirectory, jobDir));
+            invokerResult = invoker.execute(String.format("%s \"%s\" \"%s\" \"%s\"", publishInputsScript, workingDirectory, jobDir, modelFile));
             
             LOG.debug(String.format("InvokerResult: [ exit-code: %s, std-out: %s, std-err: %s ]",invokerResult.getExitCode(),invokerResult.getStdout(),invokerResult.getStderr()));
             
@@ -70,5 +72,14 @@ public class NmTranJobResourcePublisher implements JobResourceProcessor {
     
     public String getPublishInputsScript() {
         return publishInputsScript;
+    }
+    
+    @Required
+    public void setConverterToolboxExecutable(String converterToolboxExecutable) {
+        this.converterToolboxExecutable = converterToolboxExecutable;
+    }
+    
+    public String getConverterToolboxExecutable() {
+        return converterToolboxExecutable;
     }
 }

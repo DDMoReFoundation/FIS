@@ -116,7 +116,20 @@ public class FISHttpRestClient {
             throw new RuntimeException(String.format("Could not parse json %s",response), e);
         }
     }
-
+    
+    public String shutdown() {
+        String endpoint = buildEndpoint("shutdown");
+        PostMethod get = new PostMethod(endpoint);
+        get.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
+        return executeMethod(endpoint,get);
+    }
+    
+    public String healthcheck() {
+        String endpoint = buildEndpoint("healthcheck");
+        PostMethod get = new PostMethod(endpoint);
+        get.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
+        return executeMethod(endpoint,get);
+    }
 
     private String buildEndpoint(String...parts) {
         StringBuilder builder = new StringBuilder();
@@ -124,4 +137,5 @@ public class FISHttpRestClient {
         builder.append(Joiner.on("/").join(parts));
         return builder.toString();
     }
+
 }

@@ -131,17 +131,12 @@
         <dependency>
             <groupId>com.mango</groupId>
             <artifactId>MIFClient</artifactId>
-            <version>3.0.4-SNAPSHOT</version>
+            <version>3.0.4-ddmore-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.mango</groupId>
             <artifactId>mif-examples</artifactId>
-            <version>3.0.4-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-        	<groupId>eu.ddmore</groupId>
-        	<artifactId>converter-pharmml2nmtran</artifactId>
-        	<version>0.0.3-SNAPSHOT</version>
+            <version>3.0.4-ddmore-SNAPSHOT</version>
         </dependency>
         <dependency>
           <groupId>org.hibernate</groupId>

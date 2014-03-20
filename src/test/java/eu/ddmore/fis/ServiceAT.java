@@ -129,7 +129,7 @@ public class ServiceAT extends SystemPropertiesAware {
         assertTrue(String.format("File %s did not exist", outputFile), outputFile.exists());
         assertEquals(LocalJobStatus.COMPLETED,teisClient.checkStatus(jobId));
     }
-
+    
     private boolean isNotCompleted(LocalJobStatus jobStatus) {
         return LocalJobStatus.RUNNING.compareTo(jobStatus)>=0;
     }
