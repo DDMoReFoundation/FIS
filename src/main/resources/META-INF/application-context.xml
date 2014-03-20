@@ -71,14 +71,31 @@
     
     <bean id="submitController" class="eu.ddmore.fis.controllers.SubmitController">
     	<property name="localJobService" ref="localJobService" />
+        <property name="jobDispatcher" ref="jobDispatcher" />
+	</bean>
+    
+    <bean id="jobDispatcher" class="eu.ddmore.fis.service.JobDispatcherImpl">
         <property name="mifClient" ref="mifRestClient" />
         <property name="jobResourcePublisher" ref="nmTranJobResourcePublisher" />
-        <property name="environmentSetupScript" value="${nonmem.setup.script}" />
-        <property name="converterToolboxPath" value="${converter.toolbox.executable}" />
-	</bean>
+        <property name="commandRegistry" ref="commandRegistry"/>
+    </bean>
     
     <bean id="jobsController" class="eu.ddmore.fis.controllers.JobsController">
         <property name="localJobService" ref="localJobService" />
+    </bean>
+    
+    <bean id="commandRegistry" class="eu.ddmore.fis.service.CommandRegistryImpl">
+        <constructor-arg>
+            <set>
+                <bean class="eu.ddmore.fis.service.CommandExecutionTarget">
+                    <property name="command" value="${nonmem.command}"/>
+                    <property name="executionType" value="${nonmem.executionType}"/>
+                    <property name="toolExecutablePath" value="${nonmem.executable}"/>
+                    <property name="converterToolboxPath" value="${converter.toolbox.executable}"/>
+                    <property name="environmentSetupScript" value="${nonmem.setup.script}"/>
+                </bean>
+            </set>
+        </constructor-arg>
     </bean>
 	
     <bean id="mifRestClient" class="com.mango.mif.MIFHttpRestClient" scope="singleton">

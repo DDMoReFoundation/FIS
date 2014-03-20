@@ -19,6 +19,9 @@ public class LocalJob implements Serializable {
 
 	@Column(nullable = false)
 	private String command;
+	
+    @Column
+    private String commandParameters;
 
 	@Column(nullable = false)
 	private String workingDirectory;
@@ -69,17 +72,14 @@ public class LocalJob implements Serializable {
     public String getSubmitTime() {
         return submitTime;
     }
-
     
     public void setSubmitTime(String submitTime) {
         this.submitTime = submitTime;
     }
-
     
     public LocalJobStatus getStatus() {
         return status;
     }
-
     
     public void setStatus(LocalJobStatus status) {
         this.status = status;
@@ -91,6 +91,14 @@ public class LocalJob implements Serializable {
     
     public void setId(String id) {
         this.id = id;
+    }
+    
+    public void setCommandParameters(String commandParameters) {
+        this.commandParameters = commandParameters;
+    }
+    
+    public String getCommandParameters() {
+        return commandParameters;
     }
     
     public void setVersion(long version) {

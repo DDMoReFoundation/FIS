@@ -14,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -47,10 +46,10 @@ public class SubmitControllerIT  extends SystemPropertiesAware {
 	@Autowired
 	JobsController jobsController;
 
-	private String nonmemExecutable;
+	private String nonmemCommand;
 	@Before
 	public void setUp() {
-        nonmemExecutable = System.getProperty("nonmem.executable");
+        nonmemCommand = System.getProperty("nonmem.command");
 	}
 	
 	@Test
@@ -59,7 +58,7 @@ public class SubmitControllerIT  extends SystemPropertiesAware {
         Preconditions.checkArgument(scriptFile.exists(), "Script file does not exist");
         FileUtils.copyDirectory(scriptFile.getParentFile(), folder.getRoot());
         SubmissionRequest submissionRequest = new SubmissionRequest();
-        submissionRequest.setCommand(nonmemExecutable);
+        submissionRequest.setCommand(nonmemCommand);
         submissionRequest.setExecutionFile(scriptFile.getName());
         submissionRequest.setWorkingDirectory(folder.getRoot().getAbsolutePath());
         

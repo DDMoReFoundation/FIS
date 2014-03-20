@@ -1,0 +1,3 @@
+To run the software:
+1. Update config.properties with values valid to your environment
+2. Run 'startup.bat'

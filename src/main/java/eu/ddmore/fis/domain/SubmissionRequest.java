@@ -8,16 +8,20 @@ public class SubmissionRequest {
 	public String workingDirectory;
 	public String command;
 	public String executionFile;
+    public String commandParameters;
 	
 	public String getWorkingDirectory() {
 		return workingDirectory;
 	}
+	
 	public void setWorkingDirectory(String workingDirectory) {
 		this.workingDirectory = workingDirectory;
 	}
+	
 	public String getCommand() {
 		return command;
 	}
+	
 	public void setCommand(String command) {
 		this.command = command;
 	}
@@ -30,5 +34,11 @@ public class SubmissionRequest {
         this.executionFile = executionFile;
     }
 	
-	
+    public void setCommandParameters(String commandParameters) {
+        this.commandParameters = commandParameters;
+    }
+    
+    public String getCommandParameters() {
+        return commandParameters;
+    }
 }
