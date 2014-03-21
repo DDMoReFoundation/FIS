@@ -95,6 +95,8 @@ public class ServiceAT extends SystemPropertiesAware {
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
         }
         LOG.debug(String.format("Files in working directory: %s",Arrays.toString(folder.getRoot().list())));
+        File pharmmlFile = new File(folder.getRoot(),"example3_MS.pharmml");
+        assertTrue(String.format("File %s did not exist", pharmmlFile), pharmmlFile.exists());
         File outputFile = new File(folder.getRoot(),"output.lst");
         assertTrue(String.format("File %s did not exist", outputFile), outputFile.exists());
         assertEquals(LocalJobStatus.COMPLETED,teisClient.checkStatus(jobId));
@@ -102,7 +104,7 @@ public class ServiceAT extends SystemPropertiesAware {
 
     @Test
     public void shouldExecuteMDLFile() throws IOException, InterruptedException {
-        File scriptFile = FileUtils.toFile(SubmitControllerIT.class.getResource("/eu/ddmore/testdata/warfarin_PK_PRED/warfarin_PK_PRED.mdl"));
+        File scriptFile = FileUtils.toFile(SubmitControllerIT.class.getResource("/eu/ddmore/testdata/warfarin_PK_PRED_MDL/warfarin_PK_PRED.mdl"));
         Preconditions.checkArgument(scriptFile.exists(), "Script file does not exist");
         FileUtils.copyDirectory(scriptFile.getParentFile(), folder.getRoot());
         SubmissionRequest submissionRequest = new SubmissionRequest();
@@ -125,6 +127,8 @@ public class ServiceAT extends SystemPropertiesAware {
         LOG.debug(String.format("Files in working directory: %s",Arrays.toString(folder.getRoot().list())));
         File outputFile = new File(folder.getRoot(),"output.lst");
         assertTrue(String.format("File %s did not exist", outputFile), outputFile.exists());
+        File pharmmlFile = new File(folder.getRoot(),"warfarin_PK_PRED.pharmml");
+        assertTrue(String.format("File %s did not exist", pharmmlFile), pharmmlFile.exists());
         assertEquals(LocalJobStatus.COMPLETED,teisClient.checkStatus(jobId));
     }
     
