@@ -5,10 +5,10 @@ package eu.ddmore.fis.domain;
 
 public class SubmissionRequest {
 
-	public String workingDirectory;
-	public String command;
-	public String executionFile;
-    public String commandParameters;
+	private String workingDirectory;
+	private String command;
+	private String executionFile;
+	private String commandParameters;
 	
 	public String getWorkingDirectory() {
 		return workingDirectory;

@@ -5,8 +5,6 @@ package eu.ddmore.fis.controllers;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.http.MediaType;
@@ -20,8 +18,6 @@ import com.mango.mif.MIFHttpRestClient;
 @Controller
 @RequestMapping("/healthcheck")
 public class HealthcheckController {
-    
-    private static final Logger LOG = Logger.getLogger(HealthcheckController.class);
     
     private HealthEndpoint<Map<String,Object>> healthEndpoint;
     

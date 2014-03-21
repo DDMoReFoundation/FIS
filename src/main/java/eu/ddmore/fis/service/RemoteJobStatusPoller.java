@@ -37,21 +37,22 @@ public class RemoteJobStatusPoller {
         }
     }
     
-    private void updateJobStatus(LocalJob job) {
+    private void updateJobStatus(final LocalJob job) {
         LOG.debug(String.format("Job %s is %s", job.getId(), job.getStatus()));
         String remoteJobStatus = mifClient.checkStatus(job.getId());
         LOG.debug(String.format("MIF status is: %s",remoteJobStatus));
+        LocalJob localJob = job;
         if("NOT_AVAILABLE".equals(remoteJobStatus)) {
             return;
         }
         LocalJobStatus localJobStatus = toLocalStatus(remoteJobStatus);
-        job.setStatus(localJobStatus);
+        localJob.setStatus(localJobStatus);
         
         if(!LocalJobStatus.RUNNING.equals(localJobStatus)) {
-            job = jobResourceRetriever.process(job);
+            localJob = jobResourceRetriever.process(localJob);
         }
         
-        localJobService.setJobStatus(job.getId(),job.getStatus());
+        localJobService.setJobStatus(localJob.getId(),localJob.getStatus());
     }
 
     private LocalJobStatus toLocalStatus(String remoteJobStatus) {

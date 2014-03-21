@@ -25,7 +25,7 @@ import eu.ddmore.fis.service.LocalJobService;
 @Controller
 @RequestMapping("/submit")
 public class SubmitController implements ApplicationContextAware {
-    public static Logger LOG = Logger.getLogger(SubmitController.class.getName());
+    private static final Logger LOG = Logger.getLogger(SubmitController.class.getName());
 	private LocalJobService localJobService;
 	private ApplicationContext applicationContext;
 	
