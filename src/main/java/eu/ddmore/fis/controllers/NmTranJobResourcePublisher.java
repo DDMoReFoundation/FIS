@@ -33,17 +33,21 @@ public class NmTranJobResourcePublisher implements JobResourceProcessor {
     private String mdlFileExtension = "mdl";
     private String pharmmlFileExtension = "xml";
     private Invoker invoker;
+    
+    private boolean skipCopy = false;
     @Override
     public LocalJob process(LocalJob job) {
         final File jobDir = new File(job.getWorkingDirectory(), job.getId());
         jobDir.mkdir();
         try {
-            FileUtils.copyDirectory(new File(job.getWorkingDirectory()), jobDir, new FileFilter() {
-                @Override
-                public boolean accept(File pathname) {
-                    return !jobDir.equals(pathname);
-                }
-            });
+            if(!isSkipCopy()) {
+                FileUtils.copyDirectory(new File(job.getWorkingDirectory()), jobDir, new FileFilter() {
+                    @Override
+                    public boolean accept(File pathname) {
+                        return !jobDir.equals(pathname);
+                    }
+                });
+            }
             
             executeScript(job.getWorkingDirectory(), jobDir, job.getControlFile());
             String origControlFile = job.getControlFile();
@@ -97,5 +101,21 @@ public class NmTranJobResourcePublisher implements JobResourceProcessor {
     
     public Invoker getInvoker() {
         return invoker;
+    }
+    
+    public void setSkipCopy(boolean skipCopy) {
+        this.skipCopy = skipCopy;
+    }
+    
+    public boolean isSkipCopy() {
+        return skipCopy;
+    }
+    
+    public void setMdlFileExtension(String mdlFileExtension) {
+        this.mdlFileExtension = mdlFileExtension;
+    }
+    
+    public void setPharmmlFileExtension(String pharmmlFileExtension) {
+        this.pharmmlFileExtension = pharmmlFileExtension;
     }
 }

@@ -102,7 +102,6 @@ public class ServiceAT extends SystemPropertiesAware {
     }
 
     @Test
-    @Ignore("no conversion from MDL to PharmML is supported yet")
     public void shouldExecuteMDLFile() throws IOException, InterruptedException {
         File scriptFile = FileUtils.toFile(SubmitControllerIT.class.getResource("/eu/ddmore/testdata/warfarin_PK_PRED/warfarin_PK_PRED.mdl"));
         Preconditions.checkArgument(scriptFile.exists(), "Script file does not exist");
