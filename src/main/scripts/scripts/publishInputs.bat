@@ -10,9 +10,15 @@ echo %1 %2 %3 %4
 
 IF %MODEL_EXT% == .mdl (
     cd %SCRIPT_DIR%\..\mockData
+@echo off
+REM    cp warfarin_PK_PRED.csv %MIF_WORKING_DIR%\%MODEL_NAME%_data.csv
+REM    cp warfarin_PK_PRED.xml %MIF_WORKING_DIR%\%MODEL_NAME%.xml
 
-    cp warfarin_PK_PRED.csv %MIF_WORKING_DIR%\%MODEL_NAME%_data.csv
-    cp warfarin_PK_PRED.xml %MIF_WORKING_DIR%\%MODEL_NAME%.xml
+REM 'small' data
+REM    cp example3_data.csv %MIF_WORKING_DIR%\%MODEL_NAME%_data.csv
+@echo on
+    cp example3_full_data_MDV.csv %MIF_WORKING_DIR%\%MODEL_NAME%_data.csv
+    cp example3.xml %MIF_WORKING_DIR%\%MODEL_NAME%.xml
 )
 
 exit /b %errorlevel%
