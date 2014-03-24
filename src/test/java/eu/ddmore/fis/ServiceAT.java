@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -73,6 +74,7 @@ public class ServiceAT extends SystemPropertiesAware {
     }
 
     @Test
+    @Ignore("The example is not supported by the converter")
     public void shouldExecutePharmMLFile() throws IOException, InterruptedException {
         File scriptFile = FileUtils.toFile(SubmitControllerIT.class.getResource("/eu/ddmore/testdata/example3/example3_MS.xml"));
         Preconditions.checkArgument(scriptFile.exists(), "Script file does not exist");
