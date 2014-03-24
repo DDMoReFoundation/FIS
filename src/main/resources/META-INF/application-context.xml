@@ -37,16 +37,32 @@
 
     <bean id="invoker" class="com.mango.mif.core.exec.ce.CeInvoker" />
     
-    <bean id="nmTranJobResourcePublisher" class="eu.ddmore.fis.controllers.NmTranJobResourcePublisher" >
-        <property name="publishInputsScript" value="${fis.publishInputs}"/>
-        <property name="converterToolboxExecutable" value="${converter.toolbox.executable}" />
-        <property name="skipCopy" value="${fis.nmTranJobResourcePublisher.skipCopy:false}"/>
-        <property name="invoker" ref="invoker" />
+    <bean id="jobResourceRetriever" class="eu.ddmore.fis.controllers.GroovyScriptJobProcessor" >
+        <property name="scriptFile" value="${fis.retrieveOutputs}"></property>
     </bean>
     
-    <bean id="nmTranJobResourceRetriever" class="eu.ddmore.fis.controllers.NmTranJobResourceRetriever" >
-        <property name="retrieveOutputsScript" value="${fis.retrieveOutputs}"></property>
-        <property name="invoker" ref="invoker" />
+    <bean id="jobResourcePublisher" class="eu.ddmore.fis.controllers.GroovyScriptJobProcessor" >
+        <constructor-arg>
+            <bean class="groovy.lang.Binding">
+                <constructor-arg>
+                    <map>
+                        <entry key="invoker" value-ref="invoker">
+                            
+                        </entry>
+                        <entry key="fis.mdl.ext">
+                            <value>mdl</value>
+                        </entry>
+                        <entry key="fis.pharmml.ext">
+                            <value>xml</value>
+                        </entry>
+                        <entry key="converter.toolbox.executable">
+                            <value>${converter.toolbox.executable}</value>
+                        </entry>
+                    </map>
+                </constructor-arg>
+            </bean>
+        </constructor-arg>
+        <property name="scriptFile" value="${fis.publishInputs}"></property>
     </bean>
     
     <mvc:annotation-driven conversion-service="conversionService" />
@@ -77,7 +93,7 @@
     
     <bean id="jobDispatcher" class="eu.ddmore.fis.service.JobDispatcherImpl">
         <property name="mifClient" ref="mifRestClient" />
-        <property name="jobResourcePublisher" ref="nmTranJobResourcePublisher" />
+        <property name="jobResourcePublisher" ref="jobResourcePublisher" />
         <property name="commandRegistry" ref="commandRegistry"/>
     </bean>
     
@@ -108,7 +124,7 @@
     <bean id="remoteJobStatusPoller" class="eu.ddmore.fis.service.RemoteJobStatusPoller">
         <property name="localJobService" ref="localJobService" />
         <property name="mifClient" ref="mifRestClient" />
-        <property name="jobResourceRetriever" ref="nmTranJobResourceRetriever" />
+        <property name="jobResourceRetriever" ref="jobResourceRetriever" />
     </bean>
     
     <task:annotation-driven executor="globalExecutor" scheduler="globalScheduler"/>

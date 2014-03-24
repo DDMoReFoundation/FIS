@@ -74,9 +74,8 @@ public class ServiceAT extends SystemPropertiesAware {
     }
 
     @Test
-    @Ignore("The example is not supported by the converter")
     public void shouldExecutePharmMLFile() throws IOException, InterruptedException {
-        File scriptFile = FileUtils.toFile(SubmitControllerIT.class.getResource("/eu/ddmore/testdata/example3/example3_MS.xml"));
+        File scriptFile = FileUtils.toFile(SubmitControllerIT.class.getResource("/eu/ddmore/testdata/example3/example3.xml"));
         Preconditions.checkArgument(scriptFile.exists(), "Script file does not exist");
         FileUtils.copyDirectory(scriptFile.getParentFile(), folder.getRoot());
         SubmissionRequest submissionRequest = new SubmissionRequest();
@@ -97,7 +96,7 @@ public class ServiceAT extends SystemPropertiesAware {
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
         }
         LOG.debug(String.format("Files in working directory: %s",Arrays.toString(folder.getRoot().list())));
-        File pharmmlFile = new File(folder.getRoot(),"example3_MS.pharmml");
+        File pharmmlFile = new File(folder.getRoot(),"example3.pharmml");
         assertTrue(String.format("File %s did not exist", pharmmlFile), pharmmlFile.exists());
         File outputFile = new File(folder.getRoot(),"output.lst");
         assertTrue(String.format("File %s did not exist", outputFile), outputFile.exists());
