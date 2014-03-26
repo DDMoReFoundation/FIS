@@ -194,6 +194,19 @@
     </dependencies>
 
     <build>
+    <resources>
+        <resource>
+            <directory>src/main/resources</directory>
+        </resource>
+    </resources>
+    <testResources>
+        <testResource>
+            <directory>src/test/resources</directory>
+        </testResource>
+        <testResource>
+            <directory>src/main/scripts</directory>
+        </testResource>
+    </testResources>
         <finalName>${project.name}</finalName>
         <plugins>
             <plugin> 

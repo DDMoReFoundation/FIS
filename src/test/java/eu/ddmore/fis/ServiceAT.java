@@ -71,6 +71,8 @@ public class ServiceAT extends SystemPropertiesAware {
         File outputFile = new File(folder.getRoot(),"output.lst");
         assertTrue(String.format("File %s did not exist", outputFile), outputFile.exists());
         assertEquals(LocalJobStatus.COMPLETED,teisClient.checkStatus(jobId));
+
+        verifyThatFisMetadataFilesExist(folder.getRoot());
     }
 
     @Test
@@ -101,6 +103,17 @@ public class ServiceAT extends SystemPropertiesAware {
         File outputFile = new File(folder.getRoot(),"output.lst");
         assertTrue(String.format("File %s did not exist", outputFile), outputFile.exists());
         assertEquals(LocalJobStatus.COMPLETED,teisClient.checkStatus(jobId));
+        
+        verifyThatFisMetadataFilesExist(folder.getRoot());
+    }
+
+    private void verifyThatFisMetadataFilesExist(File root) {
+        File fisHiddenDir = new File(root,".fis");
+        assertTrue(String.format("%s directory should be created",fisHiddenDir), new File(root,".fis").exists());
+        File stdOut = new File(fisHiddenDir,"stdout");
+        File stdErr = new File(fisHiddenDir,"stderr");
+        assertTrue(String.format("%s file should be created",stdOut), stdOut.exists());
+        assertTrue(String.format("%s file should be created",stdErr), stdErr.exists());
     }
 
     @Test
@@ -131,6 +144,8 @@ public class ServiceAT extends SystemPropertiesAware {
         File pharmmlFile = new File(folder.getRoot(),"warfarin_PK_PRED.pharmml");
         assertTrue(String.format("File %s did not exist", pharmmlFile), pharmmlFile.exists());
         assertEquals(LocalJobStatus.COMPLETED,teisClient.checkStatus(jobId));
+        
+        verifyThatFisMetadataFilesExist(folder.getRoot());
     }
     
     private boolean isNotCompleted(LocalJobStatus jobStatus) {

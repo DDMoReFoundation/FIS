@@ -12,10 +12,15 @@ FileUtils.copyDirectory(mifWorkingDir, workingDir, new FileFilter() {
         switch(file.getName()) {
             case ~/.*\.(csv|ctl|xml|lst|pharmml)/:
                 return true;
-            case ~/\.MIF/:
-                return true;
             default:
                 return false;
         }
     }
 });
+
+File fisMetdataDir = new File(workingDir,".fis");
+fisMetdataDir.mkdir();
+
+File mifMetadataDir = new File(mifWorkingDir,".MIF");
+FileUtils.copyFile(new File(mifMetadataDir, "MIF.stderr"),new File(fisMetdataDir, "stderr"));
+FileUtils.copyFile(new File(mifMetadataDir, "MIF.stdout"),new File(fisMetdataDir, "stdout"));
