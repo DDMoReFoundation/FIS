@@ -23,6 +23,10 @@ public class HealthcheckController {
     
 	private MIFHttpRestClient mifClient;
 	
+	/**
+	 * Checks the health of mif and of FIS itself. 
+	 * @return 'ok' if everything is ok, 'MIF is not running' if MIF is down. 
+	 */
     @RequestMapping(method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody String healthcheck() {
         if(!mifClient.healthcheck()) {

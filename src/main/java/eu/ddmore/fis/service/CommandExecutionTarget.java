@@ -1,5 +1,8 @@
 package eu.ddmore.fis.service;
 
+/**
+ * Represents a execution target (TPT and Environment) runtime parameters associated with a given command.
+ */
 public class CommandExecutionTarget {
 
     private String converterToolboxPath;

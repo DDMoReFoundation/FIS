@@ -25,7 +25,11 @@ public class ShutdownController {
     private ShutdownEndpoint shutdownEndpoint;
     
 	private MIFHttpRestClient mifClient;
-	
+
+    /**
+     * Kills MIF and FIS itself. It will not fail if it can't communicate with MIF - MIF not running should not prevent FIS from shutting down. 
+     * @return 'OK' if the request was processed correctly. 
+     */
     @RequestMapping(method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody String shutdown() {
         try {

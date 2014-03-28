@@ -5,7 +5,9 @@ import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 import java.io.File;
 import org.springframework.beans.factory.annotation.Required;
-
+/**
+ * Uses a groovy script to process job
+ */
 public class GroovyScriptJobProcessor implements JobResourceProcessor {
     private File scriptFile;
     
@@ -14,7 +16,10 @@ public class GroovyScriptJobProcessor implements JobResourceProcessor {
     public GroovyScriptJobProcessor() {
         binding = new Binding();
     }
-
+    /**
+     * Creates an instance which will pass the binding object to the groovy script execution context.
+     * @param binding
+     */
     public GroovyScriptJobProcessor(Binding binding) {
         this.binding = binding;
     }
