@@ -111,6 +111,13 @@
                     <property name="converterToolboxPath" value="${converter.toolbox.executable}"/>
                     <property name="environmentSetupScript" value="${nonmem.setup.script}"/>
                 </bean>
+                <bean class="eu.ddmore.fis.service.CommandExecutionTarget">
+                    <property name="command" value="${psn.execute.command}"/>
+                    <property name="executionType" value="${psn.execute.executionType}"/>
+                    <property name="toolExecutablePath" value="${psn.execute.executable}"/>
+                    <property name="converterToolboxPath" value="${converter.toolbox.executable}"/>
+                    <property name="environmentSetupScript" value="${nonmem.setup.script}"/>
+                </bean>
             </set>
         </constructor-arg>
     </bean>
