@@ -34,8 +34,17 @@ if(PHARMML_FILE_EXT.equals(modelExt)) {
         new File(mifWorkingDir,origControlFile.getPath()), 
         new File(new File(mifWorkingDir,origControlFileDir.getPath()), modelName + ".pharmml") );
 } else if(MDL_FILE_EXT.equals(modelExt)) {
-    FileUtils.copyFile(new File(mockDataDir,"example3_full_data_MDV.csv"), new File(mifWorkingDir,modelName + "_data.csv"));
-    FileUtils.copyFile(new File(mockDataDir,"example3.xml"), new File(mifWorkingDir,modelName + ".xml"));
-    FileUtils.copyFile(new File(mockDataDir,"example3.xml"), new File(mifWorkingDir,modelName + ".pharmml"));
-    job.setControlFile(new File(origControlFileDir,modelName + "." + PHARMML_FILE_EXT).getPath());
+	String newModelFileName = modelName + "." + PHARMML_FILE_EXT
+	File xmlVersion = new File(mockDataDir, newModelFileName)
+	if( xmlVersion.exists() ) {
+		FileUtils.copyFileToDirectory( xmlVersion, mifWorkingDir )
+		FileUtils.copyFile( xmlVersion, new File(mifWorkingDir,modelName + ".pharmml") )
+	}
+	else {
+		// default to example3
+		FileUtils.copyFile(new File(mockDataDir,"example3_full_data_MDV.csv"), new File(mifWorkingDir,modelName + "_data.csv"));
+		FileUtils.copyFile(new File(mockDataDir,"example3.xml"), new File(mifWorkingDir,modelName + ".xml"));
+		FileUtils.copyFile(new File(mockDataDir,"example3.xml"), new File(mifWorkingDir,modelName + ".pharmml"));
+	}
+    job.setControlFile(new File(origControlFileDir, newModelFileName).getPath());
 }
