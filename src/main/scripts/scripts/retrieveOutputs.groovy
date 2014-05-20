@@ -22,5 +22,16 @@ File fisMetdataDir = new File(workingDir,".fis");
 fisMetdataDir.mkdir();
 
 File mifMetadataDir = new File(mifWorkingDir,".MIF");
-FileUtils.copyFile(new File(mifMetadataDir, "MIF.stderr"),new File(fisMetdataDir, "stderr"));
-FileUtils.copyFile(new File(mifMetadataDir, "MIF.stdout"),new File(fisMetdataDir, "stdout"));
+File mifStdErr=new File(mifMetadataDir, "MIF.stderr");
+if(mifStdErr.exists()) {
+    FileUtils.copyFile(mifStdErr,new File(fisMetdataDir, "stderr"));
+} else {
+    println "MIF.stderr file did not exist" 
+}
+
+File mifStdOut = new File(mifMetadataDir, "MIF.stdout");
+if(mifStdErr.exists()) {
+    FileUtils.copyFile(mifStdOut,new File(fisMetdataDir, "stdout"));
+} else {
+    println "MIF.stdout file did not exist" 
+}
