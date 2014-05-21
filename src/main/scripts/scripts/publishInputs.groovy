@@ -39,6 +39,10 @@ if(PHARMML_FILE_EXT.equals(modelExt)) {
 	if( xmlVersion.exists() ) {
 		FileUtils.copyFileToDirectory( xmlVersion, mifWorkingDir )
 		FileUtils.copyFile( xmlVersion, new File(mifWorkingDir,modelName + ".pharmml") )
+		File data = new File(mockDataDir, modelName + ".csv")
+		if(data.exists()) {
+			FileUtils.copyFile( data, new File(mifWorkingDir,modelName + "_data.csv") )
+		}
 	}
 	else {
 		// default to example3
