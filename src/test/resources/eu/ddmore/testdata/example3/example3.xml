@@ -8,7 +8,7 @@
     xmlns:mdef="http://www.pharmml.org/2013/03/ModelDefinition"
     xmlns:mstep="http://www.pharmml.org/2013/03/ModellingSteps"
     xmlns:mml="http://www.pharmml.org/2013/03/PharmML"
-    writtenVersion="0.2.1">
+    writtenVersion="0.3" id="i1">
     
     <!-- MODEL NAME -->
     <ct:Name>Example 3 - basic Warfarin PK estimation with covariate W</ct:Name>
@@ -39,11 +39,11 @@
     <ModelDefinition xmlns="http://www.pharmml.org/2013/03/ModelDefinition">
         
         <!-- VARIABILITY MODEL -->
-        <VariabilityModel blkId="modelVar" type="model">
+        <VariabilityModel blkId="randEffect" type="parameterVariability">
             <Level symbId="indiv"/>
         </VariabilityModel>
         
-        <VariabilityModel blkId="obsErr" type="error">
+        <VariabilityModel blkId="resErr" type="residualError">
             <Level symbId="residual"/>
         </VariabilityModel>
         
@@ -82,7 +82,7 @@
             <!-- Tlag -->
             <RandomVariable symbId="eta_Tlag">
                 <ct:VariabilityReference>
-                    <ct:SymbRef blkIdRef="modelVar" symbIdRef="indiv"/>
+                    <ct:SymbRef blkIdRef="randEffect" symbIdRef="indiv"/>
                 </ct:VariabilityReference>
                 <NormalDistribution xmlns="http://www.uncertml.org/3.0" definition="http://www.uncertml.org/distributions/normal">
                     <mean>
@@ -110,7 +110,7 @@
             <!-- ka -->
             <RandomVariable symbId="eta_ka">
                 <ct:VariabilityReference>
-                    <ct:SymbRef blkIdRef="modelVar" symbIdRef="indiv"/>
+                    <ct:SymbRef blkIdRef="randEffect" symbIdRef="indiv"/>
                 </ct:VariabilityReference>
                 <NormalDistribution xmlns="http://www.uncertml.org/3.0" definition="http://www.uncertml.org/distributions/normal">
                     <mean>
@@ -138,7 +138,7 @@
             <!-- V -->
             <RandomVariable symbId="eta_V">
                 <ct:VariabilityReference>
-                    <ct:SymbRef blkIdRef="modelVar" symbIdRef="indiv"/>
+                    <ct:SymbRef blkIdRef="randEffect" symbIdRef="indiv"/>
                 </ct:VariabilityReference>
                 <NormalDistribution xmlns="http://www.uncertml.org/3.0" definition="http://www.uncertml.org/distributions/normal">
                     <mean>
@@ -172,7 +172,7 @@
             <!-- CL -->
             <RandomVariable symbId="eta_CL">
                 <ct:VariabilityReference>
-                    <ct:SymbRef blkIdRef="modelVar" symbIdRef="indiv"/>
+                    <ct:SymbRef blkIdRef="randEffect" symbIdRef="indiv"/>
                 </ct:VariabilityReference>
                 <NormalDistribution xmlns="http://www.uncertml.org/3.0" definition="http://www.uncertml.org/distributions/normal">
                     <mean>
@@ -300,7 +300,7 @@
             <SimpleParameter symbId="sigma"/>
             <RandomVariable symbId="epsilon_C">
                 <ct:VariabilityReference>
-                    <ct:SymbRef blkIdRef="obsErr" symbIdRef="residual"/>
+                    <ct:SymbRef blkIdRef="resErr" symbIdRef="residual"/>
                 </ct:VariabilityReference>
                 <NormalDistribution xmlns="http://www.uncertml.org/3.0" definition="http://www.uncertml.org/distributions/normal">
                     <mean>
@@ -311,11 +311,11 @@
                     </stddev>
                 </NormalDistribution>
             </RandomVariable>
-            <Standard symbId="C_obs">
-                <Output> <!-- f -->
+            <Standard symbId="C_obs">           <!-- y = f + g*eps -->
+                <Output>                        <!-- f -->
                     <ct:SymbRef symbIdRef="C"/>
                 </Output>
-                <ErrorModel>    <!-- g -->
+                <ErrorModel>                    <!-- g -->
                     <ct:Assign>
                         <math:Equation>
                             <math:FunctionCall>
@@ -333,7 +333,7 @@
                         </math:Equation>
                     </ct:Assign>
                 </ErrorModel>
-                <ResidualError> <!-- eps -->
+                <ResidualError>                 <!-- eps -->
                     <ct:SymbRef symbIdRef="epsilon_C"/>
                 </ResidualError>
             </Standard>
@@ -361,7 +361,7 @@
             </Segment>
             <Activity oid="d1">
                 <Bolus>
-                    <DoseAmount inputType="dose">
+                    <DoseAmount inputTarget="parameter">
                         <ct:SymbRef blkIdRef="sm1" symbIdRef="D"/>
                         <ct:Assign>
                             <ct:Real>100</ct:Real>
@@ -379,60 +379,84 @@
         
         <!-- POPULATION -->
         <Population>
-            <IndividualTemplate>
-                <IndividualMapping>
-                    <ds:ColumnRef columnIdRef="ID"/>
-                </IndividualMapping>
-                <ArmMapping>
-                    <ds:ColumnRef columnIdRef="ARM"/>
-                </ArmMapping>
-                <CovariateMapping>
-                    <ds:ColumnRef columnIdRef="WEIGHT"/>
-                    <ct:SymbRef blkIdRef="cm1" symbIdRef="W"/>
-                </CovariateMapping>
-            </IndividualTemplate>
+            <ct:VariabilityReference>
+                <ct:SymbRef blkIdRef="randEffect" symbIdRef="indiv"/>
+            </ct:VariabilityReference>
+
+            <ColumnMapping>
+                <ds:ColumnRef columnIdRef="WEIGHT"/>
+                <ct:SymbRef blkIdRef="cm1" symbIdRef="W"/>
+            </ColumnMapping>
+
             <ds:DataSet>
                 <ds:Definition>
-                    <ds:Column columnId="ID" valueType="id" columnNum="1"/>
-                    <ds:Column columnId="ARM" valueType="id" columnNum="2"/>
-                    <ds:Column columnId="WEIGHT" valueType="real" columnNum="3"/>
+                    <ds:Column columnId="ID" columnType="id" valueType="id" columnNum="1"/>
+                    <ds:Column columnId="ARM" columnType="arm" valueType="id" columnNum="2"/>
+                    <ds:Column columnId="WEIGHT" columnType="covariate" valueType="real" columnNum="3"/>
                 </ds:Definition>
                 <ds:Table>
-                    <ds:Row><ct:Id>i1</ct:Id><ct:Id>a1</ct:Id><ct:Real>70.1</ct:Real></ds:Row>
-                    <ds:Row><ct:Id>i2</ct:Id><ct:Id>a1</ct:Id><ct:Real>60.0</ct:Real></ds:Row>
-                    <ds:Row><ct:Id>i3</ct:Id><ct:Id>a1</ct:Id><ct:Real>93.2</ct:Real></ds:Row>
-                    <ds:Row><ct:Id>i4</ct:Id><ct:Id>a1</ct:Id><ct:Real>85.7</ct:Real></ds:Row>
-                    <ds:Row><ct:Id>i5</ct:Id><ct:Id>a1</ct:Id><ct:Real>78.3</ct:Real></ds:Row>
+                    <ds:Row><ct:Id>i1</ct:Id><ct:Id>arm1</ct:Id><ct:Real>70.1</ct:Real></ds:Row>
+                    <ds:Row><ct:Id>i2</ct:Id><ct:Id>arm1</ct:Id><ct:Real>60.0</ct:Real></ds:Row>
+                    <ds:Row><ct:Id>i3</ct:Id><ct:Id>arm1</ct:Id><ct:Real>93.2</ct:Real></ds:Row>
+                    <ds:Row><ct:Id>i4</ct:Id><ct:Id>arm1</ct:Id><ct:Real>85.7</ct:Real></ds:Row>
+                    <ds:Row><ct:Id>i5</ct:Id><ct:Id>arm1</ct:Id><ct:Real>78.3</ct:Real></ds:Row>
                     <!-- SNIP -->
-                    <ds:Row><ct:Id>i33</ct:Id><ct:Id>a1</ct:Id><ct:Real>94.1</ct:Real></ds:Row>
+                    <ds:Row><ct:Id>i33</ct:Id><ct:Id>arm1</ct:Id><ct:Real>94.1</ct:Real></ds:Row>
                 </ds:Table>
             </ds:DataSet>
         </Population>
     </TrialDesign>
+   
     
     <!-- MODELLING STEPS -->
     <ModellingSteps xmlns="http://www.pharmml.org/2013/03/ModellingSteps">
         
+        <NONMEMdataSet oid="NMoid">
+            <ds:DataSet>
+                <ds:Definition>
+                    <ds:Column columnId="ID" columnType="id" valueType="id" columnNum="1"/>
+                </ds:Definition>
+                <ds:ImportData oid="sd">
+                    <ds:name>dsd</ds:name>
+                    <ds:url>ds</ds:url>
+                    <ds:format>CSV</ds:format>
+                    <ds:delimiter>COMMA</ds:delimiter>
+                </ds:ImportData>
+            </ds:DataSet>
+        </NONMEMdataSet>
+        
+        <TargetTool oid="targetTooloid">
+            <TargetToolName>dasd</TargetToolName>
+            <ds:TargetToolData>
+                <ds:ImportTargetData oid="sdd">
+                    <ds:name>dsds</ds:name>
+                    <ds:url>sadas</ds:url>
+                </ds:ImportTargetData>
+            </ds:TargetToolData>
+        </TargetTool>
+                        
+        
         <!-- ESTIMATION -->
         <EstimationStep oid="estimStep1">
-            <!-- OBJECTIVE DATA -->
+            
+            <TargetToolReference>
+                <ct:OidRef oidRef="NMoid"/>
+            </TargetToolReference>
+            
             <ObjectiveDataSet>
-                <IndividualMapping>
-                    <ds:ColumnRef columnIdRef="ID"/>
-                </IndividualMapping>
-                <VariableMapping>
+                <ColumnMapping>
                     <ds:ColumnRef columnIdRef="time"/>
                     <ct:SymbRef symbIdRef="t"/>
-                </VariableMapping>
-                <VariableMapping>
+                </ColumnMapping>
+                <ColumnMapping>
                     <ds:ColumnRef columnIdRef="dv"/>
                     <ct:SymbRef blkIdRef="om1" symbIdRef="C_obs"/>
-                </VariableMapping>
+                </ColumnMapping>
                 <ds:DataSet>
                     <ds:Definition>
-                        <ds:Column columnId="ID" valueType="id" columnNum="1"/>
-                        <ds:Column columnId="time" valueType="real" columnNum="2"/>
-                        <ds:Column columnId="dv" valueType="real" columnNum="3"/>
+                        <ds:Column columnId="ID" columnType="id" valueType="id" columnNum="1"/>
+                        <ds:Column columnId="TIME" columnType="time" valueType="real" columnNum="2"/>
+                        <ds:Column columnId="DV" columnType="dv" valueType="real" columnNum="3"/>
                     </ds:Definition>
                     <ds:Table>
                         <!-- SUBJECT 1 -->
@@ -447,7 +471,7 @@
                     </ds:Table>
                 </ds:DataSet>
             </ObjectiveDataSet>
-            
+                        
             <!-- PARAMETERS TO ESTIMATE -->
             <ParametersToEstimate>
                 <!-- V -->
