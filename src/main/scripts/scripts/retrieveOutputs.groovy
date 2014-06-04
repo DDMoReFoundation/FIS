@@ -18,20 +18,20 @@ FileUtils.copyDirectory(mifWorkingDir, workingDir, new FileFilter() {
     }
 });
 
-File fisMetdataDir = new File(workingDir,".fis");
-fisMetdataDir.mkdir();
+File fisMetadataDir = new File(workingDir,".fis");
+fisMetadataDir.mkdir();
 
 File mifMetadataDir = new File(mifWorkingDir,".MIF");
 File mifStdErr=new File(mifMetadataDir, "MIF.stderr");
 if(mifStdErr.exists()) {
-    FileUtils.copyFile(mifStdErr,new File(fisMetdataDir, "stderr"));
+    FileUtils.copyFile(mifStdErr,new File(fisMetadataDir, "stderr"));
 } else {
     println "MIF.stderr file did not exist" 
 }
 
 File mifStdOut = new File(mifMetadataDir, "MIF.stdout");
 if(mifStdErr.exists()) {
-    FileUtils.copyFile(mifStdOut,new File(fisMetdataDir, "stdout"));
+    FileUtils.copyFile(mifStdOut,new File(fisMetadataDir, "stdout"));
 } else {
     println "MIF.stdout file did not exist" 
 }
