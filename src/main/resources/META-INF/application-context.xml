@@ -50,10 +50,10 @@
                             
                         </entry>
                         <entry key="fis.mdl.ext">
-                            <value>mdl</value>
+                            <value>${fis.mdl.ext}</value>
                         </entry>
                         <entry key="fis.pharmml.ext">
-                            <value>xml</value>
+                            <value>${fis.pharmml.ext}</value>
                         </entry>
                         <entry key="converter.toolbox.executable">
                             <value>${converter.toolbox.executable}</value>
