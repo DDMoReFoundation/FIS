@@ -49,7 +49,7 @@ public class PublishInputsScriptTest {
 
     @Test
     public void shouldPublishPharmMLInputs() throws IOException {
-        File testDataDir = FileUtils.toFile(SubmitControllerIT.class.getResource("/eu/ddmore/testdata/example3"));
+        File testDataDir = FileUtils.toFile(PublishInputsScriptTest.class.getResource("/eu/ddmore/testdata/example3"));
         FileUtils.copyDirectory(testDataDir, testWorkingDir);
         
         LocalJob job = mock(LocalJob.class);
@@ -70,12 +70,12 @@ public class PublishInputsScriptTest {
     @Test
     public void shouldPublishMDLInputs() throws IOException {
         
-        File testDataDir = FileUtils.toFile(SubmitControllerIT.class.getResource("/eu/ddmore/testdata/warfarin_PK_PRED_MDL"));
+        File testDataDir = FileUtils.toFile(PublishInputsScriptTest.class.getResource("/eu/ddmore/testdata/MDL_with_mock_PharmML"));
         FileUtils.copyDirectory(testDataDir, testWorkingDir);
         
         LocalJob job = mock(LocalJob.class);
         when(job.getWorkingDirectory()).thenReturn(testWorkingDir.getAbsolutePath());
-        when(job.getControlFile()).thenReturn("warfarin_PK_PRED.mdl");
+        when(job.getControlFile()).thenReturn("MockGeneratedPharmML.mdl");
         when(job.getId()).thenReturn("MIF_JOB_ID");
         jobProcessor.process(job);
         
@@ -83,15 +83,15 @@ public class PublishInputsScriptTest {
         
 
         assertTrue("MIF working directory should be created", mifWorkingDir.exists());
-        assertTrue("PharmML resource should be created", new File(mifWorkingDir,"warfarin_PK_PRED.pharmml").exists());
-        assertTrue("Data file should be created", new File(mifWorkingDir,"warfarin_PK_PRED_data.csv").exists());
-        assertTrue("XML resource should be copied back", new File(mifWorkingDir,"warfarin_PK_PRED.xml").exists());
+        assertTrue("PharmML resource should be created", new File(mifWorkingDir,"MockGeneratedPharmML.pharmml").exists());
+        assertTrue("Data file should be created", new File(mifWorkingDir,"MockGeneratedPharmML_data.csv").exists());
+        assertTrue("XML resource should be copied back", new File(mifWorkingDir,"MockGeneratedPharmML.xml").exists());
     }
     
     @Test
     public void shouldPublishCTLInputs() throws IOException {
         
-        File testDataDir = FileUtils.toFile(SubmitControllerIT.class.getResource("/eu/ddmore/testdata/warfarin_PK_PRED"));
+        File testDataDir = FileUtils.toFile(PublishInputsScriptTest.class.getResource("/eu/ddmore/testdata/warfarin_PK_PRED"));
         FileUtils.copyDirectory(testDataDir, testWorkingDir);
         
         LocalJob job = mock(LocalJob.class);
@@ -107,4 +107,5 @@ public class PublishInputsScriptTest {
         assertTrue("Data file should be created", new File(mifWorkingDir,"warfarin_conc_pca.csv").exists());
         assertTrue("ctl file should be created", new File(mifWorkingDir,"warfarin_PK_PRED.ctl").exists());
     }
+    
 }

@@ -10,20 +10,30 @@ import com.mango.mif.domain.ExecutionRequestBuilder;
 
 import eu.ddmore.fis.controllers.JobResourceProcessor;
 import eu.ddmore.fis.domain.LocalJob;
+import eu.ddmore.fis.domain.LocalJobStatus;
 
 /**
  * Default implementation of {@link JobDispatcher}
  */
 public class JobDispatcherImpl implements JobDispatcher {
+    
     private MIFHttpRestClient mifClient;
     private String mifUserName = "tel-user";
     private JobResourceProcessor jobResourcePublisher;
     private CommandRegistry commandRegistry;
+    
     public LocalJob dispatch(LocalJob job) {
+        
+        // Invoke the publishInputs Groovy script
         LocalJob publishedJob = jobResourcePublisher.process(job);
-        CommandExecutionTarget commandTarget = commandRegistry.resolveExecutionTargetFor(publishedJob.getCommand());
-        ExecutionRequest executionRequest = buildExecutionRequest(publishedJob, commandTarget);
-        mifClient.executeJob(executionRequest);
+        
+        if (publishedJob.getStatus() != LocalJobStatus.FAILED) {
+            // Only continue if the pre-processing was successful
+            CommandExecutionTarget commandTarget = commandRegistry.resolveExecutionTargetFor(publishedJob.getCommand());
+            ExecutionRequest executionRequest = buildExecutionRequest(publishedJob, commandTarget);
+            mifClient.executeJob(executionRequest);
+        }
+        
         return publishedJob;
     }
 
