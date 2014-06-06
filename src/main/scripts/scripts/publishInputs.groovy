@@ -69,6 +69,7 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         cmd.addArgument(new File(converterToolboxExecutable).getAbsolutePath())
         cmd.addArgument(new File(mifWorkingDir, origControlFile.getPath()).getAbsolutePath())
         cmd.addArgument(mifWorkingDir.getAbsolutePath())
+        // TODO: Remove the hard-coding of these source and target converter versions
         cmd.addArgument("MDL")
         cmd.addArgument("5.1.6")
         cmd.addArgument("PharmML")
