@@ -49,17 +49,6 @@
 			<artifactId>spring-boot-starter-batch</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-            </exclusions>
-		</dependency>
-		<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-logging</artifactId>
             <exclusions>
@@ -87,12 +76,14 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-batch</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
         <dependency>
 			<groupId>org.springframework</groupId>
@@ -124,7 +115,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
        <dependency>
             <groupId>org.vngx</groupId>
             <artifactId>vngx-jsch</artifactId>
@@ -139,7 +129,14 @@
 			<artifactId>joda-time</artifactId>
 			<version>1.6.2-201110292322</version>
 		</dependency>
-            
+
+        <dependency>
+            <groupId>eu.ddmore.testdata</groupId>
+            <artifactId>models</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>com.mango</groupId>
             <artifactId>MIFClient</artifactId>
@@ -159,8 +156,9 @@
               <groupId>com.jolbox</groupId>
               <artifactId>bonecp</artifactId>
               <version>0.7.1.RELEASE</version>
+              
         </dependency>
-                <!-- Hibernate start -->
+        <!-- Hibernate start -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -194,20 +192,17 @@
     </dependencies>
 
     <build>
-    <resources>
-        <resource>
-            <directory>src/main/resources</directory>
-        </resource>
-    </resources>
-    <testResources>
-        <testResource>
-            <directory>src/test/resources</directory>
-        </testResource>
-        <testResource>
-            <directory>src/main/scripts</directory>
-        </testResource>
-    </testResources>
+    	<testResources>
+        	<testResource>
+            	<directory>src/test/resources</directory>
+        	</testResource>
+        	<testResource>
+            	<directory>src/main/scripts</directory>
+        	</testResource>
+    	</testResources>
+    	
         <finalName>${project.name}</finalName>
+        
         <plugins>
             <plugin> 
                 <artifactId>maven-compiler-plugin</artifactId> 
@@ -236,4 +231,4 @@
             </plugin>
         </plugins>
     </build>
-</project> 
+</project>

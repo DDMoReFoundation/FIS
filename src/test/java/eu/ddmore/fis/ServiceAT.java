@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -17,8 +18,7 @@ import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.base.Preconditions;
-
+import eu.ddmore.fis.controllers.PublishInputsScriptTest;
 import eu.ddmore.fis.domain.LocalJobStatus;
 import eu.ddmore.fis.domain.SubmissionRequest;
 import eu.ddmore.fis.domain.SubmissionResponse;
@@ -44,14 +44,25 @@ public class ServiceAT extends SystemPropertiesAware {
     @Test
     public void shouldExecuteControlFile() throws IOException, InterruptedException {
         final File workingDir = new File(parentWorkingDir, "ControlFileExecution");
+        workingDir.mkdir();
 
-        File scriptFile = FileUtils.toFile(ServiceAT.class
-                .getResource("/eu/ddmore/testdata/warfarin_PK_PRED/warfarin_PK_PRED.ctl"));
-        Preconditions.checkArgument(scriptFile.exists(), "Script file does not exist");
-        FileUtils.copyDirectory(scriptFile.getParentFile(), workingDir);
+        // Copy the files out of the testdata JAR file
+
+        final String SCRIPT_FILE_NAME = "warfarin_PK_PRED.ctl";
+        final String DATA_FILE_NAME = "warfarin_conc_pca.csv";
+
+        final String testDataDir = "/eu/ddmore/testdata/models/ctl/warfarin_PK_PRED/";
+
+        final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
+        FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
+        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + DATA_FILE_NAME);
+        FileUtils.copyURLToFile(dataFile, new File(workingDir, DATA_FILE_NAME));
+
+        // Proceed with the test...
+
         SubmissionRequest submissionRequest = new SubmissionRequest();
         submissionRequest.setCommand(nonmemCommand);
-        submissionRequest.setExecutionFile(scriptFile.getName());
+        submissionRequest.setExecutionFile(SCRIPT_FILE_NAME);
         submissionRequest.setWorkingDirectory(workingDir.getAbsolutePath());
         SubmissionResponse response = teisClient.submitRequest(submissionRequest);
 
@@ -80,13 +91,25 @@ public class ServiceAT extends SystemPropertiesAware {
     @Test
     public void shouldExecutePharmMLFile() throws IOException, InterruptedException {
         final File workingDir = new File(parentWorkingDir, "PharmMLFileExecution");
+        workingDir.mkdir();
 
-        File scriptFile = FileUtils.toFile(ServiceAT.class.getResource("/eu/ddmore/testdata/example3/example3.xml"));
-        Preconditions.checkArgument(scriptFile.exists(), "Script file does not exist");
-        FileUtils.copyDirectory(scriptFile.getParentFile(), workingDir);
+        // Copy the files out of the testdata JAR file
+
+        final String SCRIPT_FILE_NAME = "example3.xml";
+        final String DATA_FILE_NAME = "example3_data.csv"; // or _full_data_MDV.csv ?
+
+        final String testDataDir = "/eu/ddmore/testdata/models/pharmml/example3/";
+
+        final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
+        FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
+        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + DATA_FILE_NAME);
+        FileUtils.copyURLToFile(dataFile, new File(workingDir, DATA_FILE_NAME));
+
+        // Proceed with the test...
+
         SubmissionRequest submissionRequest = new SubmissionRequest();
         submissionRequest.setCommand(nonmemCommand);
-        submissionRequest.setExecutionFile(scriptFile.getName());
+        submissionRequest.setExecutionFile(SCRIPT_FILE_NAME);
         submissionRequest.setWorkingDirectory(workingDir.getAbsolutePath());
         SubmissionResponse response = teisClient.submitRequest(submissionRequest);
 
@@ -114,14 +137,22 @@ public class ServiceAT extends SystemPropertiesAware {
     @Test
     public void shouldExecuteMDLFile() throws IOException, InterruptedException {
         final File workingDir = new File(parentWorkingDir, "MDLFileExecution");
+        workingDir.mkdir();
 
-        File scriptFile = FileUtils.toFile(ServiceAT.class
-                .getResource("/eu/ddmore/testdata/warfarin_PK_PRED_MDL/warfarin_PK_PRED.mdl"));
-        Preconditions.checkArgument(scriptFile.exists(), "Script file does not exist");
-        FileUtils.copyDirectory(scriptFile.getParentFile(), workingDir);
+        // Copy the files out of the testdata JAR file
+
+        final String SCRIPT_FILE_NAME = "warfarin_PK_PRED.mdl";
+
+        final String testDataDir = "/eu/ddmore/testdata/models/mdl/warfarin_PK_PRED/";
+
+        final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
+        FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
+
+        // Proceed with the test...
+
         SubmissionRequest submissionRequest = new SubmissionRequest();
         submissionRequest.setCommand(nonmemCommand);
-        submissionRequest.setExecutionFile(scriptFile.getName());
+        submissionRequest.setExecutionFile(SCRIPT_FILE_NAME);
         submissionRequest.setWorkingDirectory(workingDir.getAbsolutePath());
         SubmissionResponse response = teisClient.submitRequest(submissionRequest);
 
@@ -137,11 +168,11 @@ public class ServiceAT extends SystemPropertiesAware {
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
         }
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
+        assertEquals(LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
         File outputFile = new File(workingDir, "output.lst");
         assertTrue(String.format("File %s did not exist", outputFile), outputFile.exists());
         File pharmmlFile = new File(workingDir, "warfarin_PK_PRED.pharmml");
         assertTrue(String.format("File %s did not exist", pharmmlFile), pharmmlFile.exists());
-        assertEquals(LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
 
         verifyThatFisMetadataFilesExist(workingDir);
     }
