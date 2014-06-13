@@ -3,6 +3,10 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.IOUtils
 import org.apache.commons.exec.CommandLine
 import org.apache.commons.exec.launcher.CommandLauncherFactory
+import org.apache.commons.exec.DefaultExecutor
+import org.apache.commons.exec.ExecuteWatchdog
+import org.apache.commons.exec.ExecuteException
+import org.apache.commons.exec.PumpStreamHandler
 import com.mango.mif.core.exec.Invoker
 import eu.ddmore.fis.domain.LocalJob
 import eu.ddmore.fis.domain.LocalJobStatus;
@@ -64,38 +68,52 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
     else {
         // Need to convert the MDL into PharmML using the Converter Toolbox command-line launch script
 
-        CommandLine cmd = new CommandLine("cmd")
-        cmd.addArgument("/c")
-        cmd.addArgument(new File(converterToolboxExecutable).getAbsolutePath())
-        cmd.addArgument(new File(mifWorkingDir, origControlFile.getPath()).getAbsolutePath())
-        cmd.addArgument(mifWorkingDir.getAbsolutePath())
+        // Build up the command line to execute
+        CommandLine cmdLine = new CommandLine("cmd")
+        cmdLine.addArgument("/c")
+        cmdLine.addArgument(new File(converterToolboxExecutable).getAbsolutePath())
+        cmdLine.addArgument(new File(mifWorkingDir, origControlFile.getPath()).getAbsolutePath())
+        cmdLine.addArgument(mifWorkingDir.getAbsolutePath())
         // TODO: Remove the hard-coding of these source and target converter versions
-        cmd.addArgument("MDL")
-        cmd.addArgument("5.1.6")
-        cmd.addArgument("PharmML")
-        cmd.addArgument("0.3.0")
-        LOGGER.info("Invoking converter toolbox command : " + cmd);
-        Process process = CommandLauncherFactory.createVMLauncher().exec(cmd, null)
-        process.waitFor()
+        cmdLine.addArgument("MDL")
+        cmdLine.addArgument("5.1.6")
+        cmdLine.addArgument("PharmML")
+        cmdLine.addArgument("0.3.0")
 
-        // Write out the stdout from the converter toolbox call
+        LOGGER.info("Invoking converter toolbox command : " + cmdLine); // This could be run from the command line for testing purposes
+
+        // Set up some output streams to handle the standard out and standard error
         BufferedOutputStream stdoutOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2PHARMML.stdout")))
-        IOUtils.write("Invoking converter toolbox command : " + cmd + "\n\n", stdoutOS)
-        IOUtils.copy(process.getInputStream(), stdoutOS)
-        stdoutOS.flush()
-        stdoutOS.close();
+        IOUtils.write("Invoking converter toolbox command : " + cmdLine + "\n\n", stdoutOS)
+        BufferedOutputStream stderrOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2PHARMML.stderr")))
 
-        if (process.exitValue() != 0) {
-            // Write out the stderr from the converter toolbox call
-            BufferedOutputStream stderrOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2PHARMML.stderr")))
-            IOUtils.write("Error code " + process.exitValue() + " returned from converter toolbox command : " + cmd + "\n\n", stderrOS)
-            IOUtils.copy(process.getErrorStream(), stderrOS)
-            stderrOS.flush()
-            stderrOS.close()
+        // Create the executor object, providing a stream handler that will avoid
+        // the child process becoming blocked because nothing is consuming its output,
+        // and also a timeout
+        DefaultExecutor executor = new DefaultExecutor()
+        executor.setExitValue(0) // Required "success" return code
+        ExecuteWatchdog watchdog = new ExecuteWatchdog(15000) // Will kill the process after 15 seconds
+        executor.setWatchdog(watchdog)
+        PumpStreamHandler pumpStreamHandler = new PumpStreamHandler(stdoutOS, stderrOS)
+        executor.setStreamHandler(pumpStreamHandler)
+
+        try {
+            executor.execute(cmdLine);
+        } catch (ExecuteException eex) { // Command has failed or timed out
+            IOUtils.write("Error code " + eex.getExitValue() + " returned from converter toolbox command : " + cmdLine + "\n\n", stderrOS)
+            IOUtils.write("ExecuteException cause: " + eex.getMessage(), stderrOS)
             job.setStatus(LocalJobStatus.FAILED)
-            return
-            //throw new RuntimeException("MDD -> PharmML converter toolbox command failed with return code " + process.exitValue() + "; refer to the output files within the .fis directory")
+            return;
+        } finally {
+            stdoutOS.close()
+            stderrOS.close()
         }
+
+        // This hangs! :-
+        //Process process = Runtime.getRuntime().exec(cmdLine.toStrings())
+        //process.waitFor()
+        //int exitValue = process.waitFor()
+
 
         // TODO: Do we really need both .xml and .pharmml copies?
         FileUtils.copyFile( new File(mifWorkingDir, newModelFileName), new File(mifWorkingDir, modelName + ".pharmml") )
