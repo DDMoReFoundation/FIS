@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import eu.ddmore.fis.controllers.PublishInputsScriptTest;
@@ -33,7 +34,13 @@ public class ServiceAT extends SystemPropertiesAware {
     private FISHttpRestClient teisClient;
 
     // This is where the output from FIS and MIF can be found
-    private File parentWorkingDir = new File("target", "ServiceAT_Test_Working_Dir");
+    private static File parentWorkingDir = new File("target", "ServiceAT_Test_Working_Dir");
+
+    @BeforeClass
+    public static void globalSetUp() throws IOException {
+        FileUtils.deleteDirectory(parentWorkingDir);
+        parentWorkingDir.mkdir();
+    }
 
     @Before
     public void setUp() throws Exception {
