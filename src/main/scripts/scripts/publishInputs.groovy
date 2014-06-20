@@ -1,3 +1,5 @@
+import java.io.File;
+
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.IOUtils
@@ -71,7 +73,7 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         // Build up the command line to execute
         CommandLine cmdLine = new CommandLine("cmd")
         cmdLine.addArgument("/c")
-        cmdLine.addArgument(new File(converterToolboxExecutable).getAbsolutePath())
+        cmdLine.addArgument(new File(converterToolboxExecutable).getName())
         cmdLine.addArgument(new File(mifWorkingDir, origControlFile.getPath()).getAbsolutePath())
         cmdLine.addArgument(mifWorkingDir.getAbsolutePath())
         // TODO: Remove the hard-coding of these source and target converter versions
@@ -91,6 +93,7 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         // the child process becoming blocked because nothing is consuming its output,
         // and also a timeout
         DefaultExecutor executor = new DefaultExecutor()
+        executor.setWorkingDirectory(new File(converterToolboxExecutable).getParentFile())
         executor.setExitValue(0) // Required "success" return code
         ExecuteWatchdog watchdog = new ExecuteWatchdog(15000) // Will kill the process after 15 seconds
         executor.setWatchdog(watchdog)
@@ -100,7 +103,7 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         try {
             executor.execute(cmdLine);
         } catch (ExecuteException eex) { // Command has failed or timed out
-            IOUtils.write("Error code " + eex.getExitValue() + " returned from converter toolbox command : " + cmdLine + "\n\n", stderrOS)
+            IOUtils.write("\n\nError code " + eex.getExitValue() + " returned from converter toolbox command : " + cmdLine + "\n\n", stderrOS)
             IOUtils.write("ExecuteException cause: " + eex.getMessage(), stderrOS)
             job.setStatus(LocalJobStatus.FAILED)
             return;
