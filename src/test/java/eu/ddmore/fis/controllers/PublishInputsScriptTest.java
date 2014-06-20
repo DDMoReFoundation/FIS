@@ -56,7 +56,7 @@ public class PublishInputsScriptTest {
         final String SCRIPT_FILE_NAME = "example3.xml";
         final String DATA_FILE_NAME = "example3_data.csv"; // or _full_data_MDV.csv ?
 
-        final String testDataDir = "/eu/ddmore/testdata/models/pharmml/example3/";
+        final String testDataDir = "/eu/ddmore/testdata/models/pharmml/v0.3/example3/";
 
         final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(testWorkingDir, SCRIPT_FILE_NAME));
