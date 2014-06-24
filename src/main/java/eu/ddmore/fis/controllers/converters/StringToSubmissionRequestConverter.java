@@ -18,7 +18,7 @@ public class StringToSubmissionRequestConverter implements Converter<String, Sub
         try {
             return mapper.readValue(submissionRequest,SubmissionRequest.class);
         } catch (Exception e) {
-            throw new RuntimeException(String.format("Could parse json %s",submissionRequest), e);
+            throw new RuntimeException(String.format("Couldn't parse json %s",submissionRequest), e);
         }
     }
 
