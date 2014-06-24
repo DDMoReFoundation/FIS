@@ -45,7 +45,7 @@ File origControlFileDir = origControlFile.getParentFile()!=null?origControlFile.
 String modelName = FilenameUtils.getBaseName(origControlFile.getName());
 String modelExt = FilenameUtils.getExtension(origControlFile.getName());
 
-// Copying mock data
+// If copying mock data
 File mockDataDir = new File(scriptFile.getParentFile().getParentFile(),"mockData")
 
 if (PHARMML_FILE_EXT.equals(modelExt)) {
@@ -95,7 +95,7 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         DefaultExecutor executor = new DefaultExecutor()
         executor.setWorkingDirectory(new File(converterToolboxExecutable).getParentFile())
         executor.setExitValue(0) // Required "success" return code
-        ExecuteWatchdog watchdog = new ExecuteWatchdog(15000) // Will kill the process after 15 seconds
+        ExecuteWatchdog watchdog = new ExecuteWatchdog(30000) // Will kill the process after 30 seconds
         executor.setWatchdog(watchdog)
         PumpStreamHandler pumpStreamHandler = new PumpStreamHandler(stdoutOS, stderrOS)
         executor.setStreamHandler(pumpStreamHandler)
