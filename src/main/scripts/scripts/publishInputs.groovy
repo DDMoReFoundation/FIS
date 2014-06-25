@@ -1,15 +1,16 @@
-import java.io.File;
-
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.IOUtils
 import org.apache.commons.exec.CommandLine
 import org.apache.commons.exec.launcher.CommandLauncherFactory
+import org.apache.commons.exec.Executor
 import org.apache.commons.exec.DefaultExecutor
 import org.apache.commons.exec.ExecuteWatchdog
 import org.apache.commons.exec.ExecuteException
 import org.apache.commons.exec.PumpStreamHandler
+
 import com.mango.mif.core.exec.Invoker
+
 import eu.ddmore.fis.domain.LocalJob
 import eu.ddmore.fis.domain.LocalJobStatus;
 
@@ -40,10 +41,12 @@ File fisMetadataDir = new File(workingDir,".fis");
 fisMetadataDir.mkdir();
 
 File origControlFile = new File(job.getControlFile());
-File origControlFileDir = origControlFile.getParentFile()!=null?origControlFile.getParentFile():new File("");
 
 String modelName = FilenameUtils.getBaseName(origControlFile.getName());
 String modelExt = FilenameUtils.getExtension(origControlFile.getName());
+
+// We ensure that subdirectory structure is maintained
+File controlFileInMifWorkingDir = new File(mifWorkingDir, origControlFile.getPath())
 
 // If copying mock data
 File mockDataDir = new File(scriptFile.getParentFile().getParentFile(),"mockData")
@@ -51,20 +54,22 @@ File mockDataDir = new File(scriptFile.getParentFile().getParentFile(),"mockData
 if (PHARMML_FILE_EXT.equals(modelExt)) {
 
     FileUtils.copyFile(
-            new File(mifWorkingDir,origControlFile.getPath()),
-            new File(new File(mifWorkingDir,origControlFileDir.getPath()), modelName + ".pharmml") );
+        controlFileInMifWorkingDir,
+        new File(FilenameUtils.removeExtension(controlFileInMifWorkingDir.getPath()) + ".pharmml")
+    );
 
 } else if (MDL_FILE_EXT.equals(modelExt)) {
 
-    String newModelFileName = modelName + "." + PHARMML_FILE_EXT
-    File xmlVersion = new File(mockDataDir, newModelFileName)
-    if (xmlVersion.exists()) {
+    String newModelFileName = FilenameUtils.removeExtension(origControlFile.getPath()) + "." + PHARMML_FILE_EXT
+
+    File xmlVersionInMockDataDir = new File(mockDataDir, modelName + "." + PHARMML_FILE_EXT)
+    if (xmlVersionInMockDataDir.exists()) {
         // Mock converted file exists in mockData dir
-        FileUtils.copyFileToDirectory( xmlVersion, mifWorkingDir )
-        FileUtils.copyFile( xmlVersion, new File(mifWorkingDir,modelName + ".pharmml") )
+        FileUtils.copyFileToDirectory( xmlVersionInMockDataDir, mifWorkingDir )
+        FileUtils.copyFile( xmlVersionInMockDataDir, new File(mifWorkingDir, modelName + ".pharmml") )
         File data = new File(mockDataDir, modelName + ".csv")
         if (data.exists()) {
-            FileUtils.copyFile( data, new File(mifWorkingDir,modelName + "_data.csv") )
+            FileUtils.copyFile( data, new File(mifWorkingDir, modelName + "_data.csv") )
         }
     }
     else {
@@ -74,8 +79,8 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         CommandLine cmdLine = new CommandLine("cmd")
         cmdLine.addArgument("/c")
         cmdLine.addArgument(new File(converterToolboxExecutable).getName())
-        cmdLine.addArgument(new File(mifWorkingDir, origControlFile.getPath()).getAbsolutePath())
-        cmdLine.addArgument(mifWorkingDir.getAbsolutePath())
+        cmdLine.addArgument(controlFileInMifWorkingDir.getAbsolutePath()) // Source MDL model file
+        cmdLine.addArgument(controlFileInMifWorkingDir.getParentFile().getAbsolutePath()) // Destination directory for the converted PharmML file
         // TODO: Remove the hard-coding of these source and target converter versions
         cmdLine.addArgument("MDL")
         cmdLine.addArgument("5.1.6")
@@ -92,7 +97,7 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         // Create the executor object, providing a stream handler that will avoid
         // the child process becoming blocked because nothing is consuming its output,
         // and also a timeout
-        DefaultExecutor executor = new DefaultExecutor()
+        Executor executor = binding.hasVariable("ApacheCommonsExecExecutor") ? binding.getVariable("ApacheCommonsExecExecutor") /* to allow unit testing */ : new DefaultExecutor()
         executor.setWorkingDirectory(new File(converterToolboxExecutable).getParentFile())
         executor.setExitValue(0) // Required "success" return code
         ExecuteWatchdog watchdog = new ExecuteWatchdog(30000) // Will kill the process after 30 seconds
@@ -118,8 +123,10 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         //int exitValue = process.waitFor()
 
 
+        File xmlFileInMifWorkingDir = new File(mifWorkingDir, newModelFileName)
+
         // TODO: Do we really need both .xml and .pharmml copies?
-        FileUtils.copyFile( new File(mifWorkingDir, newModelFileName), new File(mifWorkingDir, modelName + ".pharmml") )
+        FileUtils.copyFile( xmlFileInMifWorkingDir, new File(FilenameUtils.removeExtension(xmlFileInMifWorkingDir.getPath()) + ".pharmml") )
 
 
         // WAS:
@@ -129,5 +136,5 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         //FileUtils.copyFile(new File(mockDataDir,"example3.xml"), new File(mifWorkingDir,modelName + ".pharmml"));
     }
 
-    job.setControlFile(new File(origControlFileDir, newModelFileName).getPath());
+    job.setControlFile(newModelFileName);
 }
