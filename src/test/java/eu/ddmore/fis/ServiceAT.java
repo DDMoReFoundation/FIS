@@ -149,11 +149,14 @@ public class ServiceAT extends SystemPropertiesAware {
         // Copy the files out of the testdata JAR file
 
         final String SCRIPT_FILE_NAME = "warfarin_PK_PRED.mdl";
+        final String DATA_FILE_NAME = "warfarin_conc_pca.csv";
 
         final String testDataDir = "/eu/ddmore/testdata/models/mdl/warfarin_PK_PRED/";
 
         final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
+        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + DATA_FILE_NAME);
+        FileUtils.copyURLToFile(dataFile, new File(workingDir, DATA_FILE_NAME));
 
         // Proceed with the test...
 
