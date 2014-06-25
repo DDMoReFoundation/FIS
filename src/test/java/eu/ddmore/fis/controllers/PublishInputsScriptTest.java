@@ -44,9 +44,10 @@ public class PublishInputsScriptTest {
     private Executor mockExecutor;
 
     private GroovyScriptJobProcessor jobProcessor;
+
     @Before
     public void setUp() throws Exception {
-        testWorkingDir = testDirectory.getRoot();
+        this.testWorkingDir = this.testDirectory.getRoot();
         LOG.debug(String.format("Test working dir %s", this.testWorkingDir));
         this.mifWorkingDir = new File(testWorkingDir, "MIF_JOB_ID");
 
@@ -58,8 +59,8 @@ public class PublishInputsScriptTest {
         this.mockExecutor = mock(Executor.class);
         binding.setVariable("ApacheCommonsExecExecutor", this.mockExecutor);
 
-        jobProcessor = new GroovyScriptJobProcessor(binding);
-        jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptTest.class.getResource("/scripts/publishInputs.groovy")));
+        this.jobProcessor = new GroovyScriptJobProcessor(binding);
+        this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptTest.class.getResource("/scripts/publishInputs.groovy")));
     }
 
     @Test
