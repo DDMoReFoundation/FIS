@@ -9,25 +9,23 @@ import org.apache.commons.exec.ExecuteWatchdog
 import org.apache.commons.exec.ExecuteException
 import org.apache.commons.exec.PumpStreamHandler
 
-import com.mango.mif.core.exec.Invoker
-
-import eu.ddmore.fis.domain.LocalJob
-import eu.ddmore.fis.domain.LocalJobStatus;
-
 import org.apache.log4j.Logger
 
 
 /**
  * Wrapper for the conversion of MDL to PharmML.
+ * <p>
+ * @param origControlFile - references the control file with its relative path
  * @param controlFileInMifWorkingDir - references the control file in the MIF working directory
  * @param fisMetadataDir - into which the stdout and stderr will be written
- * @return true if successful, false if failed
+ * @return the newModelFileName (i.e. the .xml version) if conversion was successful; null if conversion failed
  */
-def doConvert(File controlFileInMifWorkingDir, File fisMetadataDir) {
+def doConvert(File origControlFile, File controlFileInMifWorkingDir, File fisMetadataDir) {
 
     def LOGGER = Logger.getLogger(getClass())
 
     def converterToolboxExecutable = binding.getVariable("converter.toolbox.executable")
+    def PHARMML_FILE_EXT = binding.getVariable("fis.pharmml.ext");
 
     // Need to convert the MDL into PharmML using the Converter Toolbox command-line launch script
 
@@ -66,7 +64,7 @@ def doConvert(File controlFileInMifWorkingDir, File fisMetadataDir) {
     } catch (ExecuteException eex) { // Command has failed or timed out
         IOUtils.write("\n\nError code " + eex.getExitValue() + " returned from converter toolbox command : " + cmdLine + "\n\n", stderrOS)
         IOUtils.write("ExecuteException cause: " + eex.getMessage(), stderrOS)
-        return false; // Failure
+        return null; // Failure
     } finally {
         stdoutOS.close()
         stderrOS.close()
@@ -77,5 +75,11 @@ def doConvert(File controlFileInMifWorkingDir, File fisMetadataDir) {
     //process.waitFor()
     //int exitValue = process.waitFor()
 
-    return true; // Success
+    def newModelFileName = FilenameUtils.removeExtension(origControlFile.getPath()) + "." + PHARMML_FILE_EXT
+
+    // TODO: Do we really need both .xml and .pharmml copies?
+    File xmlFileInMifWorkingDir = new File(FilenameUtils.removeExtension(controlFileInMifWorkingDir.getPath()) + "." + PHARMML_FILE_EXT)
+    FileUtils.copyFile( xmlFileInMifWorkingDir, new File(FilenameUtils.removeExtension(xmlFileInMifWorkingDir.getPath()) + ".pharmml") )
+
+    return newModelFileName;
 }

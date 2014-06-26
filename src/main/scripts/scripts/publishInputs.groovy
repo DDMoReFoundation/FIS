@@ -52,32 +52,30 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
 
 } else if (MDL_FILE_EXT.equals(modelExt)) {
 
-    String newModelFileName = FilenameUtils.removeExtension(origControlFile.getPath()) + "." + PHARMML_FILE_EXT
+    String newModelFileName;
 
     File xmlVersionInMockDataDir = new File(mockDataDir, modelName + "." + PHARMML_FILE_EXT)
     if (xmlVersionInMockDataDir.exists()) {
         // Mock converted file exists in mockData dir
-        FileUtils.copyFileToDirectory( xmlVersionInMockDataDir, mifWorkingDir )
-        FileUtils.copyFile( xmlVersionInMockDataDir, new File(mifWorkingDir, modelName + ".pharmml") )
+        newModelFileName = modelName + "." + PHARMML_FILE_EXT
+        FileUtils.copyFile( xmlVersionInMockDataDir, new File(mifWorkingDir, newModelFileName) )
         File data = new File(mockDataDir, modelName + ".csv")
         if (data.exists()) {
             FileUtils.copyFile( data, new File(mifWorkingDir, modelName + "_data.csv") )
         }
+        // TODO: Do we really need both .xml and .pharmml copies?
+        FileUtils.copyFile( xmlVersionInMockDataDir, new File(mifWorkingDir, modelName + ".pharmml") )
     }
     else {
         // Need to convert the MDL into PharmML using the Converter Toolbox command-line launch script
-
         GroovyShell shell = new GroovyShell(binding)
         def script = shell.parse( new File(scriptFile.getParentFile(), "MdlToPharmML.groovy") )
-        boolean success = script.doConvert(controlFileInMifWorkingDir, fisMetadataDir)
-        if (!success) {
+        newModelFileName = script.doConvert(origControlFile, controlFileInMifWorkingDir, fisMetadataDir)
+        if (newModelFileName == null) {
+            // Conversion failed
             job.setStatus(LocalJobStatus.FAILED)
             return;
         }
-
-        // TODO: Do we really need both .xml and .pharmml copies?
-        File xmlFileInMifWorkingDir = new File(mifWorkingDir, newModelFileName)
-        FileUtils.copyFile( xmlFileInMifWorkingDir, new File(FilenameUtils.removeExtension(xmlFileInMifWorkingDir.getPath()) + ".pharmml") )
     }
 
     job.setControlFile(newModelFileName);
