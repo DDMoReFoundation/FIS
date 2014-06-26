@@ -126,7 +126,7 @@ public class FISHttpRestClient {
     
     public String healthcheck() {
         String endpoint = buildEndpoint("healthcheck");
-        PostMethod get = new PostMethod(endpoint);
+        GetMethod get = new GetMethod(endpoint);
         get.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
         return executeMethod(endpoint,get);
     }
