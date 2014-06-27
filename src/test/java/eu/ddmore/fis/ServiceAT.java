@@ -6,12 +6,16 @@ package eu.ddmore.fis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -30,6 +34,8 @@ import eu.ddmore.fis.domain.SubmissionResponse;
 public class ServiceAT extends SystemPropertiesAware {
 
     private static final Logger LOG = Logger.getLogger(ServiceAT.class);
+    private static String mdlConversionWrapperScript = "";
+
     private String nonmemCommand;
     private FISHttpRestClient teisClient;
 
@@ -37,9 +43,10 @@ public class ServiceAT extends SystemPropertiesAware {
     private static File parentWorkingDir = new File("target", "ServiceAT_Test_Working_Dir");
 
     @BeforeClass
-    public static void globalSetUp() throws IOException {
+    public static void globalSetUp() throws Exception {
         FileUtils.deleteDirectory(parentWorkingDir);
         parentWorkingDir.mkdir();
+        loadConfigProperties();
     }
 
     @Before
@@ -87,8 +94,7 @@ public class ServiceAT extends SystemPropertiesAware {
 
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
 
-        File outputFile = new File(workingDir, "output.lst");
-        assertTrue(String.format("File %s did not exist", outputFile), outputFile.exists());
+        assertTrue("NONMEM Output File output.lst does not exist in the working directory", new File(workingDir, "output.lst").exists());
 
         verifyThatFisMetadataFilesExist(workingDir);
 
@@ -131,14 +137,17 @@ public class ServiceAT extends SystemPropertiesAware {
             LOG.debug(String.format("Waiting for %s job to complete. Working directory: %s", response.getRequestID(), workingDir));
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
         }
+
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
-        File pharmmlFile = new File(workingDir, "example3.pharmml");
-        assertTrue(String.format("File %s did not exist", pharmmlFile), pharmmlFile.exists());
-        File outputFile = new File(workingDir, "output.lst");
-        assertTrue(String.format("File %s did not exist", outputFile), outputFile.exists());
-        assertEquals(LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
+
+        assertTrue(".xml PharmML model file should have been duplicated to a .pharmml file in the working directory", new File(workingDir,
+                "example3.pharmml").exists());
+        assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, "example3.ctl").exists());
+        assertTrue("NONMEM Output File output.lst does not exist in the working directory", new File(workingDir, "output.lst").exists());
 
         verifyThatFisMetadataFilesExist(workingDir);
+
+        assertEquals(LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
     }
 
     @Test
@@ -177,14 +186,24 @@ public class ServiceAT extends SystemPropertiesAware {
             LOG.debug(String.format("Waiting for %s job to complete. Working directory: %s", response.getRequestID(), workingDir));
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
         }
+
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
-        assertEquals(LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
-        File outputFile = new File(workingDir, "output.lst");
-        assertTrue(String.format("File %s did not exist", outputFile), outputFile.exists());
-        File pharmmlFile = new File(workingDir, "warfarin_PK_PRED.pharmml");
-        assertTrue(String.format("File %s did not exist", pharmmlFile), pharmmlFile.exists());
+
+        if (mdlConversionWrapperScript.equals("MdlToPharmML.groovy")) {
+            assertTrue(".xml PharmML model file should have been created in the working directory", new File(workingDir,
+                    "warfarin_PK_PRED.xml").exists());
+        } else if (mdlConversionWrapperScript.equals("MdlToNmtran.groovy")) {
+            // Nothing extra to check
+        } else {
+            fail("Unknown MDL conversion wrapper script set in config.properties: " + mdlConversionWrapperScript);
+        }
+
+        assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, "warfarin_PK_PRED.ctl").exists());
+        assertTrue("NONMEM Output File output.lst does not exist in the working directory", new File(workingDir, "output.lst").exists());
 
         verifyThatFisMetadataFilesExist(workingDir);
+
+        assertEquals(LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
     }
 
     private void verifyThatFisMetadataFilesExist(final File root) {
@@ -199,4 +218,18 @@ public class ServiceAT extends SystemPropertiesAware {
     private boolean isNotCompleted(final LocalJobStatus jobStatus) {
         return LocalJobStatus.RUNNING.compareTo(jobStatus) >= 0;
     }
+
+    private static void loadConfigProperties() throws IOException, URISyntaxException {
+        final URL configPropsUrl = ServiceAT.class.getResource("/config.properties");
+        final File configPropsFile = new File(configPropsUrl.toURI());
+
+        final String configPropsContent = FileUtils.readFileToString(configPropsFile);
+
+        Pattern p = Pattern.compile("^converter\\.wrapperscript\\.mdl=(.+\\.groovy)$", Pattern.MULTILINE);
+        Matcher m = p.matcher(configPropsContent);
+        if (m.find()) {
+            mdlConversionWrapperScript = m.group(1);
+        }
+    }
+
 }
