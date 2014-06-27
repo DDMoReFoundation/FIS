@@ -70,9 +70,7 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         // def script = shell.parse( new File(scriptFile.getParentFile(), "MdlToPharmML.groovy") )
         // newModelFileName = script.doConvert(origControlFile, controlFileInMifWorkingDir, fisMetadataDir)
 
-        def convWrapperScriptFile = new File(scriptFile.getParentFile(), mdlConversionScript)
-        println(convWrapperScriptFile)
-        def convWrapper = this.class.classLoader.parseClass(convWrapperScriptFile);
+        def convWrapper = this.class.classLoader.parseClass(new File(scriptFile.getParentFile(), mdlConversionScript));
         newModelFileName = convWrapper.newInstance(binding).doConvert(origControlFile, controlFileInMifWorkingDir, fisMetadataDir)
 
         if (newModelFileName == null) {
