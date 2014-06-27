@@ -1,79 +1,18 @@
+import groovy.lang.Binding;
+
+import java.io.File;
+
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
-import org.apache.commons.io.IOUtils
-import org.apache.commons.exec.CommandLine
-import org.apache.commons.exec.launcher.CommandLauncherFactory
-import org.apache.commons.exec.Executor
-import org.apache.commons.exec.DefaultExecutor
-import org.apache.commons.exec.ExecuteWatchdog
-import org.apache.commons.exec.ExecuteException
-import org.apache.commons.exec.PumpStreamHandler
-
-import org.apache.log4j.Logger
 
 
 /**
  * Wrapper for the conversion of MDL direct to NMTRAN.
- * <p>
- * @param origControlFile - references the control file with its relative path
- * @param controlFileInMifWorkingDir - references the control file in the MIF working directory
- * @param fisMetadataDir - into which the stdout and stderr will be written
- * @return the newModelFileName (i.e. the .ctl version) if conversion was successful; null if conversion failed
  */
-def doConvert(File origControlFile, File controlFileInMifWorkingDir, File fisMetadataDir) {
+final class MdlToNMTRAN extends AbstractConverterWrapper {
 
-    def LOGGER = Logger.getLogger(getClass())
-
-    def converterToolboxExecutable = binding.getVariable("converter.toolbox.executable")
-
-    // Need to convert the MDL into NMTRAN using the Converter Toolbox command-line launch script
-
-    // Build up the command line to execute
-    CommandLine cmdLine = new CommandLine("cmd")
-    cmdLine.addArgument("/c")
-    cmdLine.addArgument(new File(converterToolboxExecutable).getName())
-    cmdLine.addArgument(controlFileInMifWorkingDir.getAbsolutePath()) // Source MDL model file
-    cmdLine.addArgument(controlFileInMifWorkingDir.getParentFile().getAbsolutePath()) // Destination directory for the converted MNTRAN file
-    // TODO: Remove the hard-coding of these source and target converter versions
-    cmdLine.addArgument("MDL")
-    cmdLine.addArgument("5.0.8")
-    cmdLine.addArgument("NMTRAN")
-    cmdLine.addArgument("7.2.0")
-
-    LOGGER.info("Invoking converter toolbox command : " + cmdLine); // This could be run from the command line for testing purposes
-
-    // Set up some output streams to handle the standard out and standard error
-    BufferedOutputStream stdoutOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2NMTRAN.stdout")))
-    IOUtils.write("Invoking converter toolbox command : " + cmdLine + "\n\n", stdoutOS)
-    BufferedOutputStream stderrOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2NMTRAN.stderr")))
-
-    // Create the executor object, providing a stream handler that will avoid
-    // the child process becoming blocked because nothing is consuming its output,
-    // and also a timeout
-    Executor executor = binding.hasVariable("ApacheCommonsExecExecutor") ? binding.getVariable("ApacheCommonsExecExecutor") /* to allow unit testing */ : new DefaultExecutor()
-    executor.setWorkingDirectory(new File(converterToolboxExecutable).getParentFile())
-    executor.setExitValue(0) // Required "success" return code
-    ExecuteWatchdog watchdog = new ExecuteWatchdog(30000) // Will kill the process after 30 seconds
-    executor.setWatchdog(watchdog)
-    PumpStreamHandler pumpStreamHandler = new PumpStreamHandler(stdoutOS, stderrOS)
-    executor.setStreamHandler(pumpStreamHandler)
-
-    try {
-        executor.execute(cmdLine);
-    } catch (ExecuteException eex) { // Command has failed or timed out
-        IOUtils.write("\n\nError code " + eex.getExitValue() + " returned from converter toolbox command : " + cmdLine + "\n\n", stderrOS)
-        IOUtils.write("ExecuteException cause: " + eex.getMessage(), stderrOS)
-        return null; // Failure
-    } finally {
-        stdoutOS.close()
-        stderrOS.close()
+    MdlToNMTRAN(final Binding binding) {
+        super(binding, "MDL", "5.0.8", "NMTRAN", "7.2.0", "ctl") // TODO: Remove the hard-coding of these source and target converter versions
     }
 
-    // This hangs! :-
-    //Process process = Runtime.getRuntime().exec(cmdLine.toStrings())
-    //process.waitFor()
-    //int exitValue = process.waitFor()
-
-    def newModelFileName = FilenameUtils.removeExtension(origControlFile.getPath()) + ".ctl"
-    return newModelFileName;
 }

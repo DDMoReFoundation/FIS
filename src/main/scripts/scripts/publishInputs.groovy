@@ -68,9 +68,16 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
     }
     else {
         // Need to convert the MDL into PharmML using the Converter Toolbox command-line launch script
-        GroovyShell shell = new GroovyShell(binding)
-        def script = shell.parse( new File(scriptFile.getParentFile(), "MdlToPharmML.groovy") )
-        newModelFileName = script.doConvert(origControlFile, controlFileInMifWorkingDir, fisMetadataDir)
+
+        // GroovyShell shell = new GroovyShell(binding)
+        // def script = shell.parse( new File(scriptFile.getParentFile(), "MdlToPharmML.groovy") )
+        // newModelFileName = script.doConvert(origControlFile, controlFileInMifWorkingDir, fisMetadataDir)
+
+        def convWrapperScriptFile = new File(scriptFile.getParentFile(), "MdlToPharmML.groovy")
+        println(convWrapperScriptFile)
+        def convWrapper = this.class.classLoader.parseClass(convWrapperScriptFile);
+        newModelFileName = convWrapper.newInstance(binding).doConvert(origControlFile, controlFileInMifWorkingDir, fisMetadataDir)
+
         if (newModelFileName == null) {
             // Conversion failed
             job.setStatus(LocalJobStatus.FAILED)
