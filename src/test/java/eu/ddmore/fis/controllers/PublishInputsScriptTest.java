@@ -41,26 +41,28 @@ public class PublishInputsScriptTest {
     private File testWorkingDir;
     private File mifWorkingDir;
 
+    private Binding binding;
+
     private Executor mockExecutor;
 
     private GroovyScriptJobProcessor jobProcessor;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         this.testWorkingDir = this.testDirectory.getRoot();
         LOG.debug(String.format("Test working dir %s", this.testWorkingDir));
         this.mifWorkingDir = new File(testWorkingDir, "MIF_JOB_ID");
 
-        Binding binding = new Binding();
-        binding.setVariable("converter.toolbox.executable", "/path/to/my/converter-exe");
-        binding.setVariable("fis.mdl.ext", "mdl");
-        binding.setVariable("fis.pharmml.ext", "xml");
-        binding.setVariable("converter.wrapperscript.mdl", "MdlToPharmML.groovy");
-        binding.setVariable("invoker", mock(Invoker.class));
+        this.binding = new Binding();
+        this.binding.setVariable("converter.toolbox.executable", "/path/to/my/converter-exe");
+        this.binding.setVariable("converter.wrapperscript.mdl", ""); // set by the specific MDL tests
+        this.binding.setVariable("fis.mdl.ext", "mdl");
+        this.binding.setVariable("fis.pharmml.ext", "xml");
+        this.binding.setVariable("invoker", mock(Invoker.class));
         this.mockExecutor = mock(Executor.class);
-        binding.setVariable("ApacheCommonsExecExecutor", this.mockExecutor);
+        this.binding.setVariable("ApacheCommonsExecExecutor", this.mockExecutor);
 
-        this.jobProcessor = new GroovyScriptJobProcessor(binding);
+        this.jobProcessor = new GroovyScriptJobProcessor(this.binding);
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptTest.class.getResource("/scripts/publishInputs.groovy")));
     }
 
@@ -118,9 +120,16 @@ public class PublishInputsScriptTest {
         assertTrue("Data file should be copied from the source", new File(mifWorkingDir, DATA_FILE_NAME).exists());
         assertTrue("PharmML resource should be created", new File(mifWorkingDir, "example3.pharmml").exists());
     }
-
-    @Test
-    public void shouldPublishMDLInputs() throws IOException {
+    
+    /**
+     * Common test functionality called by {@link #shouldPublishMDLInputs_Demonstrator10PlanAMode()}
+     * and {@link #shouldPublishMDLInputs_Demonstrator10PlanBMode()}.
+     * <p>
+     * @param targetLang - target language i.e. PharmML or NMTRAN
+     * @param outputModelFileExt - the file extension that the dummy created converter output file will be given (including the dot)
+     * @throws IOException
+     */
+    private void shouldPublishMDLInputs(final String targetLang, final String outputModelFileExt) throws IOException {
 
         // Copy the files out of the testdata JAR file
 
@@ -148,10 +157,10 @@ public class PublishInputsScriptTest {
                 assertEquals("Checking argument 4 to the call to the converter toolbox",
                     mifWorkingDir.getAbsolutePath(), cmdLineArgs[3]);
                 assertEquals("Checking argument 5 to the call to the converter toolbox", "MDL", cmdLineArgs[4]);
-                assertEquals("Checking argument 7 to the call to the converter toolbox", "PharmML", cmdLineArgs[6]);
+                assertEquals("Checking argument 7 to the call to the converter toolbox", targetLang, cmdLineArgs[6]);
 
                 // Simulate the conversion process generating the output PharmML model files
-                FileUtils.touch(new File(mifWorkingDir.getAbsolutePath(), SCRIPT_FILE_NAME.replace(".mdl", ".xml")));
+                FileUtils.touch(new File(mifWorkingDir.getAbsolutePath(), SCRIPT_FILE_NAME.replace(".mdl", outputModelFileExt)));
 
                 return 0;
             }
@@ -171,8 +180,35 @@ public class PublishInputsScriptTest {
         assertTrue("MIF working directory should be created", mifWorkingDir.exists());
         assertTrue("MDL file should be copied from the source", new File(mifWorkingDir, SCRIPT_FILE_NAME).exists());
         assertTrue("Data file should be copied from the source", new File(mifWorkingDir, DATA_FILE_NAME).exists());
+    }
+
+    /**
+     * Demonstrator 1.0 "Plan A" mode: MDL to intermediate PharmML.
+     * @throws IOException
+     */
+    @Test
+    public void shouldPublishMDLInputs_Demonstrator10PlanAMode() throws IOException {
+
+        this.binding.setVariable("converter.wrapperscript.mdl", "MdlToPharmML.groovy");
+
+        shouldPublishMDLInputs("PharmML", ".xml");
+
         assertTrue("XML resource should be created", new File(mifWorkingDir, "warfarin_PK_PRED.xml").exists());
         assertTrue("PharmML resource should be created", new File(mifWorkingDir, "warfarin_PK_PRED.pharmml").exists());
+    }
+
+    /**
+     * Demonstrator 1.0 "Plan B" mode: MDL direct to NMTRAN (NONMEM).
+     * @throws IOException
+     */
+    @Test
+    public void shouldPublishMDLInputs_Demonstrator10PlanBMode() throws IOException {
+
+        this.binding.setVariable("converter.wrapperscript.mdl", "MdlToNmtran.groovy");
+
+        shouldPublishMDLInputs("NMTRAN", ".ctl");
+
+        assertTrue("Control file should be created", new File(mifWorkingDir, "warfarin_PK_PRED.ctl").exists());
     }
 
     @Test
@@ -244,7 +280,10 @@ public class PublishInputsScriptTest {
     }
 
     @Test
-    public void shouldPublishMDLInputsWhenModelFileWithinSubdirectory() throws IOException {
+    public void shouldPublishMDLInputsWhenModelFileWithinSubdirectory_Demonstrator10PlanAMode() throws IOException {
+    
+        // Demonstrator 1.0 "Plan A" mode: MDL -> intermediate PharmML 
+        this.binding.setVariable("converter.wrapperscript.mdl", "MdlToPharmML.groovy");
 
         // Copy the files out of the testdata JAR file
 
