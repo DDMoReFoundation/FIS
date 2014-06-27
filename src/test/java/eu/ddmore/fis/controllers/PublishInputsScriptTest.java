@@ -55,6 +55,7 @@ public class PublishInputsScriptTest {
         binding.setVariable("converter.toolbox.executable", "/path/to/my/converter-exe");
         binding.setVariable("fis.mdl.ext", "mdl");
         binding.setVariable("fis.pharmml.ext", "xml");
+        binding.setVariable("converter.wrapperscript.mdl", "MdlToPharmML.groovy");
         binding.setVariable("invoker", mock(Invoker.class));
         this.mockExecutor = mock(Executor.class);
         binding.setVariable("ApacheCommonsExecExecutor", this.mockExecutor);

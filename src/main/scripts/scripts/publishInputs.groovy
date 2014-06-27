@@ -6,13 +6,10 @@ import com.mango.mif.core.exec.Invoker
 import eu.ddmore.fis.domain.LocalJob
 import eu.ddmore.fis.domain.LocalJobStatus;
 
-import org.apache.log4j.Logger
-
-
-final Logger LOGGER = Logger.getLogger(getClass())
 
 LocalJob job = binding.getVariable("job");
 File scriptFile = binding.getVariable("scriptFile");
+String mdlConversionScript = binding.getVariable("converter.wrapperscript.mdl")
 String converterToolboxExecutable = binding.getVariable("converter.toolbox.executable");
 String MDL_FILE_EXT = binding.getVariable("fis.mdl.ext");
 String PHARMML_FILE_EXT = binding.getVariable("fis.pharmml.ext");
@@ -73,7 +70,7 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         // def script = shell.parse( new File(scriptFile.getParentFile(), "MdlToPharmML.groovy") )
         // newModelFileName = script.doConvert(origControlFile, controlFileInMifWorkingDir, fisMetadataDir)
 
-        def convWrapperScriptFile = new File(scriptFile.getParentFile(), "MdlToPharmML.groovy")
+        def convWrapperScriptFile = new File(scriptFile.getParentFile(), mdlConversionScript)
         println(convWrapperScriptFile)
         def convWrapper = this.class.classLoader.parseClass(convWrapperScriptFile);
         newModelFileName = convWrapper.newInstance(binding).doConvert(origControlFile, controlFileInMifWorkingDir, fisMetadataDir)

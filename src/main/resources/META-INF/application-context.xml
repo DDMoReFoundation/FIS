@@ -47,7 +47,7 @@
                 <constructor-arg>
                     <map>
                         <entry key="invoker" value-ref="invoker">
-                            
+
                         </entry>
                         <entry key="fis.mdl.ext">
                             <value>${fis.mdl.ext}</value>
@@ -57,6 +57,9 @@
                         </entry>
                         <entry key="converter.toolbox.executable">
                             <value>${converter.toolbox.executable}</value>
+                        </entry>
+                        <entry key="converter.wrapperscript.mdl">
+                            <value>${converter.wrapperscript.mdl}</value>
                         </entry>
                     </map>
                 </constructor-arg>
