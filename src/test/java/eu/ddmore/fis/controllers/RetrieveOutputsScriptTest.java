@@ -31,7 +31,7 @@ public class RetrieveOutputsScriptTest {
 
     @Test
     public void shouldRetrieveResultFilesFromMIFWorkingDirectory() {
-        GroovyScriptJobProcessor jobProcessor = new GroovyScriptJobProcessor();
+        JobProcessor jobProcessor = new JobProcessor();
         jobProcessor.setScriptFile(FileUtils.toFile(RetrieveOutputsScriptTest.class.getResource("/scripts/retrieveOutputs.groovy")));
         File testWorkingDir = testDirectory.getRoot();
         

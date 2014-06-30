@@ -45,7 +45,7 @@ public class PublishInputsScriptTest {
 
     private Executor mockExecutor;
 
-    private GroovyScriptJobProcessor jobProcessor;
+    private JobProcessor jobProcessor;
 
     @Before
     public void setUp() {
@@ -62,7 +62,7 @@ public class PublishInputsScriptTest {
         this.mockExecutor = mock(Executor.class);
         this.binding.setVariable("ApacheCommonsExecExecutor", this.mockExecutor);
 
-        this.jobProcessor = new GroovyScriptJobProcessor(this.binding);
+        this.jobProcessor = new JobProcessor(binding);
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptTest.class.getResource("/scripts/publishInputs.groovy")));
     }
 
