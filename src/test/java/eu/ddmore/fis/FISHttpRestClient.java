@@ -131,11 +131,17 @@ public class FISHttpRestClient {
         return executeMethod(endpoint,get);
     }
 
+    public String readMdl(String fileName) {
+        String endpoint = buildEndpoint("readmdl", fileName);
+        GetMethod get = new GetMethod(endpoint);
+        get.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
+        return executeMethod(endpoint,get);
+    }
+
     private String buildEndpoint(String...parts) {
         StringBuilder builder = new StringBuilder();
         builder.append(endPoint);
         builder.append(Joiner.on("/").join(parts));
         return builder.toString();
     }
-
 }
