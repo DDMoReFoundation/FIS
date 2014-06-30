@@ -37,11 +37,11 @@
 
     <bean id="invoker" class="com.mango.mif.core.exec.ce.CeInvoker" />
     
-    <bean id="jobResourceRetriever" class="eu.ddmore.fis.controllers.GroovyScriptJobProcessor" >
+    <bean id="jobResourceRetriever" class="eu.ddmore.fis.controllers.JobProcessor" >
         <property name="scriptFile" value="${fis.retrieveOutputs}"></property>
     </bean>
     
-    <bean id="jobResourcePublisher" class="eu.ddmore.fis.controllers.GroovyScriptJobProcessor" >
+    <bean id="jobResourcePublisher" class="eu.ddmore.fis.controllers.JobProcessor" >
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
@@ -67,7 +67,37 @@
         </constructor-arg>
         <property name="scriptFile" value="${fis.publishInputs}"></property>
     </bean>
-    
+
+    <bean id="resourceReader" class="eu.ddmore.fis.controllers.ReadWriteProcessor" >
+        <constructor-arg>
+            <bean class="groovy.lang.Binding">
+                <constructor-arg>
+                    <map>
+                        <entry key="converter.toolbox.executable">
+                            <value>${converter.toolbox.executable}</value>
+                        </entry>
+                    </map>
+                </constructor-arg>
+            </bean>
+        </constructor-arg>
+        <property name="scriptFile" value="${fis.readResource}"></property>
+    </bean>
+<!--
+    <bean id="resourceWriter" class="eu.ddmore.fis.controllers.ReadWriteProcessor" >
+        <constructor-arg>
+            <bean class="groovy.lang.Binding">
+                <constructor-arg>
+                    <map>
+                        <entry key="converter.toolbox.executable">
+                            <value>${converter.toolbox.executable}</value>
+                        </entry>
+                    </map>
+                </constructor-arg>
+            </bean>
+        </constructor-arg>
+        <property name="scriptFile" value="${fis.writeResource}"></property>
+    </bean>
+-->
     <mvc:annotation-driven conversion-service="conversionService" />
     <bean id="conversionService"
           class="org.springframework.context.support.ConversionServiceFactoryBean">
@@ -103,7 +133,11 @@
     <bean id="jobsController" class="eu.ddmore.fis.controllers.JobsController">
         <property name="localJobService" ref="localJobService" />
     </bean>
-    
+
+    <bean id="readwriteController" class="eu.ddmore.fis.controllers.ReadWriteController">
+        <property name="readWriteProcessor" ref="resourceReader" />
+    </bean>
+   
     <bean id="commandRegistry" class="eu.ddmore.fis.service.CommandRegistryImpl">
         <constructor-arg>
             <set>
