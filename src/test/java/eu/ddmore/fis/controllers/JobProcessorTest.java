@@ -1,9 +1,8 @@
 package eu.ddmore.fis.controllers;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -16,7 +15,7 @@ import eu.ddmore.fis.domain.LocalJobStatus;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class GroovyScriptJobProcessorTest {
+public class JobProcessorTest {
 
     @Before
     public void setUp() throws Exception {
@@ -24,13 +23,12 @@ public class GroovyScriptJobProcessorTest {
 
     @Test
     public void shouldExecuteScript() {
-        GroovyScriptJobProcessor jobProcessor = new GroovyScriptJobProcessor();
-        jobProcessor.setScriptFile(FileUtils.toFile(GroovyScriptJobProcessorTest.class.getResource("/eu/ddmore/fis/controllers/updateJobStatus.groovy")));
+        JobProcessor jobProcessor = new JobProcessor();
+        jobProcessor.setScriptFile(FileUtils.toFile(JobProcessorTest.class.getResource("/eu/ddmore/fis/controllers/updateJobStatus.groovy")));
         LocalJob job = mock(LocalJob.class);
         
         jobProcessor.process(job);
         
         verify(job).setStatus(eq(LocalJobStatus.COMPLETED));
     }
-
 }
