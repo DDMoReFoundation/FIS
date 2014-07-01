@@ -82,8 +82,8 @@
         </constructor-arg>
         <property name="scriptFile" value="${fis.readResource}"></property>
     </bean>
-<!--
-    <bean id="resourceWriter" class="eu.ddmore.fis.controllers.ReadWriteProcessor" >
+
+    <bean id="resourceWriter" class="eu.ddmore.fis.controllers.WriteProcessor" >
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
@@ -97,7 +97,7 @@
         </constructor-arg>
         <property name="scriptFile" value="${fis.writeResource}"></property>
     </bean>
--->
+
     <mvc:annotation-driven conversion-service="conversionService" />
     <bean id="conversionService"
           class="org.springframework.context.support.ConversionServiceFactoryBean">
@@ -105,6 +105,8 @@
             <set>
                 <bean class="eu.ddmore.fis.controllers.converters.StringToSubmissionRequestConverter"/>
                 <bean class="eu.ddmore.fis.controllers.converters.SubmissionRequestToStringConverter"/>
+                <bean class="eu.ddmore.fis.controllers.converters.StringToWriteMdlRequestConverter"/>
+                <bean class="eu.ddmore.fis.controllers.converters.StringToWriteMdlResponseConverter"/>
                 <bean class="eu.ddmore.fis.controllers.converters.LocalJobToStringConverter"/>
             </set>
         </property>
@@ -136,6 +138,7 @@
 
     <bean id="readwriteController" class="eu.ddmore.fis.controllers.ReadWriteController">
         <property name="readWriteProcessor" ref="resourceReader" />
+        <property name="writeProcessor" ref="resourceWriter" />
     </bean>
    
     <bean id="commandRegistry" class="eu.ddmore.fis.service.CommandRegistryImpl">
