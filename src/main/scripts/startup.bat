@@ -5,10 +5,14 @@ IF %FIS_HOME:~-1%==\ SET FIS_HOME=%FIS_HOME:~0,-1%
 CD %FIS_HOME%
 
 SET PUBLISH_INPUTS=%FIS_HOME%\scripts\publishInputs.groovy
-SET PUBLISH_OUTPUTS=%FIS_HOME%\scripts\retrieveOutputs.groovy
+SET RETRIEVE_OUTPUTS=%FIS_HOME%\scripts\retrieveOutputs.groovy
+SET READ_RESOURCE=%FIS_HOME%\scripts\readResource.groovy
+SET WRITE_RESOURCE=%FIS_HOME%\scripts\writeResource.groovy
 
 SET params=-Dfis.publishInputs="%PUBLISH_INPUTS%"
-SET params=-Dfis.retrieveOutputs="%PUBLISH_OUTPUTS%" %params%
+SET params=-Dfis.retrieveOutputs="%RETRIEVE_OUTPUTS%" %params%
+SET params=-Dfis.readResource="%READ_RESOURCE%" %params%
+SET params=-Dfis.writeResource="%WRITE_RESOURCE%" %params%
 SET params=-Dnonmem.setup.script="%~dp0\..\setup.bat" %params%
 SET params=-Dconverter.toolbox.executable="%~dp0\..\converter-toolbox-bundle-0.0.1-SNAPSHOT\convert.bat" %params%
 
