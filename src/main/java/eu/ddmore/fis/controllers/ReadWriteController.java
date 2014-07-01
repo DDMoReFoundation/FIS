@@ -11,21 +11,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import eu.ddmore.fis.domain.WriteMdlRequest;
+import eu.ddmore.fis.domain.WriteMdlResponse;
+
 @Controller
 public class ReadWriteController {
 
 	@Autowired
 	private ReadWriteProcessor readWriteProcessor;
-	
-//	@RequestMapping(method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
-//    public @ResponseBody Set<LocalJob> getJobs() {
-//		Set<LocalJob> jobs = Sets.newHashSet();
-//		for(LocalJob job : localJobService.getAll() ) {
-//			jobs.add(job);
-//		}
-//		return jobs;
-//    }
 
+	@Autowired
+	private WriteProcessor writeProcessor;
 
 	@RequestMapping(value = "readmdl", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody String readMdl(@RequestParam(value="fileName") String fileName) {
@@ -34,15 +30,24 @@ public class ReadWriteController {
     }
 
     @RequestMapping(value = "writemdl", method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
-    public @ResponseBody String writeMdl(@RequestParam(value="outputStream") String outputStream) {
-    	return "Write successful";
+    public @ResponseBody WriteMdlResponse writeMdl(@RequestParam(value="writeRequest") WriteMdlRequest writeRequest) {
+        // Invoke the writeResource Groovy script
+    	return writeProcessor.process(writeRequest);
     }
 
-    public ReadWriteProcessor getReadWriteProcessor() {
+	public ReadWriteProcessor getReadWriteProcessor() {
 		return readWriteProcessor;
 	}
 
 	public void setReadWriteProcessor(ReadWriteProcessor readWriteProcessor) {
 		this.readWriteProcessor = readWriteProcessor;
+	}
+
+    public WriteProcessor getWriteProcessor() {
+		return writeProcessor;
+	}
+
+	public void setWriteProcessor(WriteProcessor writeProcessor) {
+		this.writeProcessor = writeProcessor;
 	}
 }
