@@ -18,6 +18,8 @@ import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
 import eu.ddmore.fis.domain.SubmissionRequest;
 import eu.ddmore.fis.domain.SubmissionResponse;
+import eu.ddmore.fis.domain.WriteMdlRequest;
+import eu.ddmore.fis.domain.WriteMdlResponse;
 
 /**
  * TEISHttpRestClient for interacting with TES IS REST services.
@@ -132,10 +134,36 @@ public class FISHttpRestClient {
     }
 
     public String readMdl(String fileName) {
-        String endpoint = buildEndpoint("readmdl", fileName);
+//        String endpoint = buildEndpoint("readmdl", fileName);
+    	String endpoint = endPoint + "readmdl?fileName=" + fileName;
         GetMethod get = new GetMethod(endpoint);
         get.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
         return executeMethod(endpoint,get);
+    }
+
+    public WriteMdlResponse writeMdl(WriteMdlRequest writeRequest) {
+        String endpoint = buildEndpoint("writemdl");
+        PostMethod req = new PostMethod(endpoint);
+        req.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
+
+        ObjectMapper mapper = new ObjectMapper();
+        String json;
+        try {
+            json = mapper.writeValueAsString(writeRequest);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not produce json", e);
+        }
+        req.setParameter("writeRequest", json);
+        
+        log.info(String.format("Sending execution request: %s",json));
+        
+        String response = executeMethod(endpoint, req);
+
+        try {
+            return mapper.readValue(response, WriteMdlResponse.class);
+        } catch (Exception e) {
+            throw new RuntimeException(String.format("Could not parse json %s",response), e);
+        }
     }
 
     private String buildEndpoint(String...parts) {
