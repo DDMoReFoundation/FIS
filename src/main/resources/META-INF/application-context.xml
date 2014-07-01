@@ -68,7 +68,7 @@
         <property name="scriptFile" value="${fis.publishInputs}"></property>
     </bean>
 
-    <bean id="resourceReader" class="eu.ddmore.fis.controllers.ReadWriteProcessor" >
+    <bean id="resourceReader" class="eu.ddmore.fis.controllers.ReadProcessor" >
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
@@ -137,7 +137,7 @@
     </bean>
 
     <bean id="readwriteController" class="eu.ddmore.fis.controllers.ReadWriteController">
-        <property name="readWriteProcessor" ref="resourceReader" />
+        <property name="readProcessor" ref="resourceReader" />
         <property name="writeProcessor" ref="resourceWriter" />
     </bean>
    

@@ -5,13 +5,13 @@ import groovy.lang.GroovyShell;
 /**
  * Uses a Groovy script to process a job
  */
-public class ReadWriteProcessor extends GroovyScriptProcessor {
+public class ReadProcessor extends GroovyScriptProcessor {
     
-    public ReadWriteProcessor() {
+    public ReadProcessor() {
     	super();
     }
 
-    public ReadWriteProcessor(Binding binding) {
+    public ReadProcessor(Binding binding) {
         super(binding);
     }
     

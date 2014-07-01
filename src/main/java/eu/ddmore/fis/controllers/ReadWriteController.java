@@ -18,29 +18,31 @@ import eu.ddmore.fis.domain.WriteMdlResponse;
 public class ReadWriteController {
 
 	@Autowired
-	private ReadWriteProcessor readWriteProcessor;
+	private ReadProcessor readProcessor;
 
 	@Autowired
 	private WriteProcessor writeProcessor;
 
 	@RequestMapping(value = "readmdl", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody String readMdl(@RequestParam(value="fileName") String fileName) {
-        // Invoke the readResource Groovy script
-        return readWriteProcessor.process(fileName);
+
+		// Invoke the readResource Groovy script
+        return readProcessor.process(fileName);
     }
 
     @RequestMapping(value = "writemdl", method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody WriteMdlResponse writeMdl(@RequestParam(value="writeRequest") WriteMdlRequest writeRequest) {
-        // Invoke the writeResource Groovy script
+
+    	// Invoke the writeResource Groovy script
     	return writeProcessor.process(writeRequest);
     }
 
-	public ReadWriteProcessor getReadWriteProcessor() {
-		return readWriteProcessor;
+	public ReadProcessor getReadProcessor() {
+		return readProcessor;
 	}
 
-	public void setReadWriteProcessor(ReadWriteProcessor readWriteProcessor) {
-		this.readWriteProcessor = readWriteProcessor;
+	public void setReadProcessor(ReadProcessor readProcessor) {
+		this.readProcessor = readProcessor;
 	}
 
     public WriteProcessor getWriteProcessor() {
