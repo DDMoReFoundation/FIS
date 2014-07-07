@@ -65,5 +65,8 @@ final Logger LOGGER = Logger.getLogger(getClass())
         stderrOS.close()
     }
 
-    result = FileUtils.readFileToString(new File(FilenameUtils.removeExtension(fileName) + ".json"))
+	File jsonFileName = new File(FilenameUtils.removeExtension(fileName) + ".json")
+    result = FileUtils.readFileToString(jsonFileName)
+	FileUtils.deleteQuietly(jsonFileName)
+
 	result

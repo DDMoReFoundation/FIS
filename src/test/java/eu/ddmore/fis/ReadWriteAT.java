@@ -4,6 +4,7 @@
 package eu.ddmore.fis;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,12 +48,17 @@ public class ReadWriteAT extends SystemPropertiesAware {
         final File mdlFile = new File(workingDir, MDL_FILE_NAME);
         FileUtils.copyURLToFile(MDL_FILE_URL, mdlFile);
 
-        String jsonFormat = fisClient.readMdl(mdlFile.getAbsolutePath().replace('\\', '/'));
+        final String mdlFileFullPath = mdlFile.getAbsolutePath().replace('\\', '/');
+        String jsonFormat = fisClient.readMdl(mdlFileFullPath);
  
-        final File jsonFile = new File(workingDir, JSON_FILE_NAME);
+        final File jsonFile = new File(workingDir, JSON_FILE_NAME + ".tmp");
         FileUtils.copyURLToFile(JSON_FILE_URL, jsonFile);
         String expected = FileUtils.readFileToString(jsonFile);
         assertEquals("MDL file should be correctly read.", expected, jsonFormat);
+
+        final String jsonFileFullPath = mdlFileFullPath.replace(MDL_FILE_NAME, JSON_FILE_NAME);
+        final File f = new File(jsonFileFullPath);
+        assertTrue("Temporary JSON file should not be present.", !f.exists());
         
     	FileUtils.deleteDirectory(workingDir);
     }
