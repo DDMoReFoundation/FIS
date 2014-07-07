@@ -10,7 +10,9 @@ File mifWorkingDir = new File(workingDir, job.getId());
 FileUtils.copyDirectory(mifWorkingDir, workingDir, new FileFilter() {
             boolean accept(File file) {
                 switch(file.getName()) {
-                    case ~/.*\.(csv|ctl|xml|lst|pharmml)/:
+                    case ~/.*\.(csv|ctl|xml|lst|pharmml|fit)$/:
+                        return true;
+                    case ~/^[a-z][a-z]tab[0-9]+$/: // Natch catab1, sdtab2, patab1 etc.
                         return true;
                     default:
                         return false;
