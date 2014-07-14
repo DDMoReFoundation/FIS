@@ -28,12 +28,12 @@ public class ReadWriteAT extends SystemPropertiesAware {
 
     private static final URL MDL_FILE_URL = ReadWriteAT.class.getResource(String.format(TEST_DATA_DIR, "mdl") + MDL_FILE_NAME);
     private static final URL JSON_FILE_URL = ReadWriteAT.class.getResource(String.format(TEST_DATA_DIR, "json") + JSON_FILE_NAME);
-    
+
     // This is where the output from FIS and MIF can be found
     private static final File parentWorkingDir = new File("target", "ReadWriteAT_Test_Working_Dir");
     private static final FISHttpRestClient fisClient = new FISHttpRestClient(System.getProperty("fis.url"));
 
-    
+
     @BeforeClass
     public static void globalSetUp() throws Exception {
         FileUtils.deleteDirectory(parentWorkingDir);
@@ -50,7 +50,7 @@ public class ReadWriteAT extends SystemPropertiesAware {
 
         final String mdlFileFullPath = mdlFile.getAbsolutePath().replace('\\', '/');
         String jsonFormat = fisClient.readMdl(mdlFileFullPath);
- 
+
         final File jsonFile = new File(workingDir, JSON_FILE_NAME + ".tmp");
         FileUtils.copyURLToFile(JSON_FILE_URL, jsonFile);
         String expected = FileUtils.readFileToString(jsonFile);
@@ -59,10 +59,9 @@ public class ReadWriteAT extends SystemPropertiesAware {
         final String jsonFileFullPath = mdlFileFullPath.replace(MDL_FILE_NAME, JSON_FILE_NAME);
         final File f = new File(jsonFileFullPath);
         assertTrue("Temporary JSON file should not be present.", !f.exists());
-        
-    	FileUtils.deleteDirectory(workingDir);
+
     }
-    
+
     @Test
     public void shouldCorrectlyWriteMdlFile() throws IOException {
         final File workingDir = new File(parentWorkingDir, "WriteMdlFile");
@@ -76,7 +75,7 @@ public class ReadWriteAT extends SystemPropertiesAware {
         writeReq.setFileName(workingDir.getAbsolutePath() + "/" + MDL_FILE_NAME);
         WriteMdlResponse writeResp = fisClient.writeMdl(writeReq);
         assertEquals("MDL file should be correctly written.", "Successful", writeResp.getStatus());
-        
-    	FileUtils.deleteDirectory(workingDir);
+
     }
+
 }
