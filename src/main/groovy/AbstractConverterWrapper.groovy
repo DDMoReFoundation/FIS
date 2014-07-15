@@ -57,7 +57,7 @@ class AbstractConverterWrapper {
     /**
      * Convert the MDL using the Converter Toolbox command-line launch script using the supplied parameters.
      * <p>
-     * @param origModelFile - references the MDL model file in its original location
+     * @param origModelFile - references the MDL model file with its relative path
      * @param modelFileInMifWorkingDir - references the MDL model file in the MIF working directory
      * @param fisMetadataDir - into which the stdout and stderr will be written
      * @return the newModelFileName (i.e. the converted version of the original model file) if conversion was successful;

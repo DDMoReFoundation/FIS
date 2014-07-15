@@ -33,10 +33,9 @@ File origControlFile = new File(job.getControlFile());
 
 String modelName = FilenameUtils.getBaseName(origControlFile.getName());
 String modelExt = FilenameUtils.getExtension(origControlFile.getName());
-println("Model name: " + modelName)
 
-
-File controlFileInMifWorkingDir = new File(mifWorkingDir, origControlFile.getName())
+// We ensure that subdirectory structure is maintained
+File controlFileInMifWorkingDir = new File(mifWorkingDir, origControlFile.getPath())
 
 // If copying mock data
 File mockDataDir = new File(scriptFile.getParentFile().getParentFile(),"mockData")
