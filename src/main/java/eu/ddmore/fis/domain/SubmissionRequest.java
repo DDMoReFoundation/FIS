@@ -41,4 +41,11 @@ public class SubmissionRequest {
     public String getCommandParameters() {
         return commandParameters;
     }
+    
+	@Override
+	public String toString() {
+		return "SubmissionRequest [workingDirectory=" + workingDirectory
+				+ ", command=" + command + ", executionFile=" + executionFile
+				+ ", commandParameters=" + commandParameters + "]";
+	}
 }
