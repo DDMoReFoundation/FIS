@@ -16,15 +16,7 @@ SET params=-Dfis.writeResource="%WRITE_RESOURCE%" %params%
 SET params=-Dnonmem.setup.script="%~dp0\..\setup.bat" %params%
 SET params=-Dconverter.toolbox.executable="%~dp0\..\converter-toolbox-bundle-0.0.1-SNAPSHOT\convert.bat" %params%
 
-if "%PROCESSOR_ARCHITECTURE%" == "x86" ( 
-    if not defined PROCESSOR_ARCHITEW6432 (
-		set TRAINING_JAVA_HOME=%SERVICE_HOME%\..\MDL_IDE\x86\jre
-	) else (
-		set TRAINING_JAVA_HOME=%SERVICE_HOME%\..\MDL_IDE\x86_64\jre
-	)
-) else (
-	set TRAINING_JAVA_HOME=%SERVICE_HOME%\..\MDL_IDE\x86_64\jre
-)
+set TRAINING_JAVA_HOME=%SERVICE_HOME%\..\MDL_IDE\jre
 
 IF EXIST "%TRAINING_JAVA_HOME%\bin\java.exe" (
     echo Using Java from SEE
