@@ -29,4 +29,4 @@ IF EXIST "%TRAINING_JAVA_HOME%\bin\java.exe" (
     SET JAVA_CMD=java
 )
 
-"%JAVA_CMD%" %params% -Dmango.mif.invoker.shell="cmd.exe /C" -Dmango.mif.invoker.tmp.file.ext=".bat" -DFIS_HOME="%SERVICE_HOME%" -jar %SERVICE_HOME%\fis.jar
+"%JAVA_CMD%" %params% -Dmango.mif.invoker.shell="cmd.exe /C" -Dmango.mif.invoker.tmp.file.ext=".bat" -DFIS_HOME="%SERVICE_HOME%" -jar "%SERVICE_HOME%"\fis.jar
