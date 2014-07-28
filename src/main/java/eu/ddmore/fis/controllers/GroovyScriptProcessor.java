@@ -51,7 +51,6 @@ public abstract class GroovyScriptProcessor {
 
     @Required
     public void setScriptFile(File scriptFile) {
-    	System.out.println("scriptFile = " + scriptFile);
         this.scriptFile = scriptFile;
     }
 
