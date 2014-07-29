@@ -3,6 +3,9 @@
  ******************************************************************************/
 package eu.ddmore.fis;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -134,8 +137,13 @@ public class FISHttpRestClient {
     }
 
     public String readMdl(String fileName) {
-//        String endpoint = buildEndpoint("readmdl", fileName);
-    	String endpoint = endPoint + "readmdl?fileName=" + fileName;
+    	String urlEncodedFilename;
+        try {
+	        urlEncodedFilename = URLEncoder.encode(fileName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+	        throw new IllegalArgumentException("Unable to URL-encode file path: " + fileName);
+        }
+        String endpoint = buildEndpoint("readmdl?fileName=" + urlEncodedFilename);
         GetMethod get = new GetMethod(endpoint);
         get.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
         return executeMethod(endpoint,get);
