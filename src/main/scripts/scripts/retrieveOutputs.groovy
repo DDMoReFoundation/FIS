@@ -1,3 +1,5 @@
+import java.util.regex.Pattern;
+
 import org.apache.commons.io.FileUtils
 
 import eu.ddmore.fis.domain.LocalJob
@@ -7,16 +9,12 @@ LocalJob job = binding.getVariable("job");
 File workingDir = new File(job.getWorkingDirectory())
 File mifWorkingDir = new File(workingDir, job.getId());
 
+Pattern outputFilenamesRegex = Pattern.compile(job.getOutputFilenamesRegex())
+
+// Copy back any files that match the filename regular expression and which aren't "hidden" e.g. .MIF directory
 FileUtils.copyDirectory(mifWorkingDir, workingDir, new FileFilter() {
             boolean accept(File file) {
-                switch(file.getName()) {
-                    case ~/.*\.(csv|ctl|xml|lst|pharmml|fit)$/:
-                        return true;
-                    case ~/^[a-z][a-z]tab[0-9]+$/: // Natch catab1, sdtab2, patab1 etc.
-                        return true;
-                    default:
-                        return false;
-                }
+				return (file.getName().matches(outputFilenamesRegex) && !file.getName().startsWith("."));
             }
         });
 

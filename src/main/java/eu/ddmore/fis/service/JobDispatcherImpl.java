@@ -2,7 +2,6 @@ package eu.ddmore.fis.service;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.mango.mif.MIFHttpRestClient;
 import com.mango.mif.domain.ExecutionRequest;
@@ -25,20 +24,29 @@ public class JobDispatcherImpl implements JobDispatcher {
 	public LocalJob dispatch(LocalJob job) {
 
 		// Invoke the publishInputs Groovy script
-		LocalJob publishedJob = jobResourcePublisher.process(job);
+		final LocalJob publishedJob = this.jobResourcePublisher.process(job);
 
 		if (publishedJob.getStatus() != LocalJobStatus.FAILED) {
 			// Only continue if the pre-processing was successful
-			CommandExecutionTarget commandTarget = commandRegistry.resolveExecutionTargetFor(publishedJob.getCommand());
-			ExecutionRequest executionRequest = buildExecutionRequest(publishedJob, commandTarget);
-			mifClient.executeJob(executionRequest);
+
+			final CommandExecutionTarget commandTarget = this.commandRegistry.resolveExecutionTargetFor(publishedJob.getCommand());
+			final ExecutionRequest executionRequest = buildExecutionRequest(publishedJob, commandTarget);
+
+			// The retrieveOutputs Groovy script needs to know the (MIF-connector-specific) file patterns it needs to copy back
+			// from the MIF working directory to the FIS working directory. Ideally there would be a cleaner way than bunging
+			// these in the LocalJob object, but this is the easiest solution since the LocalJob gets passed all the way through
+			// to the Groovy script itself (as a bound variable).
+			// Also, this would allow TEL-R (or another FIS client) to access the output filenames regex if it needed to for
+			// whatever reason, such as copying files back from the FIS working directory to a user source directory.
+			publishedJob.setOutputFilenamesRegex(commandTarget.getOutputFilenamesRegex());
+
+			this.mifClient.executeJob(executionRequest);
 		}
 
 		return publishedJob;
 	}
 
-	@VisibleForTesting
-	ExecutionRequest buildExecutionRequest(LocalJob job, CommandExecutionTarget commandTarget) {
+	private ExecutionRequest buildExecutionRequest(LocalJob job, CommandExecutionTarget commandTarget) {
 		Preconditions.checkNotNull(job, "Job can't be null");
 		Preconditions.checkNotNull(commandTarget, "Command Target can't be null");
 		ExecutionRequestBuilder requestBuilder = new ExecutionRequestBuilder().setRequestId(job.getId()).setName("FIS Service Job")
@@ -78,6 +86,6 @@ public class JobDispatcherImpl implements JobDispatcher {
 	}
 
 	public CommandRegistry getCommandRegistry() {
-		return commandRegistry;
+		return this.commandRegistry;
 	}
 }

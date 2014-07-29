@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -43,12 +44,13 @@ public class SubmitControllerIT extends SystemPropertiesAware {
     @Autowired
     JobsController jobsController;
 
-    private String nonmemCommand;
+    @Value("${commandline.execute.command}")
+    private String command;
 
     @Before
     public void setUp() throws IOException {
-        nonmemCommand = System.getProperty("nonmem.command");
-        FileUtils.deleteDirectory(workingDir);
+        FileUtils.deleteDirectory(this.workingDir);
+        this.workingDir.mkdir();
     }
 
     @Test
@@ -57,19 +59,20 @@ public class SubmitControllerIT extends SystemPropertiesAware {
         // Copy the files out of the testdata JAR file
 
         final String SCRIPT_FILE_NAME = "warfarin_PK_PRED.ctl";
-        final String DATA_FILE_NAME = "warfarin_conc_pca.csv";
-
-        final String testDataDir = "/eu/ddmore/testdata/models/ctl/warfarin_PK_PRED/";
-
-        final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
-        FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
-        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + DATA_FILE_NAME);
-        FileUtils.copyURLToFile(dataFile, new File(workingDir, DATA_FILE_NAME));
+//        final String DATA_FILE_NAME = "warfarin_conc_pca.csv";
+//
+//        final String testDataDir = "/eu/ddmore/testdata/models/ctl/warfarin_PK_PRED/";
+//
+//        final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
+//        FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
+//        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + DATA_FILE_NAME);
+//        FileUtils.copyURLToFile(dataFile, new File(workingDir, DATA_FILE_NAME));
 
         // Proceed with the test...
 
         SubmissionRequest submissionRequest = new SubmissionRequest();
-        submissionRequest.setCommand(nonmemCommand);
+        submissionRequest.setCommand(this.command);
+        submissionRequest.setCommandParameters("echo Hello from mock NONMEM via command-line connector of MIF! >dummyoutput.lst\necho.");
         submissionRequest.setExecutionFile(SCRIPT_FILE_NAME);
         submissionRequest.setWorkingDirectory(workingDir.getAbsolutePath());
 
@@ -87,8 +90,10 @@ public class SubmitControllerIT extends SystemPropertiesAware {
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
         }
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
-        File outputFile = new File(workingDir, "output.lst");
+        File outputFile = new File(workingDir, "dummyoutput.lst");
         assertTrue(String.format("File %s did not exist", outputFile), outputFile.exists());
+        assertTrue("Checking the content of the dummy output file",
+            FileUtils.readFileToString(outputFile).startsWith("Hello from "));
         assertEquals(LocalJobStatus.COMPLETED, jobsController.getJobStatus(jobId));
     }
 

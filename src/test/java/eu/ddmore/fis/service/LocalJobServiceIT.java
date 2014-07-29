@@ -33,6 +33,7 @@ public class LocalJobServiceIT extends SystemPropertiesAware {
     	job.setControlFile("The test control file");
         job.setWorkingDirectory("The test working directory");
     	job.setSubmitTime(new DateTime().toString());
+    	job.setOutputFilenamesRegex(".*");
 
     	String jobId = job.getId();
     	localJobService.save(job);

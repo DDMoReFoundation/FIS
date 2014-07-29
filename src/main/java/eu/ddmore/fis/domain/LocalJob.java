@@ -14,98 +14,103 @@ import javax.persistence.Version;
 public class LocalJob implements Serializable {
 
 	@Id
-    @Column(nullable = false)
+	@Column(nullable = false)
 	private String id;
 
 	@Column(nullable = false)
 	private String command;
-	
-    @Column
-    private String commandParameters;
+
+	@Column
+	private String commandParameters;
 
 	@Column(nullable = false)
 	private String workingDirectory;
-	
+
 	@Column(nullable = false)
 	private String controlFile;
 
-	@Column(nullable = false)	
+	@Column(nullable = false)
 	private String submitTime;
 
-    @Column(nullable = false)   
-    private LocalJobStatus status;
+	@Column(nullable = false)
+	private LocalJobStatus status;
 
-    @Version
-    @Column
-    private long version;
-    
-    public String getCommand() {
-        return command;
-    }
+	@Column(nullable = false)
+	private String outputFilenamesRegex;
 
-    
-    public void setCommand(String command) {
-        this.command = command;
-    }
+	@Version
+	@Column
+	private long version;
 
-    
-    public String getWorkingDirectory() {
-        return workingDirectory;
-    }
+	public String getCommand() {
+		return command;
+	}
 
-    
-    public void setWorkingDirectory(String workingDirectory) {
-        this.workingDirectory = workingDirectory;
-    }
+	public void setCommand(String command) {
+		this.command = command;
+	}
 
-    
-    public String getControlFile() {
-        return controlFile;
-    }
+	public String getWorkingDirectory() {
+		return workingDirectory;
+	}
 
-    
-    public void setControlFile(String controlFile) {
-        this.controlFile = controlFile;
-    }
+	public void setWorkingDirectory(String workingDirectory) {
+		this.workingDirectory = workingDirectory;
+	}
 
-    
-    public String getSubmitTime() {
-        return submitTime;
-    }
-    
-    public void setSubmitTime(String submitTime) {
-        this.submitTime = submitTime;
-    }
-    
-    public LocalJobStatus getStatus() {
-        return status;
-    }
-    
-    public void setStatus(LocalJobStatus status) {
-        this.status = status;
-    }
-    
-    public String getId() {
-        return id;
-    }
-    
-    public void setId(String id) {
-        this.id = id;
-    }
-    
-    public void setCommandParameters(String commandParameters) {
-        this.commandParameters = commandParameters;
-    }
-    
-    public String getCommandParameters() {
-        return commandParameters;
-    }
-    
-    public void setVersion(long version) {
-        this.version = version;
-    }
-    
-    public long getVersion() {
-        return version;
-    }
+	public String getControlFile() {
+		return controlFile;
+	}
+
+	public void setControlFile(String controlFile) {
+		this.controlFile = controlFile;
+	}
+
+	public String getSubmitTime() {
+		return submitTime;
+	}
+
+	public void setSubmitTime(String submitTime) {
+		this.submitTime = submitTime;
+	}
+
+	public LocalJobStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(LocalJobStatus status) {
+		this.status = status;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setCommandParameters(String commandParameters) {
+		this.commandParameters = commandParameters;
+	}
+
+	public String getCommandParameters() {
+		return commandParameters;
+	}
+	
+	public void setOutputFilenamesRegex(final String outputFilenamesRegex) {
+		this.outputFilenamesRegex = outputFilenamesRegex;
+	}
+	
+	public String getOutputFilenamesRegex() {
+		return this.outputFilenamesRegex;
+	}
+
+	public void setVersion(long version) {
+		this.version = version;
+	}
+
+	public long getVersion() {
+		return version;
+	}
 }
