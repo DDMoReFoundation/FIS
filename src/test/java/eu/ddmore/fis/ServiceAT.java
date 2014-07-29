@@ -34,10 +34,12 @@ import eu.ddmore.fis.domain.SubmissionResponse;
 public class ServiceAT extends SystemPropertiesAware {
 
     private static final Logger LOG = Logger.getLogger(ServiceAT.class);
+    
+    private FISHttpRestClient teisClient;
+    
     private static String mdlConversionWrapperScript = "";
 
-    private String nonmemCommand;
-    private FISHttpRestClient teisClient;
+    private static String nonmemCommand;
 
     // This is where the output from FIS and MIF can be found
     private static File parentWorkingDir = new File("target", "ServiceAT_Test_Working_Dir");
@@ -47,11 +49,11 @@ public class ServiceAT extends SystemPropertiesAware {
         FileUtils.deleteDirectory(parentWorkingDir);
         parentWorkingDir.mkdir();
         loadConfigProperties();
+        nonmemCommand = System.getProperty("nonmem.command");
     }
 
     @Before
     public void setUp() throws Exception {
-        nonmemCommand = System.getProperty("nonmem.command");
         teisClient = new FISHttpRestClient(System.getProperty("fis.url"));
     }
 
