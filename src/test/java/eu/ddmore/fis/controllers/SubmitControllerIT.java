@@ -46,8 +46,9 @@ public class SubmitControllerIT extends SystemPropertiesAware {
     private String nonmemCommand;
 
     @Before
-    public void setUp() {
+    public void setUp() throws IOException {
         nonmemCommand = System.getProperty("nonmem.command");
+        FileUtils.deleteDirectory(workingDir);
     }
 
     @Test
