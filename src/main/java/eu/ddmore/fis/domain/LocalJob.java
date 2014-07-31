@@ -35,7 +35,7 @@ public class LocalJob implements Serializable {
 	@Column(nullable = false)
 	private LocalJobStatus status;
 
-	@Column(nullable = false)
+	@Column(nullable = true) // Won't necessarily be set e.g. if a Job fails before the JobDispatcher reads the outputFilenamesRegex
 	private String outputFilenamesRegex;
 
 	@Version
