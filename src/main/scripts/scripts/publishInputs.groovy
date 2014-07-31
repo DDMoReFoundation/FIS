@@ -64,7 +64,7 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         FileUtils.copyFile( xmlVersionInMockDataDir, new File(mifWorkingDir, modelName + ".pharmml") )
     }
     else {
-        // Need to convert the MDL into PharmML using the Converter Toolbox command-line launch script
+        // Need to convert the MDL into PharmML or direct to NMTRAN using the Converter Toolbox command-line launch script
 
         // GroovyShell shell = new GroovyShell(binding)
         // def script = shell.parse( new File(scriptFile.getParentFile(), "MdlToPharmML.groovy") )
