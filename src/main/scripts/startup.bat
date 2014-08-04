@@ -14,7 +14,7 @@ SET params=-Dfis.retrieveOutputs="%RETRIEVE_OUTPUTS%" %params%
 SET params=-Dfis.readResource="%READ_RESOURCE%" %params%
 SET params=-Dfis.writeResource="%WRITE_RESOURCE%" %params%
 SET params=-Dnonmem.setup.script="%~dp0\..\setup.bat" %params%
-SET params=-Dconverter.toolbox.executable="%~dp0\..\converter-toolbox-bundle-0.0.1-SNAPSHOT\convert.bat" %params%
+SET params=-Dconverter.toolbox.executable="%~dp0\..\converter-toolbox-bundle\convert.bat" %params%
 
 set TRAINING_JAVA_HOME=%SERVICE_HOME%\..\MDL_IDE\jre
 
