@@ -140,12 +140,12 @@
         <dependency>
             <groupId>com.mango</groupId>
             <artifactId>MIFClient</artifactId>
-            <version>3.0.4-ddmore-SNAPSHOT</version>
+            <version>3.0.12-ddmore-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.mango</groupId>
             <artifactId>mif-examples</artifactId>
-            <version>3.0.4-ddmore-SNAPSHOT</version>
+            <version>3.0.11-ddmore-SNAPSHOT</version>
         </dependency>
         <dependency>
           <groupId>org.hibernate</groupId>
