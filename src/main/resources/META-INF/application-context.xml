@@ -145,6 +145,7 @@
     </bean>
    
     <bean id="commandRegistry" class="eu.ddmore.fis.service.CommandRegistryImpl">
+        <!-- OLD WAY:-
         <constructor-arg>
             <set>
                 <bean class="eu.ddmore.fis.service.CommandExecutionTarget">
@@ -163,7 +164,7 @@
                     <property name="environmentSetupScript" value="${nonmem.setup.script}"/>
                     <property name="outputFilenamesRegex" value="${commandline.outputfilenames.regex}"/>
                 </bean>
-                <!-- TODO: Implement this:-
+                - TODO: Implement this:-
                 <bean class="eu.ddmore.fis.service.CommandExecutionTarget">
                     <property name="command" value="${psn.execute.command}"/>
                     <property name="executionType" value="${psn.execute.executionType}"/>
@@ -172,9 +173,11 @@
                     <property name="environmentSetupScript" value="${nonmem.setup.script}"/>
                     <property name="outputFilenamesRegex" value=".*"/>
                 </bean>
-                -->
+                -
             </set>
         </constructor-arg>
+        -->
+        <property name="mifClient" ref="mifRestClient" />
     </bean>
     
     <bean id="mifRestClient" class="com.mango.mif.MIFHttpRestClient" scope="singleton">
