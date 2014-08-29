@@ -1,5 +1,5 @@
+REM Locations without trailing '\'
 SET SERVICE_HOME=%~dp0
-
 IF %SERVICE_HOME:~-1%==\ SET SERVICE_HOME=%SERVICE_HOME:~0,-1%
 
 CD %SERVICE_HOME%
@@ -9,12 +9,12 @@ SET RETRIEVE_OUTPUTS=%SERVICE_HOME%\scripts\retrieveOutputs.groovy
 SET READ_RESOURCE=%SERVICE_HOME%\scripts\readResource.groovy
 SET WRITE_RESOURCE=%SERVICE_HOME%\scripts\writeResource.groovy
 
-SET params=-Dfis.publishInputs="%PUBLISH_INPUTS%"
-SET params=-Dfis.retrieveOutputs="%RETRIEVE_OUTPUTS%" %params%
-SET params=-Dfis.readResource="%READ_RESOURCE%" %params%
-SET params=-Dfis.writeResource="%WRITE_RESOURCE%" %params%
-SET params=-Dnonmem.setup.script="%~dp0\..\setup.bat" %params%
-SET params=-Dconverter.toolbox.executable="%~dp0\..\converter-toolbox-bundle\convert.bat" %params%
+SET params= -Dfis.publishInputs="%PUBLISH_INPUTS%" ^
+ -Dfis.retrieveOutputs="%RETRIEVE_OUTPUTS%" ^
+ -Dfis.readResource="%READ_RESOURCE%" ^
+ -Dfis.writeResource="%WRITE_RESOURCE%" ^
+ -Dnonmem.setup.script="%SERVICE_HOME%\..\setup.bat" ^
+ -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-bundle\convert.bat"
 
 set TRAINING_JAVA_HOME=%SERVICE_HOME%\..\MDL_IDE\jre
 
