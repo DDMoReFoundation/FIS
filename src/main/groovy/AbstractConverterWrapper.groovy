@@ -66,9 +66,7 @@ class AbstractConverterWrapper {
     final String doConvert(File origModelFile, File modelFileInMifWorkingDir, File fisMetadataDir) {
 
         // Build up the command line to execute
-        CommandLine cmdLine = new CommandLine("cmd")
-        cmdLine.addArgument("/c")
-        cmdLine.addArgument(new File(this.converterToolboxExecutable).getName())
+        CommandLine cmdLine = new CommandLine(this.converterToolboxExecutable) // Assumption: this is the full path
         cmdLine.addArgument(modelFileInMifWorkingDir.getAbsolutePath()) // Source MDL model file
         cmdLine.addArgument(modelFileInMifWorkingDir.getParentFile().getAbsolutePath()) // Destination directory for the output converted model file
         cmdLine.addArgument(this.srcLang)

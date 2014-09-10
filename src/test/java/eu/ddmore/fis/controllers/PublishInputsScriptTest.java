@@ -34,6 +34,8 @@ import com.mango.mif.core.exec.Invoker;
 public class PublishInputsScriptTest {
 
     private static final Logger LOG = Logger.getLogger(PublishInputsScriptTest.class);
+    
+    private static final File PATH_TO_CONVERTER_EXE = new File("/path/to/my/converter-exe");
 
     @Rule
     public TemporaryFolder testDirectory = new TemporaryFolder();
@@ -54,7 +56,7 @@ public class PublishInputsScriptTest {
         this.mifWorkingDir = new File(testWorkingDir, "MIF_JOB_ID");
 
         this.binding = new Binding();
-        this.binding.setVariable("converter.toolbox.executable", "/path/to/my/converter-exe");
+        this.binding.setVariable("converter.toolbox.executable", PATH_TO_CONVERTER_EXE.getPath());
         this.binding.setVariable("converter.wrapperscript.mdl", ""); // set by the specific MDL tests
         this.binding.setVariable("fis.mdl.ext", "mdl");
         this.binding.setVariable("fis.pharmml.ext", "xml");
@@ -149,15 +151,13 @@ public class PublishInputsScriptTest {
             public Integer answer(final InvocationOnMock invocation) throws Throwable {
                 final CommandLine invokedCmdLine = (CommandLine) invocation.getArguments()[0];
                 final String[] cmdLineArgs = invokedCmdLine.getArguments();
-                assertEquals("Checking argument 0 to the call to the converter toolbox", "cmd", invokedCmdLine.getExecutable());
-                assertEquals("Checking argument 1 to the call to the converter toolbox", "/c", cmdLineArgs[0]);
-                assertEquals("Checking argument 2 to the call to the converter toolbox", "converter-exe", cmdLineArgs[1]);
-                assertEquals("Checking argument 3 to the call to the converter toolbox",
-                    new File(mifWorkingDir, "warfarin_PK_PRED.mdl").getAbsolutePath(), cmdLineArgs[2]);
-                assertEquals("Checking argument 4 to the call to the converter toolbox",
-                    mifWorkingDir.getAbsolutePath(), cmdLineArgs[3]);
-                assertEquals("Checking argument 5 to the call to the converter toolbox", "MDL", cmdLineArgs[4]);
-                assertEquals("Checking argument 7 to the call to the converter toolbox", targetLang, cmdLineArgs[6]);
+                assertEquals("Checking argument 0 to the call to the converter toolbox", PATH_TO_CONVERTER_EXE.getPath(), invokedCmdLine.getExecutable());
+                assertEquals("Checking argument 1 to the call to the converter toolbox",
+                    new File(mifWorkingDir, "warfarin_PK_PRED.mdl").getAbsolutePath(), cmdLineArgs[0]);
+                assertEquals("Checking argument 2 to the call to the converter toolbox",
+                    mifWorkingDir.getAbsolutePath(), cmdLineArgs[1]);
+                assertEquals("Checking argument 3 to the call to the converter toolbox", "MDL", cmdLineArgs[2]);
+                assertEquals("Checking argument 5 to the call to the converter toolbox", targetLang, cmdLineArgs[4]);
 
                 // Simulate the conversion process generating the output PharmML model files
                 FileUtils.touch(new File(mifWorkingDir.getAbsolutePath(), SCRIPT_FILE_NAME.replace(".mdl", outputModelFileExt)));
@@ -303,15 +303,13 @@ public class PublishInputsScriptTest {
             public Integer answer(final InvocationOnMock invocation) throws Throwable {
                 final CommandLine invokedCmdLine = (CommandLine) invocation.getArguments()[0];
                 final String[] cmdLineArgs = invokedCmdLine.getArguments();
-                assertEquals("Checking argument 0 to the call to the converter toolbox", "cmd", invokedCmdLine.getExecutable());
-                assertEquals("Checking argument 1 to the call to the converter toolbox", "/c", cmdLineArgs[0]);
-                assertEquals("Checking argument 2 to the call to the converter toolbox", "converter-exe", cmdLineArgs[1]);
-                assertEquals("Checking argument 3 to the call to the converter toolbox",
-                    new File(mifWorkingDir, "warfarin/warfarin_PK_PRED.mdl").getAbsolutePath(), cmdLineArgs[2]);
-                assertEquals("Checking argument 4 to the call to the converter toolbox",
-                    new File(mifWorkingDir, "warfarin").getAbsolutePath(), cmdLineArgs[3]);
-                assertEquals("Checking argument 5 to the call to the converter toolbox", "MDL", cmdLineArgs[4]);
-                assertEquals("Checking argument 7 to the call to the converter toolbox", "PharmML", cmdLineArgs[6]);
+                assertEquals("Checking argument 0 to the call to the converter toolbox", PATH_TO_CONVERTER_EXE.getPath(), invokedCmdLine.getExecutable());
+                assertEquals("Checking argument 1 to the call to the converter toolbox",
+                    new File(mifWorkingDir, "warfarin/warfarin_PK_PRED.mdl").getAbsolutePath(), cmdLineArgs[0]);
+                assertEquals("Checking argument 2 to the call to the converter toolbox",
+                    new File(mifWorkingDir, "warfarin").getAbsolutePath(), cmdLineArgs[1]);
+                assertEquals("Checking argument 3 to the call to the converter toolbox", "MDL", cmdLineArgs[2]);
+                assertEquals("Checking argument 5 to the call to the converter toolbox", "PharmML", cmdLineArgs[4]);
 
                 // Simulate the conversion process generating the output PharmML model files
                 FileUtils.touch(new File(mifWorkingDir.getAbsolutePath(), ("warfarin/" + SCRIPT_FILE_NAME).replace(".mdl", ".xml")));
