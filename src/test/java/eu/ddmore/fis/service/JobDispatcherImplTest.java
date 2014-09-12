@@ -98,17 +98,15 @@ public class JobDispatcherImplTest {
             "tel-user", mifClientExecArgCaptor.getValue().getUserName());
         assertFalse("Checking the submit-as-user mode on the MIF Client Execution Request",
             mifClientExecArgCaptor.getValue().getSubmitAsUserMode());
-        assertEquals("Checking the submit host preamble on the MIF Client Execution Request",
-            "ENV-SETUP-SCRIPT", mifClientExecArgCaptor.getValue().getSubmitHostPreamble());
-        assertNull("Checking the grid host preamble on the MIF Client Execution Request",
+        assertNull("Passing the submit host preamble on the MIF Client Execution Request is deprecated so should NOT be set",
+            mifClientExecArgCaptor.getValue().getSubmitHostPreamble());
+        assertNull("The grid host preamble on the MIF Client Execution Request should NOT be set",
             mifClientExecArgCaptor.getValue().getGridHostPreamble());
         final Map<String, String> execRequestAttrs = mifClientExecArgCaptor.getValue().getRequestAttributes();
         assertEquals("Checking the \"execution host fileshare\" Execution Request Parameter on the MIF Client Execution Request",
             "WORKING_DIR", execRequestAttrs.get("EXECUTION_HOST_FILESHARE"));
         assertEquals("Checking the \"execution host fileshare remote\" Execution Request Parameter on the MIF Client Execution Request",
             "WORKING_DIR", execRequestAttrs.get("EXECUTION_HOST_FILESHARE_REMOTE"));
-        assertEquals("Checking the \"converter toolbox path\" Execution Request Parameter on the MIF Client Execution Request",
-            "CONVERTER-TOOLBOX-PATH", execRequestAttrs.get("CONVERTER_TOOLBOX_PATH"));
 
         // Unused? :
         // mifClientExecArgCaptor.getValue().getExecutionMode()
