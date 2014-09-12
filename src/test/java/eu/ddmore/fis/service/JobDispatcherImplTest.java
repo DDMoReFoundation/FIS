@@ -86,8 +86,6 @@ public class JobDispatcherImplTest {
             "1234", mifClientExecArgCaptor.getValue().getRequestId());
         assertEquals("Checking the name on the MIF Client Execution Request",
             "FIS Service Job", mifClientExecArgCaptor.getValue().getName());
-        assertEquals("Checking the command (executable) on the MIF Client Execution Request",
-            "cmd /c", mifClientExecArgCaptor.getValue().getCommand());
         assertEquals("Checking the execution type on the MIF Client Execution Request",
             "CMDLINE", mifClientExecArgCaptor.getValue().getType());
         assertEquals("Checking the execution file on the MIF Client Execution Request",

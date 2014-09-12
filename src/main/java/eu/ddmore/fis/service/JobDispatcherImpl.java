@@ -54,7 +54,6 @@ public class JobDispatcherImpl implements JobDispatcher {
 			.setName("FIS Service Job")
 			.setExecutionType(commandTarget.getExecutionType())
 			.setExecutionFile(job.getControlFile())
-			.setCommand(commandTarget.getToolExecutablePath())
 			.setSubmitAsUserMode(false)
 			.setUserName(mifUserName)
 			.setExecutionParameters(job.getCommandParameters());
