@@ -49,18 +49,16 @@ public class JobDispatcherImpl implements JobDispatcher {
 	private ExecutionRequest buildExecutionRequest(LocalJob job, CommandExecutionTarget commandTarget) {
 		Preconditions.checkNotNull(job, "Job can't be null");
 		Preconditions.checkNotNull(commandTarget, "Command Target can't be null");
-		ExecutionRequestBuilder requestBuilder = new ExecutionRequestBuilder()
-			.setRequestId(job.getId())
-			.setName("FIS Service Job")
-			.setExecutionType(commandTarget.getExecutionType())
-			.setExecutionFile(job.getControlFile())
-			.setCommand(commandTarget.getToolExecutablePath())
-			.setSubmitAsUserMode(false)
-			.setUserName(mifUserName)
-			.setSubmitHostPreamble(commandTarget.getEnvironmentSetupScript())
-			.setExecutionParameters(job.getCommandParameters());
+		ExecutionRequestBuilder requestBuilder = new ExecutionRequestBuilder().setRequestId(job.getId()).setName("FIS Service Job")
+		        .setExecutionType(commandTarget.getExecutionType()).setExecutionFile(job.getControlFile())
+		        .setCommand(commandTarget.getToolExecutablePath()).setSubmitAsUserMode(false).setUserName(mifUserName);
 		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE", job.getWorkingDirectory());
 		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE_REMOTE", job.getWorkingDirectory());
+		if (commandTarget.getConverterToolboxPath() != null) {
+			requestBuilder.addAttribute("CONVERTER_TOOLBOX_PATH", commandTarget.getConverterToolboxPath());
+		}
+		requestBuilder.setSubmitHostPreamble(commandTarget.getEnvironmentSetupScript());
+		requestBuilder.setExecutionParameters(job.getCommandParameters());
 		return requestBuilder.getExecutionRequest();
 	}
 
