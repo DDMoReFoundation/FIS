@@ -107,8 +107,6 @@ public class JobDispatcherImplTest {
             "WORKING_DIR", execRequestAttrs.get("EXECUTION_HOST_FILESHARE"));
         assertEquals("Checking the \"execution host fileshare remote\" Execution Request Parameter on the MIF Client Execution Request",
             "WORKING_DIR", execRequestAttrs.get("EXECUTION_HOST_FILESHARE_REMOTE"));
-        assertEquals("Checking the \"converter toolbox path\" Execution Request Parameter on the MIF Client Execution Request",
-            "CONVERTER-TOOLBOX-PATH", execRequestAttrs.get("CONVERTER_TOOLBOX_PATH"));
 
         // Unused? :
         // mifClientExecArgCaptor.getValue().getExecutionMode()
