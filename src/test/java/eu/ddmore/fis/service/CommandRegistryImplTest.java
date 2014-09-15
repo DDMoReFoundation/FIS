@@ -19,7 +19,7 @@ public class CommandRegistryImplTest {
         ClientAvailableConnectorDetails connectorDetails = createMockClientAvailableConnectorDetails();
 
         CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(connectorDetails));
-        registry.resolveExecutionTargetFor("");
+        registry.resolveClientAvailableConnectorDetailsFor("");
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -27,7 +27,7 @@ public class CommandRegistryImplTest {
     	ClientAvailableConnectorDetails connectorDetails = createMockClientAvailableConnectorDetails();
 
         CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(connectorDetails));
-        registry.resolveExecutionTargetFor(null);
+        registry.resolveClientAvailableConnectorDetailsFor(null);
     }
 
     @Test(expected = NoSuchElementException.class)
@@ -35,7 +35,7 @@ public class CommandRegistryImplTest {
     	ClientAvailableConnectorDetails connectorDetails = createMockClientAvailableConnectorDetails();
 
         CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(connectorDetails));
-        registry.resolveExecutionTargetFor("COMMAND2");
+        registry.resolveClientAvailableConnectorDetailsFor("COMMAND2");
     }
 
     @Test
@@ -44,7 +44,7 @@ public class CommandRegistryImplTest {
 
     	CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(connectorDetails));
         
-        assertTrue(registry.resolveExecutionTargetFor("COMMAND")==connectorDetails);
+        assertTrue(registry.resolveClientAvailableConnectorDetailsFor("COMMAND")==connectorDetails);
     }
     
     @Test(expected=IllegalStateException.class)
@@ -58,7 +58,7 @@ public class CommandRegistryImplTest {
         
         CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(connectorDetails, connectorDetails2));
         
-        registry.resolveExecutionTargetFor("COMMAND");
+        registry.resolveClientAvailableConnectorDetailsFor("COMMAND");
     }
 
     private ClientAvailableConnectorDetails createMockClientAvailableConnectorDetails() {

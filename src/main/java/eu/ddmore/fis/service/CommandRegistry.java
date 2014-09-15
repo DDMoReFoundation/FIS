@@ -17,6 +17,5 @@ public interface CommandRegistry {
      * @throws NoSuchElementException if no matches are found
      * @throws IllegalStateException if more than one match is found
      */
-     // TODO: Rename this method
-    ClientAvailableConnectorDetails resolveExecutionTargetFor(String command);
+    ClientAvailableConnectorDetails resolveClientAvailableConnectorDetailsFor(String command);
 }

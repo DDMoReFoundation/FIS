@@ -30,7 +30,7 @@ public class JobDispatcherImpl implements JobDispatcher {
 		if (publishedJob.getStatus() != LocalJobStatus.FAILED) {
 			// Only continue if the pre-processing was successful
 
-			final ClientAvailableConnectorDetails clientAvailableConnectorDetails = this.commandRegistry.resolveExecutionTargetFor(publishedJob.getCommand());
+			final ClientAvailableConnectorDetails clientAvailableConnectorDetails = this.commandRegistry.resolveClientAvailableConnectorDetailsFor(publishedJob.getCommand());
 			final ExecutionRequest executionRequest = buildExecutionRequest(publishedJob, clientAvailableConnectorDetails);
 
 			// The retrieveOutputs Groovy script needs to know the (MIF-connector-specific) file patterns it needs to copy back

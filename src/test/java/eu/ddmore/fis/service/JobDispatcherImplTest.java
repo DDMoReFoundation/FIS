@@ -63,7 +63,7 @@ public class JobDispatcherImplTest {
         connectorDetails.setOutputFilenamesRegex(".*\\.(csv|ctl|xml|lst|pharmml|fit)$");
 
         when(this.jobResourcePublisher.process(localJob)).thenReturn(localJob);
-        when(this.commandRegistry.resolveExecutionTargetFor("COMMAND")).thenReturn(connectorDetails);
+        when(this.commandRegistry.resolveClientAvailableConnectorDetailsFor("COMMAND")).thenReturn(connectorDetails);
 
         // Call the method under test
         final LocalJob publishedLocalJob = this.jobDispatcher.dispatch(localJob);
@@ -74,7 +74,7 @@ public class JobDispatcherImplTest {
 
         // Check calls to dependencies
         verify(this.jobResourcePublisher).process(localJob);
-        verify(this.commandRegistry).resolveExecutionTargetFor("COMMAND");
+        verify(this.commandRegistry).resolveClientAvailableConnectorDetailsFor("COMMAND");
         final ArgumentCaptor<ExecutionRequest> mifClientExecArgCaptor = ArgumentCaptor.forClass(ExecutionRequest.class);
         verify(this.mifClient).executeJob(mifClientExecArgCaptor.capture());
         assertNotNull("ExecutionRequest should be created and passed to MIF Client Execute Job call", mifClientExecArgCaptor.getValue());

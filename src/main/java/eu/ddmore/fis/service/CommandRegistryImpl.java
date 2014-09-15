@@ -58,7 +58,7 @@ public class CommandRegistryImpl implements CommandRegistry {
     }
     
     @Override
-    public ClientAvailableConnectorDetails resolveExecutionTargetFor(final String command) {
+    public ClientAvailableConnectorDetails resolveClientAvailableConnectorDetailsFor(final String command) {
         Preconditions.checkArgument(StringUtils.isNotBlank(command), String.format("Command must be non-empty string"));
         
         // Lazily discover the Client-Available Connector Details exposed by TES (MIF)
@@ -86,7 +86,7 @@ public class CommandRegistryImpl implements CommandRegistry {
      * Discover {@link ClientAvailableConnectorDetails} from TES (MIF) and add each one to the internal Set.
      */
     private void discoverConnectorDetails() {
-    	for (final Map.Entry<String, String> entry : this.mifClient.getCommandExecutionTargetDetails().entrySet()) {
+    	for (final Map.Entry<String, String> entry : this.mifClient.getClientAvailableConnectorDetails().entrySet()) {
     		LOGGER.info("Discovered Client-Available Connector Details of a TES Connector: executionType=" + entry.getKey() + ",clientAvailableConnectorDetails=" + entry.getValue());
     		try {
     			// Re-create the Client-Available Connector Details object from the JSON
