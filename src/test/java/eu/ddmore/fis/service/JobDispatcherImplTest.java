@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.mango.mif.MIFHttpRestClient;
+import com.mango.mif.domain.ClientAvailableConnectorDetails;
 import com.mango.mif.domain.ExecutionRequest;
 
 import eu.ddmore.fis.controllers.JobResourceProcessor;
@@ -56,16 +57,13 @@ public class JobDispatcherImplTest {
         localJob.setCommandParameters("COMMAND_PARAMETERS");
         localJob.setStatus(LocalJobStatus.NEW);
 
-        final CommandExecutionTarget executionTarget = new CommandExecutionTarget();
-        executionTarget.setCommand("COMMAND");
-        executionTarget.setExecutionType("CMDLINE");
-        executionTarget.setToolExecutablePath("cmd /c");
-        executionTarget.setOutputFilenamesRegex(".*\\.(csv|ctl|xml|lst|pharmml|fit)$");
-        executionTarget.setEnvironmentSetupScript("ENV-SETUP-SCRIPT");
-        executionTarget.setConverterToolboxPath("CONVERTER-TOOLBOX-PATH");
+        final ClientAvailableConnectorDetails connectorDetails = new ClientAvailableConnectorDetails();
+        connectorDetails.setCommand("COMMAND");
+        connectorDetails.setExecutionType("CMDLINE");
+        connectorDetails.setOutputFilenamesRegex(".*\\.(csv|ctl|xml|lst|pharmml|fit)$");
 
         when(this.jobResourcePublisher.process(localJob)).thenReturn(localJob);
-        when(this.commandRegistry.resolveExecutionTargetFor("COMMAND")).thenReturn(executionTarget);
+        when(this.commandRegistry.resolveExecutionTargetFor("COMMAND")).thenReturn(connectorDetails);
 
         // Call the method under test
         final LocalJob publishedLocalJob = this.jobDispatcher.dispatch(localJob);

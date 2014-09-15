@@ -1,6 +1,6 @@
 package eu.ddmore.fis.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -9,69 +9,64 @@ import java.util.NoSuchElementException;
 import org.junit.Test;
 
 import com.google.common.collect.Sets;
+import com.mango.mif.domain.ClientAvailableConnectorDetails;
 
 
 public class CommandRegistryImplTest {
 
-
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionForEmptyCommand() {
-        CommandExecutionTarget executionTarget = createMockExecutionTarget();
+        ClientAvailableConnectorDetails connectorDetails = createMockClientAvailableConnectorDetails();
 
-        CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(executionTarget));
+        CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(connectorDetails));
         registry.resolveExecutionTargetFor("");
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionForNullCommand() {
-        CommandExecutionTarget executionTarget = createMockExecutionTarget();
+    	ClientAvailableConnectorDetails connectorDetails = createMockClientAvailableConnectorDetails();
 
-        CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(executionTarget));
+        CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(connectorDetails));
         registry.resolveExecutionTargetFor(null);
     }
 
     @Test(expected = NoSuchElementException.class)
     public void shouldThrowExceptionIfNoExecutionTargetWasFound() {
-        CommandExecutionTarget executionTarget = createMockExecutionTarget();
+    	ClientAvailableConnectorDetails connectorDetails = createMockClientAvailableConnectorDetails();
 
-        CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(executionTarget));
+        CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(connectorDetails));
         registry.resolveExecutionTargetFor("COMMAND2");
     }
 
     @Test
     public void shouldReturnExecutionTargetForGivenCommand() {
-        CommandExecutionTarget executionTarget = createMockExecutionTarget();
+    	ClientAvailableConnectorDetails connectorDetails = createMockClientAvailableConnectorDetails();
 
-        CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(executionTarget));
+    	CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(connectorDetails));
         
-        assertTrue(registry.resolveExecutionTargetFor("COMMAND")==executionTarget);
+        assertTrue(registry.resolveExecutionTargetFor("COMMAND")==connectorDetails);
     }
     
     @Test(expected=IllegalStateException.class)
     public void shouldThrowExceptionIfMoreThanOneExecutionTargetWasFoundForGivenCommand() {
-        CommandExecutionTarget executionTarget = createMockExecutionTarget();
+    	ClientAvailableConnectorDetails connectorDetails = createMockClientAvailableConnectorDetails();
 
-        CommandExecutionTarget executionTarget2 = mock(CommandExecutionTarget.class);
-        when(executionTarget2.getCommand()).thenReturn("COMMAND");
-        when(executionTarget2.getConverterToolboxPath()).thenReturn("CONVERTER_TOOLBOX_PATH2");
-        when(executionTarget2.getEnvironmentSetupScript()).thenReturn("ENVIRONMENT_SETUP_SCRIPT2");
-        when(executionTarget2.getExecutionType()).thenReturn("EXECUTION_TYPE");
-        when(executionTarget2.getToolExecutablePath()).thenReturn("EXECUTABLE_PATH");
+        ClientAvailableConnectorDetails connectorDetails2 = mock(ClientAvailableConnectorDetails.class);
+        when(connectorDetails2.getCommand()).thenReturn("COMMAND");
+        when(connectorDetails2.getExecutionType()).thenReturn("EXECUTION_TYPE");
+        when(connectorDetails2.getOutputFilenamesRegex()).thenReturn(".*\\.out");
         
-        CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(executionTarget, executionTarget2));
+        CommandRegistryImpl registry = new CommandRegistryImpl(Sets.newHashSet(connectorDetails, connectorDetails2));
         
         registry.resolveExecutionTargetFor("COMMAND");
     }
 
-
-    private CommandExecutionTarget createMockExecutionTarget() {
-        CommandExecutionTarget executionTarget = mock(CommandExecutionTarget.class);
-        when(executionTarget.getCommand()).thenReturn("COMMAND");
-        when(executionTarget.getConverterToolboxPath()).thenReturn("CONVERTER_TOOLBOX_PATH");
-        when(executionTarget.getEnvironmentSetupScript()).thenReturn("ENVIRONMENT_SETUP_SCRIPT");
-        when(executionTarget.getExecutionType()).thenReturn("EXECUTION_TYPE");
-        when(executionTarget.getToolExecutablePath()).thenReturn("EXECUTABLE_PATH");
-        return executionTarget;
+    private ClientAvailableConnectorDetails createMockClientAvailableConnectorDetails() {
+    	ClientAvailableConnectorDetails connectorDetails = mock(ClientAvailableConnectorDetails.class);
+        when(connectorDetails.getCommand()).thenReturn("COMMAND");
+        when(connectorDetails.getExecutionType()).thenReturn("EXECUTION_TYPE");
+        when(connectorDetails.getOutputFilenamesRegex()).thenReturn(".*\\.out");
+        return connectorDetails;
     }
 
 }

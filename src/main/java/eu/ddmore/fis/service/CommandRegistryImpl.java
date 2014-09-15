@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -18,11 +16,12 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.mango.mif.MIFHttpRestClient;
+import com.mango.mif.domain.ClientAvailableConnectorDetails;
 
 
 /**
- * Implementation of the command registry that allows for either pre-defined {@link CommandExecutionTarget}s
- * to be provided via Spring config within FIS, or for {@link CommandExecutionTarget}s to be lazily
+ * Implementation of the command registry that allows for either pre-defined {@link ClientAvailableConnectorDetails}
+ * to be provided via Spring config within FIS, or for {@link ClientAvailableConnectorDetails} to be lazily
  * auto-discovered from TES (MIF) the first time an execution request is made.
  * <p>
  * Which constructor is used determines which of these modes is used.
@@ -32,72 +31,72 @@ public class CommandRegistryImpl implements CommandRegistry {
 
 	private MIFHttpRestClient mifClient;
     
-    private Set<CommandExecutionTarget> executionTargets = null;
+    private Set<ClientAvailableConnectorDetails> connectorDetails = null;
     
     /**
-     * Construct a Command Registry with an empty set of {@link CommandExecutionTarget}s.
-     * This is used when FIS is to auto-discover Command Execution Targets exposed by TES (MIF).
+     * Construct a Command Registry with an empty set of {@link ClientAvailableConnectorDetails}.
+     * This is used when FIS is to auto-discover Client-Available Connector Details exposed by TES (MIF).
      */
     public CommandRegistryImpl() {
     	LOGGER.info("FIS is running in connector-auto-discovery mode: Initialising an empty Command Registry.");
-    	this.executionTargets = new HashSet<CommandExecutionTarget>();
+    	this.connectorDetails = new HashSet<ClientAvailableConnectorDetails>();
     }
     
     /**
-     * Construct a Command Registry with a predefined set of Command Execution Targets,
-     * defined in FIS Spring configuration. This is the "old way" since such details
-     * are specific to TES (MIF) Connectors and shouldn't be stored within FIS.
+     * Construct a Command Registry with a predefined set of Client-Available Connector Details,
+     * defined in FIS Spring configuration. This is the "old way" since this precludes being able
+     * tp drop new Connector JARs in to the connectors directory in MIF and have them able to be
+     * used straightaway.
      * <p>
-     * @param executionTargets - set of {@link CommandExecutionTarget}s to populate with
+     * @param connectorDetails - set of {@link ClientAvailableConnectorDetails} to populate with
      */
     @Deprecated
-    public CommandRegistryImpl(Set<CommandExecutionTarget> executionTargets) {
-        Preconditions.checkNotNull(executionTargets, "Command Execution Targets can't be null");
-        LOGGER.warn("FIS is NOT running in connector-auto-discovery mode: Populating the Command Registry with the pre-defined Command Execution Targets.");
-        this.executionTargets = executionTargets;
+    public CommandRegistryImpl(Set<ClientAvailableConnectorDetails> connectorDetails) {
+        Preconditions.checkNotNull(connectorDetails, "Client-Available Connector Details can't be null");
+        LOGGER.warn("FIS is NOT running in connector-auto-discovery mode: Populating the Command Registry with the pre-defined Client-Available Connector Details.");
+        this.connectorDetails = connectorDetails;
     }
     
     @Override
-    public CommandExecutionTarget resolveExecutionTargetFor(final String command) {
+    public ClientAvailableConnectorDetails resolveExecutionTargetFor(final String command) {
         Preconditions.checkArgument(StringUtils.isNotBlank(command), String.format("Command must be non-empty string"));
         
-        // Lazily discover the Command Execution Targets exposed by TES (MIF)
-        if (CollectionUtils.isEmpty(this.executionTargets)) {
-        	discoverCommandExecutionTargets();
+        // Lazily discover the Client-Available Connector Details exposed by TES (MIF)
+        if (CollectionUtils.isEmpty(this.connectorDetails)) {
+        	discoverConnectorDetails();
         }
         
-        Set<CommandExecutionTarget> targets = Sets.filter(this.executionTargets, new Predicate<CommandExecutionTarget>() {
+        Set<ClientAvailableConnectorDetails> matchingConnectorDetails = Sets.filter(this.connectorDetails, new Predicate<ClientAvailableConnectorDetails>() {
             @Override
-            public boolean apply(@Nullable
-            CommandExecutionTarget element) {
-                return command.equals(element.getCommand());
+            public boolean apply(final ClientAvailableConnectorDetails cacd) {
+                return command.equals(cacd.getCommand());
             }
         });
-        if (targets.size() != 1) {
-            if (targets.size() == 0 ) {
-                throw new NoSuchElementException(String.format("Execution target for command %s was not found", command));
+        if (matchingConnectorDetails.size() != 1) {
+            if (matchingConnectorDetails.size() == 0 ) {
+                throw new NoSuchElementException(String.format("Client-Available Connector Details for command %s was not found", command));
             } else {
-                throw new IllegalStateException(String.format("Found more than one execution target for command %s", command));
+                throw new IllegalStateException(String.format("Found more than one Client-Available Connector Details for command %s", command));
             }
         }
-        return Iterables.getOnlyElement(targets);
+        return Iterables.getOnlyElement(matchingConnectorDetails);
     }
     
     /**
-     * Discover {@link CommandExecutionTarget}s from TES (MIF) and add each one to the internal Set.
+     * Discover {@link ClientAvailableConnectorDetails} from TES (MIF) and add each one to the internal Set.
      */
-    private void discoverCommandExecutionTargets() {
+    private void discoverConnectorDetails() {
     	for (final Map.Entry<String, String> entry : this.mifClient.getCommandExecutionTargetDetails().entrySet()) {
-    		LOGGER.info("Discovered CommandExecutionTarget of a TES Connector: executionType=" + entry.getKey() + ",commandExecutionTarget=" + entry.getValue());
+    		LOGGER.info("Discovered Client-Available Connector Details of a TES Connector: executionType=" + entry.getKey() + ",clientAvailableConnectorDetails=" + entry.getValue());
     		try {
-    			// Re-create the Command Execution Target object from the JSON
-	            final CommandExecutionTarget executionTarget = new ObjectMapper().readValue(entry.getValue(), CommandExecutionTarget.class);
+    			// Re-create the Client-Available Connector Details object from the JSON
+	            final ClientAvailableConnectorDetails connectorDetails = new ObjectMapper().readValue(entry.getValue(), ClientAvailableConnectorDetails.class);
 	            // And add it to the registry
-	            this.executionTargets.add(executionTarget);
-	            LOGGER.info("Successfully added Command Execution Target for executionType " + entry.getKey() + " to the CommandRegistry!");
+	            this.connectorDetails.add(connectorDetails);
+	            LOGGER.info("Successfully added Client-Available Connector Details for executionType " + entry.getKey() + " to the CommandRegistry!");
             } catch (Exception e) {
-	            LOGGER.error("Error deserialising JSON when discovering Command Execution Target for " + entry.getValue(), e);
-	            throw new RuntimeException("Error deserialising JSON when discovering Command Execution Target for " + entry.getValue(), e);
+	            LOGGER.error("Error deserialising JSON when discovering Client-Available Connector Details for " + entry.getValue(), e);
+	            throw new RuntimeException("Error deserialising JSON when discovering Client-Available Connector Details for " + entry.getValue(), e);
             }
     	}
     }

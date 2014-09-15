@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.google.common.base.Preconditions;
 import com.mango.mif.MIFHttpRestClient;
+import com.mango.mif.domain.ClientAvailableConnectorDetails;
 import com.mango.mif.domain.ExecutionRequest;
 import com.mango.mif.domain.ExecutionRequestBuilder;
 
@@ -29,8 +30,8 @@ public class JobDispatcherImpl implements JobDispatcher {
 		if (publishedJob.getStatus() != LocalJobStatus.FAILED) {
 			// Only continue if the pre-processing was successful
 
-			final CommandExecutionTarget commandTarget = this.commandRegistry.resolveExecutionTargetFor(publishedJob.getCommand());
-			final ExecutionRequest executionRequest = buildExecutionRequest(publishedJob, commandTarget);
+			final ClientAvailableConnectorDetails clientAvailableConnectorDetails = this.commandRegistry.resolveExecutionTargetFor(publishedJob.getCommand());
+			final ExecutionRequest executionRequest = buildExecutionRequest(publishedJob, clientAvailableConnectorDetails);
 
 			// The retrieveOutputs Groovy script needs to know the (MIF-connector-specific) file patterns it needs to copy back
 			// from the MIF working directory to the FIS working directory. Ideally there would be a cleaner way than bunging
@@ -38,7 +39,7 @@ public class JobDispatcherImpl implements JobDispatcher {
 			// to the Groovy script itself (as a bound variable).
 			// Also, this would allow TEL-R (or another FIS client) to access the output filenames regex if it needed to for
 			// whatever reason, such as copying files back from the FIS working directory to a user source directory.
-			publishedJob.setOutputFilenamesRegex(commandTarget.getOutputFilenamesRegex());
+			publishedJob.setOutputFilenamesRegex(clientAvailableConnectorDetails.getOutputFilenamesRegex());
 
 			this.mifClient.executeJob(executionRequest);
 		}
@@ -46,13 +47,13 @@ public class JobDispatcherImpl implements JobDispatcher {
 		return publishedJob;
 	}
 
-	private ExecutionRequest buildExecutionRequest(LocalJob job, CommandExecutionTarget commandTarget) {
+	private ExecutionRequest buildExecutionRequest(LocalJob job, ClientAvailableConnectorDetails clientAvailableConnectorDetails) {
 		Preconditions.checkNotNull(job, "Job can't be null");
-		Preconditions.checkNotNull(commandTarget, "Command Target can't be null");
+		Preconditions.checkNotNull(clientAvailableConnectorDetails, "Client-Available Connector Details can't be null");
 		ExecutionRequestBuilder requestBuilder = new ExecutionRequestBuilder()
 			.setRequestId(job.getId())
 			.setName("FIS Service Job")
-			.setExecutionType(commandTarget.getExecutionType())
+			.setExecutionType(clientAvailableConnectorDetails.getExecutionType())
 			.setExecutionFile(job.getControlFile())
 			.setSubmitAsUserMode(false)
 			.setUserName(mifUserName)
