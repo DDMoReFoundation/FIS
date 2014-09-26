@@ -30,8 +30,10 @@ public class JobDispatcherImpl implements JobDispatcher {
 		if (publishedJob.getStatus() != LocalJobStatus.FAILED) {
 			// Only continue if the pre-processing was successful
 
-			final ClientAvailableConnectorDetails clientAvailableConnectorDetails = this.commandRegistry.resolveClientAvailableConnectorDetailsFor(publishedJob.getCommand());
-			final ExecutionRequest executionRequest = buildExecutionRequest(publishedJob, clientAvailableConnectorDetails);
+			final ClientAvailableConnectorDetails clientAvailableConnectorDetails =
+					this.commandRegistry.resolveClientAvailableConnectorDetailsFor(publishedJob.getExecutionType());
+					
+			final ExecutionRequest executionRequest = buildExecutionRequest(publishedJob);
 
 			// The retrieveOutputs Groovy script needs to know the (MIF-connector-specific) file patterns it needs to copy back
 			// from the MIF working directory to the FIS working directory. Ideally there would be a cleaner way than bunging
@@ -47,13 +49,12 @@ public class JobDispatcherImpl implements JobDispatcher {
 		return publishedJob;
 	}
 
-	private ExecutionRequest buildExecutionRequest(LocalJob job, ClientAvailableConnectorDetails clientAvailableConnectorDetails) {
+	private ExecutionRequest buildExecutionRequest(LocalJob job) {
 		Preconditions.checkNotNull(job, "Job can't be null");
-		Preconditions.checkNotNull(clientAvailableConnectorDetails, "Client-Available Connector Details can't be null");
 		ExecutionRequestBuilder requestBuilder = new ExecutionRequestBuilder()
 			.setRequestId(job.getId())
 			.setName("FIS Service Job")
-			.setExecutionType(clientAvailableConnectorDetails.getExecutionType())
+			.setExecutionType(job.getExecutionType())
 			.setExecutionFile(job.getControlFile())
 			.setSubmitAsUserMode(false)
 			.setUserName(mifUserName)

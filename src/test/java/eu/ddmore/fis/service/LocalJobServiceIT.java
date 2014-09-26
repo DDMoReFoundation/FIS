@@ -29,7 +29,7 @@ public class LocalJobServiceIT extends SystemPropertiesAware {
 	@Test
 	public void createLocalJob() {
     	LocalJob job = localJobService.newJob();
-    	job.setCommand("A test command");
+    	job.setExecutionType("MY_CMD");
     	job.setControlFile("The test control file");
         job.setWorkingDirectory("The test working directory");
     	job.setSubmitTime(new DateTime().toString());

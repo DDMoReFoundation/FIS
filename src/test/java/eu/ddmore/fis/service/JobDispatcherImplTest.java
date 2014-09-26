@@ -50,7 +50,7 @@ public class JobDispatcherImplTest {
     public void shouldDispatch() {
 
         final LocalJob localJob = new LocalJob();
-        localJob.setCommand("COMMAND");
+        localJob.setExecutionType("CMDLINE");
         localJob.setId("1234");
         localJob.setControlFile("CONTROL_FILE");
         localJob.setWorkingDirectory("WORKING_DIR");
@@ -58,12 +58,10 @@ public class JobDispatcherImplTest {
         localJob.setStatus(LocalJobStatus.NEW);
 
         final ClientAvailableConnectorDetails connectorDetails = new ClientAvailableConnectorDetails();
-        connectorDetails.setCommand("COMMAND");
-        connectorDetails.setExecutionType("CMDLINE");
         connectorDetails.setOutputFilenamesRegex(".*\\.(csv|ctl|xml|lst|pharmml|fit)$");
 
         when(this.jobResourcePublisher.process(localJob)).thenReturn(localJob);
-        when(this.commandRegistry.resolveClientAvailableConnectorDetailsFor("COMMAND")).thenReturn(connectorDetails);
+        when(this.commandRegistry.resolveClientAvailableConnectorDetailsFor("CMDLINE")).thenReturn(connectorDetails);
 
         // Call the method under test
         final LocalJob publishedLocalJob = this.jobDispatcher.dispatch(localJob);
@@ -74,7 +72,7 @@ public class JobDispatcherImplTest {
 
         // Check calls to dependencies
         verify(this.jobResourcePublisher).process(localJob);
-        verify(this.commandRegistry).resolveClientAvailableConnectorDetailsFor("COMMAND");
+        verify(this.commandRegistry).resolveClientAvailableConnectorDetailsFor("CMDLINE");
         final ArgumentCaptor<ExecutionRequest> mifClientExecArgCaptor = ArgumentCaptor.forClass(ExecutionRequest.class);
         verify(this.mifClient).executeJob(mifClientExecArgCaptor.capture());
         assertNotNull("ExecutionRequest should be created and passed to MIF Client Execute Job call", mifClientExecArgCaptor.getValue());

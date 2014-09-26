@@ -18,7 +18,7 @@ public class LocalJob implements Serializable {
 	private String id;
 
 	@Column(nullable = false)
-	private String command;
+	private String executionType;
 
 	@Column
 	private String commandParameters;
@@ -42,12 +42,12 @@ public class LocalJob implements Serializable {
 	@Column
 	private long version;
 
-	public String getCommand() {
-		return command;
+	public String getExecutionType() {
+		return executionType;
 	}
 
-	public void setCommand(String command) {
-		this.command = command;
+	public void setExecutionType(final String executionType) {
+		this.executionType = executionType;
 	}
 
 	public String getWorkingDirectory() {

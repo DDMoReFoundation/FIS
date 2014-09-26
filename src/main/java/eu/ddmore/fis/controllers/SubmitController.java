@@ -51,7 +51,7 @@ public class SubmitController implements ApplicationContextAware {
 
     private LocalJob createJobForSubmissionRequest(SubmissionRequest submissionRequest) {
         LocalJob job = localJobService.newJob();
-        job.setCommand(submissionRequest.getCommand());
+        job.setExecutionType(submissionRequest.getCommand());
         job.setWorkingDirectory(submissionRequest.getWorkingDirectory());
         job.setControlFile(submissionRequest.getExecutionFile());
         job.setCommandParameters(submissionRequest.getCommandParameters());

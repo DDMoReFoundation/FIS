@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.ddmore</groupId>
   <artifactId>fis</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.3-SNAPSHOT</version>
   <name>fis</name>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -140,7 +140,7 @@
         <dependency>
             <groupId>com.mango</groupId>
             <artifactId>MIFClient</artifactId>
-            <version>3.0.12-ddmore-SNAPSHOT</version>
+            <version>3.0.13-ddmore-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.mango</groupId>
