@@ -145,38 +145,6 @@
     </bean>
    
     <bean id="commandRegistry" class="eu.ddmore.fis.service.CommandRegistryImpl">
-        <!-- OLD WAY:-
-        <constructor-arg>
-            <set>
-                <bean class="eu.ddmore.fis.service.CommandExecutionTarget">
-                    <property name="command" value="${nonmem.command}"/>
-                    <property name="executionType" value="${nonmem.executionType}"/>
-                    <property name="toolExecutablePath" value="${nonmem.executable}"/>
-                    <property name="converterToolboxPath" value="${converter.toolbox.executable}"/>
-                    <property name="environmentSetupScript" value="${nonmem.setup.script}"/>
-                    <property name="outputFilenamesRegex" value="${nonmem.outputfilenames.regex}"/>
-                </bean>
-                <bean class="eu.ddmore.fis.service.CommandExecutionTarget">
-                    <property name="command" value="${commandline.execute.command}"/>
-                    <property name="executionType" value="${commandline.execute.executionType}"/>
-                    <property name="toolExecutablePath" value="${commandline.execute.executable}"/>
-                    <property name="converterToolboxPath" value="${converter.toolbox.executable}"/>
-                    <property name="environmentSetupScript" value="${nonmem.setup.script}"/>
-                    <property name="outputFilenamesRegex" value="${commandline.outputfilenames.regex}"/>
-                </bean>
-                - TODO: Implement this:-
-                <bean class="eu.ddmore.fis.service.CommandExecutionTarget">
-                    <property name="command" value="${psn.execute.command}"/>
-                    <property name="executionType" value="${psn.execute.executionType}"/>
-                    <property name="toolExecutablePath" value="${psn.execute.executable}"/>
-                    <property name="converterToolboxPath" value="${converter.toolbox.executable}"/>
-                    <property name="environmentSetupScript" value="${nonmem.setup.script}"/>
-                    <property name="outputFilenamesRegex" value=".*"/>
-                </bean>
-                -
-            </set>
-        </constructor-arg>
-        -->
         <property name="mifClient" ref="mifRestClient" />
     </bean>
     
