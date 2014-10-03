@@ -13,7 +13,6 @@ SET params= -Dfis.publishInputs="%PUBLISH_INPUTS%" ^
  -Dfis.retrieveOutputs="%RETRIEVE_OUTPUTS%" ^
  -Dfis.readResource="%READ_RESOURCE%" ^
  -Dfis.writeResource="%WRITE_RESOURCE%" ^
- -Dnonmem.setup.script="%SERVICE_HOME%\..\setup.bat" ^
  -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-bundle\convert.bat"
 
 set TRAINING_JAVA_HOME=%SERVICE_HOME%\..\MDL_IDE\jre
@@ -29,4 +28,4 @@ IF EXIST "%TRAINING_JAVA_HOME%\bin\java.exe" (
     SET JAVA_CMD=java
 )
 
-%JAVA_CMD% %params% -Dmango.mif.invoker.shell="cmd.exe /C" -Dmango.mif.invoker.tmp.file.ext=".bat" -DFIS_HOME="%SERVICE_HOME%" -jar "%SERVICE_HOME%"\fis.jar
+%JAVA_CMD% %params% -DFIS_HOME="%SERVICE_HOME%" -jar "%SERVICE_HOME%"\fis.jar
