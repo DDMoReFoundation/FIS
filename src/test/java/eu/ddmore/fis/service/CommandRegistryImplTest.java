@@ -11,7 +11,6 @@ import java.util.NoSuchElementException;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,9 +34,9 @@ public class CommandRegistryImplTest {
 		final ClientAvailableConnectorDetails mifConnectorDetails2 = new ClientAvailableConnectorDetails();
 		mifConnectorDetails2.setOutputFilenamesRegex(".*\\.lst");
 		
-		final Map<String, String> allMifConnectorDetails = new HashMap<String, String>();
-		allMifConnectorDetails.put("MYEXECTYPE1", new ObjectMapper().writeValueAsString(mifConnectorDetails1));
-		allMifConnectorDetails.put("MYEXECTYPE2", new ObjectMapper().writeValueAsString(mifConnectorDetails2));
+		final Map<String, ClientAvailableConnectorDetails> allMifConnectorDetails = new HashMap<String, ClientAvailableConnectorDetails>();
+		allMifConnectorDetails.put("MYEXECTYPE1", mifConnectorDetails1);
+		allMifConnectorDetails.put("MYEXECTYPE2", mifConnectorDetails2);
 		when(this.mockMifClient.getClientAvailableConnectorDetails()).thenReturn(allMifConnectorDetails);
 	}
 

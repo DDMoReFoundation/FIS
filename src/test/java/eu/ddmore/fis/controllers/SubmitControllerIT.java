@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mango.mif.MIFHttpRestClient;
 import com.mango.mif.domain.ClientAvailableConnectorDetails;
 import com.mango.mif.domain.ExecutionRequest;
@@ -74,13 +73,12 @@ public class SubmitControllerIT extends SystemPropertiesAware {
         FileUtils.deleteDirectory(this.workingDir);
         this.workingDir.mkdir();
         
-        final Map<String, String> allClientAvailConnectorDetails = new HashMap<String, String>();
-        final String clientAvailConnectorDetailsJSON = new ObjectMapper().writeValueAsString(new ClientAvailableConnectorDetails());
-        allClientAvailConnectorDetails.put(this.command, clientAvailConnectorDetailsJSON);
+        final Map<String, ClientAvailableConnectorDetails> allClientAvailConnectorDetails = new HashMap<String, ClientAvailableConnectorDetails>();
+        allClientAvailConnectorDetails.put(this.command, new ClientAvailableConnectorDetails());
         
         this.mockMifClient = mock(MIFHttpRestClient.class);
         when(this.mockMifClient.getClientAvailableConnectorDetails()).thenReturn(allClientAvailConnectorDetails);
-        when(this.mockMifClient.getClientAvailableConnectorDetails(this.command)).thenReturn(clientAvailConnectorDetailsJSON);
+        when(this.mockMifClient.getClientAvailableConnectorDetails(this.command)).thenReturn(allClientAvailConnectorDetails.get(this.command));
         
         // Set the mock MIFHttpRestClient on all the controllers/services that will use it
         ((CommandRegistryImpl) ((JobDispatcherImpl) this.submitController.getJobDispatcher()).getCommandRegistry()).setMifClient(this.mockMifClient);

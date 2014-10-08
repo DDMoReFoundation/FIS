@@ -7,7 +7,6 @@ import java.util.NoSuchElementException;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.google.common.base.Preconditions;
@@ -73,19 +72,9 @@ public class CommandRegistryImpl implements CommandRegistry {
      * Discover {@link ClientAvailableConnectorDetails} from TES (MIF) and add each one to the internal Set.
      */
     private void discoverConnectorDetails() {
-    	for (final Map.Entry<String, String> entry : this.mifClient.getClientAvailableConnectorDetails().entrySet()) {
-    		LOGGER.info("Discovered Client-Available Connector Details of a TES Connector: executionType=" + entry.getKey() + ",clientAvailableConnectorDetails=" + entry.getValue());
-    		try {
-    			// Re-create the Client-Available Connector Details object from the JSON
-	            final ClientAvailableConnectorDetails connectorDetails = new ObjectMapper().readValue(entry.getValue(), ClientAvailableConnectorDetails.class);
-	            // And add it to the Map, keyed by executionType
-	            this.connectorDetails.put(entry.getKey(), connectorDetails);
-	            LOGGER.info("Successfully added Client-Available Connector Details for executionType " + entry.getKey() + " to the CommandRegistry!");
-            } catch (Exception e) {
-	            LOGGER.error("Error deserialising JSON when discovering Client-Available Connector Details for " + entry.getValue(), e);
-	            throw new RuntimeException("Error deserialising JSON when discovering Client-Available Connector Details for " + entry.getValue(), e);
-            }
-    	}
+    	final Map<String, ClientAvailableConnectorDetails> clientAvailableConnectorDetails = this.mifClient.getClientAvailableConnectorDetails();
+    	LOGGER.info("Discovered Client-Available Connector Details of TES Connectors for executionTypes: " + clientAvailableConnectorDetails.keySet());
+    	this.connectorDetails.putAll(clientAvailableConnectorDetails);
     }
     
 	public MIFHttpRestClient getMifClient() {
