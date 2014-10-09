@@ -9,10 +9,9 @@ WRITE_RESOURCE=$SERVICE_HOME/scripts/writeResource.groovy
 
 params=" -Dfis.publishInputs=\"$PUBLISH_INPUTS\" -Dfis.retrieveOutputs=\"$RETRIEVE_OUTPUTS\" -Dfis.readResource=\"$READ_RESOURCE\" -Dfis.writeResource=\"$WRITE_RESOURCE\" \
  -DFIS_HOME=\"$SERVICE_HOME\" \
- -Dconverter.toolbox.executable=echo "; # dummy converter toolbox until this is implemented for Linux as well as Windows
-
-# Converter Toolbox involves Windows-only batch files :- 
-#  -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-bundle\convert.bat"
+ -Dconverter.toolbox.executable=echo "; # dummy converter toolbox until this is implemented for Linux as well as Windows (it currently uses Windows batch file)
+#  If FIS is executing in standalone mode, outside of SEE, then the location of the
+#  converter toolbox executable will need to be set / amended above.
 
 echo Starting up FIS with parameters: $params
 

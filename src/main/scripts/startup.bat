@@ -16,6 +16,8 @@ SET params= -Dfis.publishInputs="%PUBLISH_INPUTS%" ^
  -Dfis.readResource="%READ_RESOURCE%" ^
  -Dfis.writeResource="%WRITE_RESOURCE%" ^
  -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-bundle\convert.bat"
+REM  If FIS is executing in standalone mode, outside of SEE, then the location of the
+REM  converter toolbox executable will need to be amended above.
 
 IF NOT DEFINED JAVA_CMD (
     echo FIS is executing in standalone mode, outside of SEE, which would have set JAVA_CMD
