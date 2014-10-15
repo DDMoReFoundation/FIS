@@ -96,7 +96,7 @@ public class ServiceAT extends SystemPropertiesAware {
 
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
 
-        assertTrue("NONMEM Output File output.lst does not exist in the working directory", new File(workingDir, "output.lst").exists());
+        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "warfarin_PK_PRED.lst").exists());
 
         verifyThatFisMetadataFilesExist(workingDir);
 
@@ -142,10 +142,11 @@ public class ServiceAT extends SystemPropertiesAware {
 
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
 
+        // TODO: Should the .xml files be being copied back or not?
         assertTrue(".xml PharmML model file should have been duplicated to a .pharmml file in the working directory", new File(workingDir,
                 "example3.pharmml").exists());
         assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, "example3.ctl").exists());
-        assertTrue("NONMEM Output File output.lst does not exist in the working directory", new File(workingDir, "output.lst").exists());
+        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "example3.lst").exists());
 
         verifyThatFisMetadataFilesExist(workingDir);
 
@@ -201,7 +202,7 @@ public class ServiceAT extends SystemPropertiesAware {
         }
 
         assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, "warfarin_PK_PRED.ctl").exists());
-        assertTrue("NONMEM Output File output.lst does not exist in the working directory", new File(workingDir, "output.lst").exists());
+        assertTrue("NONMEM Output LST File does not exist in the working directory", new File(workingDir, "warfarin_PK_PRED.lst").exists());
 
         verifyThatFisMetadataFilesExist(workingDir);
 
