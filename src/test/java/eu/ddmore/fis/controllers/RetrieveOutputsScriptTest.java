@@ -49,7 +49,7 @@ public class RetrieveOutputsScriptTest {
         jobProcessor.process(job);
 
         assertTrue("PharmML resource should be copied back", new File(testWorkingDir, "model.pharmml").exists());
-        assertTrue("output.lst resource should be copied back", new File(testWorkingDir, "output.lst").exists());
+        assertTrue("Output LST resource should be copied back", new File(testWorkingDir, "model.lst").exists());
         assertTrue("XML resource should be copied back", new File(testWorkingDir, "model.xml").exists());
         assertFalse("File that doesn't match the list of extensions should not be copied back", new File(testWorkingDir,
                 FILE_THAT_SHOULD_NOT_BE_COPIED_BACK).exists());
