@@ -73,7 +73,7 @@ public class PublishInputsScriptTest {
 
         // Copy the files out of the testdata JAR file
 
-        final String testDataDir = "/eu/ddmore/testdata/models/ctl/warfarin_PK_PRED/";
+        final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/warfarin_PK_PRED/";
 
         final URL ctlFile = PublishInputsScriptTest.class.getResource(testDataDir + "warfarin_PK_PRED.ctl");
         final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + "warfarin_conc_pca.csv");
@@ -102,7 +102,7 @@ public class PublishInputsScriptTest {
         final String SCRIPT_FILE_NAME = "example3.xml";
         final String DATA_FILE_NAME = "example3_data.csv"; // or _full_data_MDV.csv ?
 
-        final String testDataDir = "/eu/ddmore/testdata/models/pharmml/v0.3/example3/";
+        final String testDataDir = "/eu/ddmore/testdata/models/PharmML/0.3.0/example3/";
 
         final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(testWorkingDir, SCRIPT_FILE_NAME));
@@ -216,7 +216,7 @@ public class PublishInputsScriptTest {
 
         // Copy the files out of the testdata JAR file
 
-        final String testDataDir = "/eu/ddmore/testdata/models/ctl/warfarin_PK_PRED/";
+        final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/warfarin_PK_PRED/";
 
         final URL ctlFile = PublishInputsScriptTest.class.getResource(testDataDir + "warfarin_PK_PRED.ctl");
         final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + "warfarin_conc_pca.csv");
@@ -249,7 +249,7 @@ public class PublishInputsScriptTest {
         final String SCRIPT_FILE_NAME = "example3.xml";
         final String DATA_FILE_NAME = "example3_data.csv"; // or _full_data_MDV.csv ?
 
-        final String testDataDir = "/eu/ddmore/testdata/models/pharmml/v0.3/example3/";
+        final String testDataDir = "/eu/ddmore/testdata/models/PharmML/0.3.0/example3/";
 
         final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(testWorkingDir, "example3/" + SCRIPT_FILE_NAME));
