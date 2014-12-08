@@ -42,7 +42,7 @@ final Logger LOGGER = Logger.getLogger(getClass())
 	cmdLine.addArgument("JSON")
 	cmdLine.addArgument("0.0.0")
 	cmdLine.addArgument("MDL")
-    cmdLine.addArgument("5.1.6")
+    cmdLine.addArgument("5.1.6-interop")
 
     LOGGER.info("Invoking converter toolbox command : " + cmdLine); // This could be run from the command line for testing purposes
 
