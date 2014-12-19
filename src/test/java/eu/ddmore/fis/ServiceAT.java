@@ -6,7 +6,6 @@ package eu.ddmore.fis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +22,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import eu.ddmore.fis.controllers.PublishInputsScriptTest;
 import eu.ddmore.fis.domain.LocalJobStatus;
 import eu.ddmore.fis.domain.SubmissionRequest;
 import eu.ddmore.fis.domain.SubmissionResponse;
@@ -69,9 +67,9 @@ public class ServiceAT extends SystemPropertiesAware {
 
         final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/warfarin_PK_PRED/";
 
-        final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
+        final URL scriptFile = ServiceAT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
-        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + DATA_FILE_NAME);
+        final URL dataFile = ServiceAT.class.getResource(testDataDir + DATA_FILE_NAME);
         FileUtils.copyURLToFile(dataFile, new File(workingDir, DATA_FILE_NAME));
 
         // Proceed with the test...
@@ -97,6 +95,7 @@ public class ServiceAT extends SystemPropertiesAware {
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
 
         assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "warfarin_PK_PRED.lst").exists());
+        assertTrue("Standard Output Object XML file should have been created in the working directory", new File(workingDir, "warfarin_PK_PRED.SO.xml").exists());
 
         verifyThatFisMetadataFilesExist(workingDir);
 
@@ -110,14 +109,14 @@ public class ServiceAT extends SystemPropertiesAware {
 
         // Copy the files out of the testdata JAR file
 
-        final String SCRIPT_FILE_NAME = "example3.xml";
-        final String DATA_FILE_NAME = "example3_data.csv"; // or _full_data_MDV.csv ?
+        final String SCRIPT_FILE_NAME = "Warfarin-ODE-latest.xml";
+        final String DATA_FILE_NAME = "warfarin_conc.csv";
 
-        final String testDataDir = "/eu/ddmore/testdata/models/PharmML/0.3.0/example3/";
+        final String testDataDir = "/eu/ddmore/testdata/models/PharmML/0.3.1/warfarin_PK_ODE/";
 
-        final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
+        final URL scriptFile = ServiceAT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
-        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + DATA_FILE_NAME);
+        final URL dataFile = ServiceAT.class.getResource(testDataDir + DATA_FILE_NAME);
         FileUtils.copyURLToFile(dataFile, new File(workingDir, DATA_FILE_NAME));
 
         // Proceed with the test...
@@ -142,11 +141,9 @@ public class ServiceAT extends SystemPropertiesAware {
 
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
 
-        // TODO: Should the .xml files be being copied back or not?
-        assertTrue(".xml PharmML model file should have been duplicated to a .pharmml file in the working directory", new File(workingDir,
-                "example3.pharmml").exists());
-        assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, "example3.ctl").exists());
-        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "example3.lst").exists());
+        assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, "Warfarin-ODE-latest.ctl").exists());
+        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "Warfarin-ODE-latest.lst").exists());
+        assertTrue("Standard Output Object XML file should have been created in the working directory", new File(workingDir, "Warfarin-ODE-latest.SO.xml").exists());
 
         verifyThatFisMetadataFilesExist(workingDir);
 
@@ -160,14 +157,14 @@ public class ServiceAT extends SystemPropertiesAware {
 
         // Copy the files out of the testdata JAR file
 
-        final String SCRIPT_FILE_NAME = "warfarin_PK_PRED.mdl";
-        final String DATA_FILE_NAME = "warfarin_conc_pca.csv";
+        final String SCRIPT_FILE_NAME = "Warfarin-ODE-latest.mdl";
+        final String DATA_FILE_NAME = "warfarin_conc.csv";
 
-        final String testDataDir = "/eu/ddmore/testdata/models/mdl/warfarin_PK_PRED/";
+        final String testDataDir = "/eu/ddmore/testdata/models/mdl/5.1.6/Warfarin_PK_ODE/";
 
-        final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
+        final URL scriptFile = ServiceAT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
-        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + DATA_FILE_NAME);
+        final URL dataFile = ServiceAT.class.getResource(testDataDir + DATA_FILE_NAME);
         FileUtils.copyURLToFile(dataFile, new File(workingDir, DATA_FILE_NAME));
 
         // Proceed with the test...
@@ -192,17 +189,9 @@ public class ServiceAT extends SystemPropertiesAware {
 
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
 
-        if (mdlConversionWrapperScript.equals("MdlToPharmML.groovy")) {
-            assertTrue(".xml PharmML model file should have been created in the working directory", new File(workingDir,
-                    "warfarin_PK_PRED.xml").exists());
-        } else if (mdlConversionWrapperScript.equals("MdlToNmtran.groovy")) {
-            // Nothing extra to check
-        } else {
-            fail("Unknown MDL conversion wrapper script set in config.properties: " + mdlConversionWrapperScript);
-        }
-
-        assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, "warfarin_PK_PRED.ctl").exists());
-        assertTrue("NONMEM Output LST File does not exist in the working directory", new File(workingDir, "warfarin_PK_PRED.lst").exists());
+        assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, "Warfarin-ODE-latest.ctl").exists());
+        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "Warfarin-ODE-latest.lst").exists());
+        assertTrue("Standard Output Object XML file should have been created in the working directory", new File(workingDir, "Warfarin-ODE-latest.SO.xml").exists());
 
         verifyThatFisMetadataFilesExist(workingDir);
 
