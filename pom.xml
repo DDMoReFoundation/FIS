@@ -16,6 +16,21 @@
     </properties>
 
     <dependencies>
+
+        <!-- DDMoRe and Mango packages -->
+        <dependency>
+            <groupId>eu.ddmore.testdata</groupId>
+            <artifactId>models</artifactId>
+            <version>0.0.3-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mango</groupId>
+            <artifactId>mif-examples</artifactId>
+            <version>3.0.14-ddmore-SNAPSHOT</version>
+        </dependency>
+        <!-- end DDMoRe and Mango packages -->
+        
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
@@ -129,24 +144,6 @@
 			<artifactId>joda-time</artifactId>
 			<version>1.6.2-201110292322</version>
 		</dependency>
-
-        <dependency>
-            <groupId>eu.ddmore.testdata</groupId>
-            <artifactId>models</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.mango</groupId>
-            <artifactId>MIFClient</artifactId>
-            <version>3.0.14-ddmore-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.mango</groupId>
-            <artifactId>mif-examples</artifactId>
-            <version>3.0.14-ddmore-SNAPSHOT</version>
-        </dependency>
         <dependency>
           <groupId>org.hibernate</groupId>
           <artifactId>hibernate-c3p0</artifactId>
@@ -156,8 +153,8 @@
               <groupId>com.jolbox</groupId>
               <artifactId>bonecp</artifactId>
               <version>0.7.1.RELEASE</version>
-              
         </dependency>
+        
         <!-- Hibernate start -->
         <dependency>
             <groupId>org.hibernate</groupId>
