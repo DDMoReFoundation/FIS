@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.ddmore</groupId>
   <artifactId>fis</artifactId>
-  <version>0.0.4-SNAPSHOT</version>
+  <version>0.0.5-SNAPSHOT</version>
   <name>fis</name>
     <parent>
         <groupId>org.springframework.boot</groupId>
