@@ -16,10 +16,17 @@
             </includes>
         </fileSet>
         <fileSet>
-            <directory>target/../src/main/scripts</directory>
+            <directory>src/main/scripts</directory>
             <outputDirectory>fis</outputDirectory>
             <includes>
                 <include>**/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory></directory>
+            <outputDirectory>fis</outputDirectory>
+            <includes>
+                <include>LICENSE</include>
             </includes>
         </fileSet>
 	</fileSets>
