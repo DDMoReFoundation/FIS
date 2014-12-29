@@ -1,12 +1,12 @@
 package eu.ddmore.fis.controllers;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.when;
 import eu.ddmore.fis.domain.LocalJob;
 import groovy.lang.Binding;
 
@@ -27,8 +27,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import com.mango.mif.core.exec.Invoker;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class PublishInputsScriptTest {
@@ -41,6 +39,7 @@ public class PublishInputsScriptTest {
     public TemporaryFolder testDirectory = new TemporaryFolder();
 
     private File testWorkingDir;
+    private File testExecutionHostFileshare;
     private File mifWorkingDir;
 
     private Binding binding;
@@ -53,18 +52,19 @@ public class PublishInputsScriptTest {
     public void setUp() {
         this.testWorkingDir = this.testDirectory.getRoot();
         LOG.debug(String.format("Test working dir %s", this.testWorkingDir));
-        this.mifWorkingDir = new File(testWorkingDir, "MIF_JOB_ID");
+        this.testExecutionHostFileshare = this.testWorkingDir;
+        this.mifWorkingDir = new File(this.testExecutionHostFileshare, "MIF_JOB_ID");
 
         this.binding = new Binding();
         this.binding.setVariable("converter.toolbox.executable", PATH_TO_CONVERTER_EXE.getPath());
         this.binding.setVariable("converter.wrapperscript.mdl", ""); // set by the specific MDL tests
         this.binding.setVariable("fis.mdl.ext", "mdl");
         this.binding.setVariable("fis.pharmml.ext", "xml");
-        this.binding.setVariable("invoker", mock(Invoker.class));
+        this.binding.setVariable("execution.host.fileshare", this.testExecutionHostFileshare);
         this.mockExecutor = mock(Executor.class);
         this.binding.setVariable("ApacheCommonsExecExecutor", this.mockExecutor);
 
-        this.jobProcessor = new JobProcessor(binding);
+        this.jobProcessor = new JobProcessor(this.binding);
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptTest.class.getResource("/scripts/publishInputs.groovy")));
     }
 
@@ -118,9 +118,8 @@ public class PublishInputsScriptTest {
         jobProcessor.process(job);
 
         assertTrue("MIF working directory should be created", mifWorkingDir.exists());
-        assertTrue("XML resource should be copied from the source", new File(mifWorkingDir, SCRIPT_FILE_NAME).exists());
+        assertTrue("PharmML resource should be copied from the source", new File(mifWorkingDir, SCRIPT_FILE_NAME).exists());
         assertTrue("Data file should be copied from the source", new File(mifWorkingDir, DATA_FILE_NAME).exists());
-        assertTrue("PharmML resource should be created", new File(mifWorkingDir, "example3.pharmml").exists());
     }
     
     /**
@@ -193,8 +192,7 @@ public class PublishInputsScriptTest {
 
         shouldPublishMDLInputs("PharmML", ".xml");
 
-        assertTrue("XML resource should be created", new File(mifWorkingDir, "warfarin_PK_PRED.xml").exists());
-        assertTrue("PharmML resource should be created", new File(mifWorkingDir, "warfarin_PK_PRED.pharmml").exists());
+        assertTrue("PharmML resource should be created", new File(mifWorkingDir, "warfarin_PK_PRED.xml").exists());
     }
 
     /**
@@ -265,18 +263,14 @@ public class PublishInputsScriptTest {
         jobProcessor.process(job);
 
         assertTrue("MIF working directory should be created", mifWorkingDir.exists());
-        assertTrue("XML resource should be copied from the source to within the subdirectory",
+        assertTrue("PharmML resource should be copied from the source to within the subdirectory",
             new File(mifWorkingDir, "example3/" + SCRIPT_FILE_NAME).exists());
         assertTrue("Data file should be copied from the source to within the subdirectory",
             new File(mifWorkingDir, "example3/" + DATA_FILE_NAME).exists());
-        assertTrue("PharmML resource should be created within the subdirectory",
-            new File(mifWorkingDir, "example3/example3.pharmml").exists());
-        assertFalse("XML resource should not be present within the main directory",
+        assertFalse("PharmML resource should not be present within the main directory",
             new File(mifWorkingDir, SCRIPT_FILE_NAME).exists());
         assertFalse("Data file should not be present within the main directory",
             new File(mifWorkingDir, DATA_FILE_NAME).exists());
-        assertFalse("PharmML resource should not be created within the main directory",
-            new File(mifWorkingDir, "example3.pharmml").exists());
     }
 
     @Test
@@ -334,18 +328,14 @@ public class PublishInputsScriptTest {
             new File(mifWorkingDir, "warfarin/" + SCRIPT_FILE_NAME).exists());
         assertTrue("Data file should be copied from the source to within the subdirectory",
             new File(mifWorkingDir, "warfarin/" + DATA_FILE_NAME).exists());
-        assertTrue("XML resource should be created within the subdirectory",
-            new File(mifWorkingDir, "warfarin/warfarin_PK_PRED.xml").exists());
         assertTrue("PharmML resource should be created within the subdirectory",
-            new File(mifWorkingDir, "warfarin/warfarin_PK_PRED.pharmml").exists());
+            new File(mifWorkingDir, "warfarin/warfarin_PK_PRED.xml").exists());
         assertFalse("MDL file should not be present within the main directory",
             new File(mifWorkingDir, SCRIPT_FILE_NAME).exists());
         assertFalse("Data file should not be present within the main directory",
             new File(mifWorkingDir, DATA_FILE_NAME).exists());
-        assertFalse("XML resource should not be present within the main directory",
-            new File(mifWorkingDir, "warfarin_PK_PRED.xml").exists());
         assertFalse("PharmML resource should not be present within the main directory",
-            new File(mifWorkingDir, "warfarin_PK_PRED.pharmml").exists());
+            new File(mifWorkingDir, "warfarin_PK_PRED.xml").exists());
     }
 
 }

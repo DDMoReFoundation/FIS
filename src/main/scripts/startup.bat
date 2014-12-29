@@ -14,12 +14,25 @@ SET PUBLISH_INPUTS=%SERVICE_HOME%\scripts\publishInputs.groovy
 SET RETRIEVE_OUTPUTS=%SERVICE_HOME%\scripts\retrieveOutputs.groovy
 SET READ_RESOURCE=%SERVICE_HOME%\scripts\readResource.groovy
 SET WRITE_RESOURCE=%SERVICE_HOME%\scripts\writeResource.groovy
+REM  If only local execution will be performed then these are the same path string, e.g. a directory within the system temporary directory.
+REM  Otherwise execution.host.fileshare must point to a directory within a virtual filesystem mapped from the remote host, and
+REM  execution.host.fileshare.remote must point to that directory on the remote host.
+SET EXECUTION_HOST_FILESHARE=%TEMP%\mifshare
+SET EXECUTION_HOST_FILESHARE_REMOTE=%EXECUTION_HOST_FILESHARE%
+
+REM  If the fileshare location is pointed somewhere else other than within the system temporary directory then
+REM  this directory creation should be removed and the directory created manually if it doesn't already exist.
+IF NOT EXIST "%EXECUTION_HOST_FILESHARE%" (
+    mkdir "%EXECUTION_HOST_FILESHARE%"
+)
 
 SET params= -Dfis.publishInputs="%PUBLISH_INPUTS%" ^
  -Dfis.retrieveOutputs="%RETRIEVE_OUTPUTS%" ^
  -Dfis.readResource="%READ_RESOURCE%" ^
  -Dfis.writeResource="%WRITE_RESOURCE%" ^
- -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-bundle\convert.bat"
+ -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-bundle\convert.bat" ^
+ -Dexecution.host.fileshare="%EXECUTION_HOST_FILESHARE%" ^
+ -Dexecution.host.fileshare.remote="%EXECUTION_HOST_FILESHARE_REMOTE%"
 REM  If FIS is executing in standalone mode, outside of SEE, then the location of the
 REM  converter toolbox executable will need to be amended above.
 

@@ -6,8 +6,10 @@ import eu.ddmore.fis.domain.LocalJob
 
 
 LocalJob job = binding.getVariable("job");
+String executionHostFileshare = binding.getVariable("execution.host.fileshare");
+
 File workingDir = new File(job.getWorkingDirectory())
-File mifWorkingDir = new File(workingDir, job.getId());
+File mifWorkingDir = new File(executionHostFileshare, job.getId());
 
 
 // Ensure that the FIS metadata directory is created

@@ -53,6 +53,11 @@ public class SubmitControllerIT extends SystemPropertiesAware {
 
     // This is where the output from FIS and MIF can be found
     private File workingDir = new File("target", "SubmitControllerIT_Test_Working_Dir");
+
+    @Value("${execution.host.fileshare}") // Set to "target/Test_Execution_Host_Fileshare" in tests.properties
+    private String executionHostFileshare;
+    @Value("${execution.host.fileshare.remote}")
+    private String executionHostFileshareRemote;
     
     @Autowired
     private SubmitController submitController;
@@ -111,7 +116,7 @@ public class SubmitControllerIT extends SystemPropertiesAware {
         submissionRequest.setCommand(this.command);
         submissionRequest.setCommandParameters("echo Hello from mock NONMEM via command-line connector of MIF! >dummyoutput.lst\necho.");
         submissionRequest.setExecutionFile(MODEL_FILE_NAME);
-        submissionRequest.setWorkingDirectory(workingDir.getAbsolutePath());
+        submissionRequest.setWorkingDirectory(this.workingDir.getAbsolutePath());
         
         final SubmissionResponse response = this.submitController.submit(submissionRequest);
 
@@ -120,7 +125,7 @@ public class SubmitControllerIT extends SystemPropertiesAware {
 
         final String jobId = response.getRequestID();
         LOG.debug(String.format("Request ID = Job ID = %s", jobId));
-        final File mifWorkingDir = new File(this.workingDir, jobId);
+        final File mifWorkingDir = new File(this.executionHostFileshare, jobId);
         
         verify(this.mockMifClient).getClientAvailableConnectorDetails();
     	final ArgumentCaptor<ExecutionRequest> execRequestArgCaptor = ArgumentCaptor.forClass(ExecutionRequest.class);
@@ -131,9 +136,9 @@ public class SubmitControllerIT extends SystemPropertiesAware {
         assertEquals("Checking the value of ExecutionRequest.executionFile", submissionRequest.getExecutionFile(), executionRequest.getExecutionFile());
         assertEquals("Checking the value of ExecutionRequest.executionParameters", submissionRequest.getCommandParameters(), executionRequest.getExecutionParameters());
         assertEquals("Checking the value of ExecutionRequest.requestAttributes['EXECUTION_HOST_FILESHARE']",
-        	submissionRequest.getWorkingDirectory(), executionRequest.getRequestAttributes().get("EXECUTION_HOST_FILESHARE"));
+        	this.executionHostFileshare, executionRequest.getRequestAttributes().get("EXECUTION_HOST_FILESHARE"));
         assertEquals("Checking the value of ExecutionRequest.requestAttributes['EXECUTION_HOST_FILESHARE_REMOTE']",
-        	submissionRequest.getWorkingDirectory(), executionRequest.getRequestAttributes().get("EXECUTION_HOST_FILESHARE_REMOTE"));
+        	this.executionHostFileshareRemote, executionRequest.getRequestAttributes().get("EXECUTION_HOST_FILESHARE_REMOTE"));
         assertEquals("Checking the value of ExecutionRequest.userName", "tel-user", executionRequest.getUserName());
         assertNull("Checking the value of ExecutionRequest.userPassword", executionRequest.getUserPassword());
 

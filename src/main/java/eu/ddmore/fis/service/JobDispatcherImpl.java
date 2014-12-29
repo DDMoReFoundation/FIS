@@ -21,6 +21,8 @@ public class JobDispatcherImpl implements JobDispatcher {
 	private String mifUserName = "tel-user";
 	private JobResourceProcessor jobResourcePublisher;
 	private CommandRegistry commandRegistry;
+	private String executionHostFileshare;
+	private String executionHostFileshareRemote;
 
 	public LocalJob dispatch(LocalJob job) {
 
@@ -59,8 +61,8 @@ public class JobDispatcherImpl implements JobDispatcher {
 			.setSubmitAsUserMode(false)
 			.setUserName(mifUserName)
 			.setExecutionParameters(job.getCommandParameters());
-		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE", job.getWorkingDirectory());
-		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE_REMOTE", job.getWorkingDirectory());
+		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE", getExecutionHostFileshare());
+		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE_REMOTE", getExecutionHostFileshareRemote());
 		return requestBuilder.getExecutionRequest();
 	}
 
@@ -90,4 +92,21 @@ public class JobDispatcherImpl implements JobDispatcher {
 	public CommandRegistry getCommandRegistry() {
 		return this.commandRegistry;
 	}
+	
+	public void setExecutionHostFileshare(final String executionHostFileshare) {
+		this.executionHostFileshare = executionHostFileshare;
+	}
+	
+	public String getExecutionHostFileshare() {
+		return this.executionHostFileshare;
+	}
+	
+	public void setExecutionHostFileshareRemote(final String executionHostFileshareRemote) {
+		this.executionHostFileshareRemote = executionHostFileshareRemote;
+	}
+	
+	public String getExecutionHostFileshareRemote() {
+		return this.executionHostFileshareRemote;
+	}
+	
 }

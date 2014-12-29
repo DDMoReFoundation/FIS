@@ -10,8 +10,10 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -34,7 +36,7 @@ import eu.ddmore.fis.domain.LocalJobStatus;
 public class JobDispatcherImplTest {
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder testDirectory = new TemporaryFolder();
 
     @Mock
     private JobResourceProcessor jobResourcePublisher;
@@ -42,9 +44,21 @@ public class JobDispatcherImplTest {
     private CommandRegistry commandRegistry;
     @Mock
     private MIFHttpRestClient mifClient;
+    
+    private File testWorkingDir;
+    private String testExecutionHostFileshare;
+    private String dummyExecutionHostFileshareRemote = "V:\\mifshare";
 
     @InjectMocks
     private JobDispatcherImpl jobDispatcher = new JobDispatcherImpl();
+    
+    @Before
+    public void setUp() {
+    	this.testWorkingDir = this.testDirectory.getRoot();
+    	this.testExecutionHostFileshare = this.testWorkingDir.toString();
+    	this.jobDispatcher.setExecutionHostFileshare(this.testExecutionHostFileshare);
+    	this.jobDispatcher.setExecutionHostFileshareRemote(this.dummyExecutionHostFileshareRemote);
+    }
 
     @Test
     public void shouldDispatch() {
@@ -98,9 +112,9 @@ public class JobDispatcherImplTest {
             mifClientExecArgCaptor.getValue().getGridHostPreamble());
         final Map<String, String> execRequestAttrs = mifClientExecArgCaptor.getValue().getRequestAttributes();
         assertEquals("Checking the \"execution host fileshare\" Execution Request Parameter on the MIF Client Execution Request",
-            "WORKING_DIR", execRequestAttrs.get("EXECUTION_HOST_FILESHARE"));
+            this.testExecutionHostFileshare, execRequestAttrs.get("EXECUTION_HOST_FILESHARE"));
         assertEquals("Checking the \"execution host fileshare remote\" Execution Request Parameter on the MIF Client Execution Request",
-            "WORKING_DIR", execRequestAttrs.get("EXECUTION_HOST_FILESHARE_REMOTE"));
+            this.dummyExecutionHostFileshareRemote, execRequestAttrs.get("EXECUTION_HOST_FILESHARE_REMOTE"));
 
         // Unused? :
         // mifClientExecArgCaptor.getValue().getExecutionMode()

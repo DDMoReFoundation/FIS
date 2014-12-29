@@ -1,8 +1,6 @@
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 
-import com.mango.mif.core.exec.Invoker
-
 import eu.ddmore.fis.domain.LocalJob
 import eu.ddmore.fis.domain.LocalJobStatus;
 
@@ -13,10 +11,10 @@ String mdlConversionScript = binding.getVariable("converter.wrapperscript.mdl")
 String converterToolboxExecutable = binding.getVariable("converter.toolbox.executable");
 String MDL_FILE_EXT = binding.getVariable("fis.mdl.ext");
 String PHARMML_FILE_EXT = binding.getVariable("fis.pharmml.ext");
-Invoker invoker = binding.getVariable("invoker");
+String executionHostFileshare = binding.getVariable("execution.host.fileshare");
 
 File workingDir = new File(job.getWorkingDirectory())
-File mifWorkingDir = new File(workingDir, job.getId());
+File mifWorkingDir = new File(executionHostFileshare, job.getId());
 
 FileUtils.copyDirectory(workingDir, mifWorkingDir, new FileFilter() {
             @Override
@@ -40,14 +38,7 @@ File controlFileInMifWorkingDir = new File(mifWorkingDir, origControlFile.getPat
 // If copying mock data
 File mockDataDir = new File(scriptFile.getParentFile().getParentFile(),"mockData")
 
-if (PHARMML_FILE_EXT.equals(modelExt)) {
-
-    FileUtils.copyFile(
-        controlFileInMifWorkingDir,
-        new File(FilenameUtils.removeExtension(controlFileInMifWorkingDir.getPath()) + ".pharmml")
-    );
-
-} else if (MDL_FILE_EXT.equals(modelExt)) {
+if (MDL_FILE_EXT.equals(modelExt)) {
 
     String newModelFileName;
 
@@ -60,8 +51,6 @@ if (PHARMML_FILE_EXT.equals(modelExt)) {
         if (data.exists()) {
             FileUtils.copyFile( data, new File(mifWorkingDir, modelName + "_data.csv") )
         }
-        // TODO: Do we really need both .xml and .pharmml copies?
-        FileUtils.copyFile( xmlVersionInMockDataDir, new File(mifWorkingDir, modelName + ".pharmml") )
     }
     else {
         // Need to convert the MDL into PharmML or direct to NMTRAN using the Converter Toolbox command-line launch script

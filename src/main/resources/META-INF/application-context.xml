@@ -37,10 +37,19 @@
     <jpa:repositories base-package="eu.ddmore.fis.repository" />
     
     <bean id="localJobService" class="eu.ddmore.fis.service.LocalJobService" />
-
-    <bean id="invoker" class="com.mango.mif.core.exec.ce.CeInvoker" />
     
     <bean id="jobResourceRetriever" class="eu.ddmore.fis.controllers.JobProcessor" >
+        <constructor-arg>
+            <bean class="groovy.lang.Binding">
+                <constructor-arg>
+                    <map>
+                        <entry key="execution.host.fileshare">
+                            <value>${execution.host.fileshare}</value>
+                        </entry>
+                    </map>
+                </constructor-arg>
+            </bean>
+        </constructor-arg>
         <property name="scriptFile" value="${fis.retrieveOutputs}"></property>
     </bean>
     
@@ -49,9 +58,6 @@
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
                     <map>
-                        <entry key="invoker" value-ref="invoker">
-
-                        </entry>
                         <entry key="fis.mdl.ext">
                             <value>${fis.mdl.ext}</value>
                         </entry>
@@ -63,6 +69,9 @@
                         </entry>
                         <entry key="converter.wrapperscript.mdl">
                             <value>${converter.wrapperscript.mdl}</value>
+                        </entry>
+                        <entry key="execution.host.fileshare">
+                            <value>${execution.host.fileshare}</value>
                         </entry>
                     </map>
                 </constructor-arg>
@@ -133,6 +142,8 @@
         <property name="mifClient" ref="mifRestClient" />
         <property name="jobResourcePublisher" ref="jobResourcePublisher" />
         <property name="commandRegistry" ref="commandRegistry"/>
+        <property name="executionHostFileshare" value="${execution.host.fileshare}" />
+        <property name="executionHostFileshareRemote" value="${execution.host.fileshare.remote}" />
     </bean>
     
     <bean id="jobsController" class="eu.ddmore.fis.controllers.JobsController">

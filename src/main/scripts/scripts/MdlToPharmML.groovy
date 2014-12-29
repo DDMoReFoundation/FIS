@@ -18,10 +18,4 @@ final class MdlToPharmML extends AbstractConverterWrapper {
         this.pharmmlFileExt = binding.getVariable("fis.pharmml.ext")
     }
 
-    protected void postConvert(File modelFileInMifWorkingDir) {
-        // TODO: Do we really need both .xml and .pharmml copies?
-        File xmlFileInMifWorkingDir = new File(FilenameUtils.removeExtension(modelFileInMifWorkingDir.getPath()) + "." + this.pharmmlFileExt)
-        FileUtils.copyFile( xmlFileInMifWorkingDir, new File(FilenameUtils.removeExtension(xmlFileInMifWorkingDir.getPath()) + ".pharmml") )
-    }
-
 }
