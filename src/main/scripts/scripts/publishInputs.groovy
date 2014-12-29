@@ -7,7 +7,7 @@ import eu.ddmore.fis.domain.LocalJobStatus;
 
 LocalJob job = binding.getVariable("job");
 File scriptFile = binding.getVariable("scriptFile");
-String mdlConversionScript = binding.getVariable("converter.wrapperscript.mdl")
+String mdlConversionScript = "MdlToPharmML.groovy"
 String converterToolboxExecutable = binding.getVariable("converter.toolbox.executable");
 String MDL_FILE_EXT = binding.getVariable("fis.mdl.ext");
 String PHARMML_FILE_EXT = binding.getVariable("fis.pharmml.ext");
