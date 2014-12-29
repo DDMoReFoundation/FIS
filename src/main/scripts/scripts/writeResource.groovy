@@ -32,9 +32,7 @@ final Logger LOGGER = Logger.getLogger(getClass())
 	FileUtils.writeStringToFile(jsonFileName, fileContent)
 
     // Build up the command line to execute
-    CommandLine cmdLine = new CommandLine("cmd")
-    cmdLine.addArgument("/c")
-    cmdLine.addArgument(new File(converterToolboxExecutable).getName())
+    CommandLine cmdLine = new CommandLine(converterToolboxExecutable)
     cmdLine.addArgument(jsonFileName.path) // Source JSON model file
     cmdLine.addArgument(new File(fileName).parent) // Destination directory for the MDL output file
 

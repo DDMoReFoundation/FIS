@@ -24,9 +24,7 @@ final Logger LOGGER = Logger.getLogger(getClass())
     fisMetadataDir.mkdir();
 
     // Build up the command line to execute
-    CommandLine cmdLine = new CommandLine("cmd")
-    cmdLine.addArgument("/c")
-    cmdLine.addArgument(new File(converterToolboxExecutable).getName())
+    CommandLine cmdLine = new CommandLine(converterToolboxExecutable)
     cmdLine.addArgument(new File(fileName).getAbsolutePath()) // Source MDL model file
     cmdLine.addArgument(new File(fileName).getParentFile().getAbsolutePath()) // Destination directory for the JSON output file
 
