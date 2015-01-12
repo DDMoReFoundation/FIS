@@ -92,8 +92,9 @@ public class JobDispatcherImpl implements JobDispatcher {
 	public CommandRegistry getCommandRegistry() {
 		return this.commandRegistry;
 	}
-	
-	public void setExecutionHostFileshare(final String executionHostFileshare) {
+
+	@Required
+	public void setExecutionHostFileshare(String executionHostFileshare) {
 		this.executionHostFileshare = executionHostFileshare;
 	}
 	
@@ -101,7 +102,8 @@ public class JobDispatcherImpl implements JobDispatcher {
 		return this.executionHostFileshare;
 	}
 	
-	public void setExecutionHostFileshareRemote(final String executionHostFileshareRemote) {
+	@Required
+	public void setExecutionHostFileshareRemote(String executionHostFileshareRemote) {
 		this.executionHostFileshareRemote = executionHostFileshareRemote;
 	}
 	
