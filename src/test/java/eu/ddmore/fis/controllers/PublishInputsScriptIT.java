@@ -29,9 +29,9 @@ import org.mockito.stubbing.Answer;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class PublishInputsScriptTest {
+public class PublishInputsScriptIT {
 
-    private static final Logger LOG = Logger.getLogger(PublishInputsScriptTest.class);
+    private static final Logger LOG = Logger.getLogger(PublishInputsScriptIT.class);
     
     private static final File PATH_TO_CONVERTER_EXE = new File("/path/to/my/converter-exe");
 
@@ -64,7 +64,7 @@ public class PublishInputsScriptTest {
         this.binding.setVariable("ApacheCommonsExecExecutor", this.mockExecutor);
 
         this.jobProcessor = new JobProcessor(this.binding);
-        this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptTest.class.getResource("/scripts/publishInputs.groovy")));
+        this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptIT.class.getResource("/scripts/publishInputs.groovy")));
     }
 
     @Test
@@ -74,8 +74,8 @@ public class PublishInputsScriptTest {
 
         final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/warfarin_PK_PRED/";
 
-        final URL ctlFile = PublishInputsScriptTest.class.getResource(testDataDir + "warfarin_PK_PRED.ctl");
-        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + "warfarin_conc_pca.csv");
+        final URL ctlFile = PublishInputsScriptIT.class.getResource(testDataDir + "warfarin_PK_PRED.ctl");
+        final URL dataFile = PublishInputsScriptIT.class.getResource(testDataDir + "warfarin_conc_pca.csv");
 
         FileUtils.copyURLToFile(ctlFile, new File(testWorkingDir, "warfarin_PK_PRED.ctl"));
         FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, "warfarin_conc_pca.csv"));
@@ -103,9 +103,9 @@ public class PublishInputsScriptTest {
 
         final String testDataDir = "/eu/ddmore/testdata/models/PharmML/0.3.0/example3/";
 
-        final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
+        final URL scriptFile = PublishInputsScriptIT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(testWorkingDir, SCRIPT_FILE_NAME));
-        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + DATA_FILE_NAME);
+        final URL dataFile = PublishInputsScriptIT.class.getResource(testDataDir + DATA_FILE_NAME);
         FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, DATA_FILE_NAME));
 
         // Proceed with the test...
@@ -139,9 +139,9 @@ public class PublishInputsScriptTest {
 
         final String testDataDir = "/eu/ddmore/testdata/models/mdl/warfarin_PK_PRED/";
 
-        final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
+        final URL scriptFile = PublishInputsScriptIT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(testWorkingDir, SCRIPT_FILE_NAME));
-        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + DATA_FILE_NAME);
+        final URL dataFile = PublishInputsScriptIT.class.getResource(testDataDir + DATA_FILE_NAME);
         FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, DATA_FILE_NAME));
 
         // Set up the behaviour of the mock DefaultExecutor used to execute the conversion script
@@ -188,8 +188,8 @@ public class PublishInputsScriptTest {
 
         final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/warfarin_PK_PRED/";
 
-        final URL ctlFile = PublishInputsScriptTest.class.getResource(testDataDir + "warfarin_PK_PRED.ctl");
-        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + "warfarin_conc_pca.csv");
+        final URL ctlFile = PublishInputsScriptIT.class.getResource(testDataDir + "warfarin_PK_PRED.ctl");
+        final URL dataFile = PublishInputsScriptIT.class.getResource(testDataDir + "warfarin_conc_pca.csv");
 
         FileUtils.copyURLToFile(ctlFile, new File(testWorkingDir, "warfarin/warfarin_PK_PRED.ctl"));
         FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, "warfarin/warfarin_conc_pca.csv"));
@@ -221,9 +221,9 @@ public class PublishInputsScriptTest {
 
         final String testDataDir = "/eu/ddmore/testdata/models/PharmML/0.3.0/example3/";
 
-        final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
+        final URL scriptFile = PublishInputsScriptIT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(testWorkingDir, "example3/" + SCRIPT_FILE_NAME));
-        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + DATA_FILE_NAME);
+        final URL dataFile = PublishInputsScriptIT.class.getResource(testDataDir + DATA_FILE_NAME);
         FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, "example3/" + DATA_FILE_NAME));
 
         // Proceed with the test...
@@ -255,9 +255,9 @@ public class PublishInputsScriptTest {
 
         final String testDataDir = "/eu/ddmore/testdata/models/mdl/warfarin_PK_PRED/";
 
-        final URL scriptFile = PublishInputsScriptTest.class.getResource(testDataDir + SCRIPT_FILE_NAME);
+        final URL scriptFile = PublishInputsScriptIT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(testWorkingDir, "warfarin/" + SCRIPT_FILE_NAME));
-        final URL dataFile = PublishInputsScriptTest.class.getResource(testDataDir + DATA_FILE_NAME);
+        final URL dataFile = PublishInputsScriptIT.class.getResource(testDataDir + DATA_FILE_NAME);
         FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, "warfarin/" + DATA_FILE_NAME));
 
         // Set up the behaviour of the mock DefaultExecutor used to execute the conversion script

@@ -20,9 +20,9 @@ import eu.ddmore.fis.domain.LocalJob;
 import groovy.lang.Binding;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RetrieveOutputsScriptTest {
+public class RetrieveOutputsScriptIT {
 
-	private static final Logger LOG = Logger.getLogger(RetrieveOutputsScriptTest.class);
+	private static final Logger LOG = Logger.getLogger(RetrieveOutputsScriptIT.class);
 
     @Rule
     public TemporaryFolder testDirectory = new TemporaryFolder();
@@ -33,7 +33,7 @@ public class RetrieveOutputsScriptTest {
 
     @Before
     public void setUp() throws Exception {
-        File testDataDir = FileUtils.toFile(RetrieveOutputsScriptTest.class.getResource("/eu/ddmore/fis/controllers/testWorkingDir"));
+        File testDataDir = FileUtils.toFile(RetrieveOutputsScriptIT.class.getResource("/eu/ddmore/fis/controllers/testWorkingDir"));
         
         this.testWorkingDir = this.testDirectory.getRoot();
         LOG.debug(String.format("Test working dir %s", this.testWorkingDir));
@@ -50,7 +50,7 @@ public class RetrieveOutputsScriptTest {
         binding.setVariable("execution.host.fileshare", this.testExecutionHostFileshare);
         
         JobProcessor jobProcessor = new JobProcessor(binding);
-        jobProcessor.setScriptFile(FileUtils.toFile(RetrieveOutputsScriptTest.class.getResource("/scripts/retrieveOutputs.groovy")));
+        jobProcessor.setScriptFile(FileUtils.toFile(RetrieveOutputsScriptIT.class.getResource("/scripts/retrieveOutputs.groovy")));
         File testWorkingDir = testDirectory.getRoot();
 
         final String FILE_THAT_SHOULD_NOT_BE_COPIED_BACK = "should_not_be_copied_back.blah";
