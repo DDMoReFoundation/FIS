@@ -30,7 +30,7 @@ SET params= -Dfis.publishInputs="%PUBLISH_INPUTS%" ^
  -Dfis.retrieveOutputs="%RETRIEVE_OUTPUTS%" ^
  -Dfis.readResource="%READ_RESOURCE%" ^
  -Dfis.writeResource="%WRITE_RESOURCE%" ^
- -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-bundle\convert.bat" ^
+ -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-distribution\converter-toolbox\convert.bat" ^
  -Dexecution.host.fileshare="%EXECUTION_HOST_FILESHARE%" ^
  -Dexecution.host.fileshare.remote="%EXECUTION_HOST_FILESHARE_REMOTE%"
 REM  If FIS is executing in standalone mode, outside of SEE, then the location of the
