@@ -76,6 +76,21 @@
         </constructor-arg>
         <property name="scriptFile" value="${fis.publishInputs}"></property>
     </bean>
+    
+    <bean id="mdlConversionProcessor" class="eu.ddmore.fis.controllers.MdlConversionProcessor" >
+        <constructor-arg>
+            <bean class="groovy.lang.Binding">
+                <constructor-arg>
+                    <map>
+                        <entry key="converter.toolbox.executable">
+                            <value>${converter.toolbox.executable}</value>
+                        </entry>
+                    </map>
+                </constructor-arg>
+            </bean>
+        </constructor-arg>
+        <property name="scriptFile" value="${fis.mdlConverter}"></property>
+    </bean>
 
     <bean id="resourceReader" class="eu.ddmore.fis.controllers.ReadProcessor" >
         <constructor-arg>
@@ -145,6 +160,10 @@
     
     <bean id="jobsController" class="eu.ddmore.fis.controllers.JobsController">
         <property name="localJobService" ref="localJobService" />
+    </bean>
+    
+    <bean id="mdlConversionController" class="eu.ddmore.fis.controllers.MdlConversionController">
+        <property name="conversionProcessor" ref="mdlConversionProcessor" />
     </bean>
 
     <bean id="readwriteController" class="eu.ddmore.fis.controllers.ReadWriteController">

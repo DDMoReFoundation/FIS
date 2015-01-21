@@ -180,4 +180,19 @@ public class FISHttpRestClient {
         builder.append(Joiner.on("/").join(parts));
         return builder.toString();
     }
+
+	public String convertMdlToPharmML(String mdlFileFullPath, String outputFileFullPath) {
+    	String urlEncodedFilename,urlEncodedOutputName;
+    	
+        try {
+	        urlEncodedFilename = URLEncoder.encode(mdlFileFullPath, "UTF-8");
+	        urlEncodedOutputName = URLEncoder.encode(outputFileFullPath, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+	        throw new IllegalArgumentException("Unable to URL-encode file path: " + mdlFileFullPath);
+        }
+        String endpoint = buildEndpoint("convertmdl?fileName=" + urlEncodedFilename+"&outputDir="+urlEncodedOutputName);
+        GetMethod get = new GetMethod(endpoint);
+        get.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
+        return executeMethod(endpoint,get);
+	}
 }
