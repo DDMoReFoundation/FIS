@@ -160,7 +160,7 @@ public class ServiceAT extends SystemPropertiesAware {
         final String SCRIPT_FILE_NAME = "Warfarin-ODE-latest.mdl";
         final String DATA_FILE_NAME = "warfarin_conc.csv";
 
-        final String testDataDir = "/eu/ddmore/testdata/models/mdl/5.1.6/Warfarin_PK_ODE/";
+        final String testDataDir = "/eu/ddmore/testdata/models/mdl/6.0.7/Warfarin_ODE/";
 
         final URL scriptFile = ServiceAT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
