@@ -38,9 +38,9 @@ final Logger LOGGER = Logger.getLogger(getClass())
 
     // TODO: Remove the hard-coding of these source and target converter versions
 	cmdLine.addArgument("JSON")
-	cmdLine.addArgument("0.0.0")
+	cmdLine.addArgument("6.0.7")
 	cmdLine.addArgument("MDL")
-    cmdLine.addArgument("5.1.6-interop")
+    cmdLine.addArgument("6.0.7")
 
     LOGGER.info("Invoking converter toolbox command : " + cmdLine); // This could be run from the command line for testing purposes
 
