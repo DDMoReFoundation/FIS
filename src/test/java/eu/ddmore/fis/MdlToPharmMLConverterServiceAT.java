@@ -20,7 +20,6 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 
 	private static final String TEST_DATA_DIR = "/eu/ddmore/testdata/models/%s/6.0.7/Warfarin_ODE/";
 	private static final String MDL_FILE_NAME = "Warfarin-ODE-latest.mdl";
-	private static final String OUTPUT_FILE_NAME = "Warfarin-ODE-latest.xml";
 
 	private static final URL MDL_FILE_URL = MdlToPharmMLConverterServiceAT.class.getResource(String.format(TEST_DATA_DIR, "mdl") + MDL_FILE_NAME);
 
@@ -30,8 +29,8 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 	
 	@BeforeClass
 	public static void globalSetUp() throws Exception {
-		FileUtils.deleteDirectory(parentWorkingDir);
-		parentWorkingDir.mkdir();
+//		FileUtils.deleteDirectory(parentWorkingDir);
+//		parentWorkingDir.mkdir();
 	}
 
 	@Test
@@ -43,7 +42,8 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 		FileUtils.copyURLToFile(MDL_FILE_URL, mdlFile);
 
 		final String mdlFileFullPath = mdlFile.getAbsolutePath();
-		final String outputFileFullPath = (parentWorkingDir.getAbsolutePath() +File.separator+ OUTPUT_FILE_NAME);
+		final String outputFileFullPath = (parentWorkingDir.getAbsolutePath());
+		
 		String output = fisClient.convertMdlToPharmML(mdlFileFullPath, outputFileFullPath);
 		
 		//Checks if returned file location does exist.
@@ -52,7 +52,7 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 	}
 	
 	@Test
-	public void shouldCreateOutputDirectroyIfDoesntExist() throws IOException {
+	public void shouldCreateOutputDirectroyIfItDoesntExist() throws IOException {
 		final File workingDir = new File(parentWorkingDir, "ReadMdlFile");
 		final String newLocation = "NewLocation";
 		workingDir.mkdir();
@@ -65,12 +65,14 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 		if(outputFileLocation.exists()){
 			FileUtils.deleteDirectory(outputFileLocation);
 		}
-		final String outputFileFullPath = (outputFileLocation+File.separator+ OUTPUT_FILE_NAME);
-		String output = fisClient.convertMdlToPharmML(mdlFileFullPath, outputFileFullPath);
 		
+		String outputFilePath = fisClient.convertMdlToPharmML(mdlFileFullPath, outputFileLocation.getAbsolutePath());
+
+		assertTrue("Output file should be created", new File(outputFilePath).exists());
+		
+		String outputParentDir = new File(outputFilePath).getParent();
 		//Checks if returned file location does exist.
-		assertTrue("Output file should be in newly created directory", output.equals(outputFileFullPath));
-		assertTrue("Output file should be created", new File(output).exists());
+		assertTrue("Output file should be in newly created directory", outputParentDir.equals(outputFileLocation.getAbsolutePath()));
 		
 	}
 	

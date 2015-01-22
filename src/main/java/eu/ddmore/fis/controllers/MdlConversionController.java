@@ -17,10 +17,10 @@ public class MdlConversionController {
 	@Autowired
 	private MdlConversionProcessor conversionProcessor;
 
-	@RequestMapping(value = "convertmdl", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
+	@RequestMapping(value = "convertmdl", method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody String convertMdlToPharmML(@RequestParam(value="fileName") String fileName, @RequestParam(value="outputDir") String outputDir) {
 
-		// Invoke the readResource Groovy script
+		// Invoke the mdlConverter Groovy script
         return conversionProcessor.process(fileName, outputDir);
     }
 
