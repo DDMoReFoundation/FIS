@@ -44,7 +44,7 @@ final Logger LOGGER = Logger.getLogger(getClass())
 	
 	    // TODO: Remove the hard-coding of these source and target converter versions
 	    cmdLine.addArgument("MDL")
-	    cmdLine.addArgument("5.1.6-interop")
+	    cmdLine.addArgument("6.0.7")
 	    cmdLine.addArgument("PharmML")
 	    cmdLine.addArgument("0.3.1")
 	
