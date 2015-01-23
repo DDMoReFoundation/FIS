@@ -6,6 +6,7 @@ PUBLISH_INPUTS="$SERVICE_HOME/scripts/publishInputs.groovy"
 RETRIEVE_OUTPUTS="$SERVICE_HOME/scripts/retrieveOutputs.groovy"
 READ_RESOURCE="$SERVICE_HOME/scripts/readResource.groovy"
 WRITE_RESOURCE="$SERVICE_HOME/scripts/writeResource.groovy"
+MDL_CONVERTER="$SERVICE_HOME/scripts/mdlConverter.groovy"
 #  If only local execution will be performed then these are the same path string, e.g. a directory within the system temporary directory.
 #  Otherwise execution.host.fileshare must point to a directory within a virtual filesystem mapped from the remote host, and
 #  execution.host.fileshare.remote must point to that directory on the remote host.
@@ -19,7 +20,7 @@ then
     mkdir "$EXECUTION_HOST_FILESHARE"
 fi
 
-params=" -Dfis.publishInputs=\"$PUBLISH_INPUTS\" -Dfis.retrieveOutputs=\"$RETRIEVE_OUTPUTS\" -Dfis.readResource=\"$READ_RESOURCE\" -Dfis.writeResource=\"$WRITE_RESOURCE\" \
+params=" -Dfis.publishInputs=\"$PUBLISH_INPUTS\" -Dfis.retrieveOutputs=\"$RETRIEVE_OUTPUTS\" -Dfis.readResource=\"$READ_RESOURCE\" -Dfis.writeResource=\"$WRITE_RESOURCE\" -Dfis.mdlConverter=\"$MDL_CONVERTER\" \
  -Dexecution.host.fileshare=\"$EXECUTION_HOST_FILESHARE\" \
  -Dexecution.host.fileshare.remote=\"$EXECUTION_HOST_FILESHARE_REMOTE\" \
  -DFIS_HOME=\"$SERVICE_HOME\" \
