@@ -27,7 +27,7 @@
         <dependency>
             <groupId>com.mango</groupId>
             <artifactId>mif-examples</artifactId>
-            <version>3.0.14-ddmore-SNAPSHOT</version>
+            <version>3.0.16-ddmore-SNAPSHOT</version>
         </dependency>
         <!-- end DDMoRe and Mango packages -->
         
