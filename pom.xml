@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.ddmore</groupId>
   <artifactId>fis</artifactId>
-  <version>0.0.5-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
   <name>fis</name>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -21,13 +21,13 @@
         <dependency>
             <groupId>eu.ddmore.testdata</groupId>
             <artifactId>models</artifactId>
-            <version>0.0.3-SNAPSHOT</version>
+            <version>0.1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.mango</groupId>
             <artifactId>mif-examples</artifactId>
-            <version>3.0.16-ddmore-SNAPSHOT</version>
+            <version>3.0.16-ddmore</version>
         </dependency>
         <!-- end DDMoRe and Mango packages -->
         
