@@ -72,25 +72,25 @@ public class PublishInputsScriptIT {
 
         // Copy the files out of the testdata JAR file
 
-        final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/warfarin_PK_PRED/";
+        final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/Warfarin_ODE/";
 
-        final URL ctlFile = PublishInputsScriptIT.class.getResource(testDataDir + "warfarin_PK_PRED.ctl");
-        final URL dataFile = PublishInputsScriptIT.class.getResource(testDataDir + "warfarin_conc_pca.csv");
+        final URL ctlFile = PublishInputsScriptIT.class.getResource(testDataDir + "Warfarin-ODE-latest.ctl");
+        final URL dataFile = PublishInputsScriptIT.class.getResource(testDataDir + "warfarin_conc.csv");
 
-        FileUtils.copyURLToFile(ctlFile, new File(testWorkingDir, "warfarin_PK_PRED.ctl"));
-        FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, "warfarin_conc_pca.csv"));
+        FileUtils.copyURLToFile(ctlFile, new File(testWorkingDir, "Warfarin-ODE-latest.ctl"));
+        FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, "warfarin_conc.csv"));
 
         // Proceed with the test...
 
         LocalJob job = mock(LocalJob.class);
         when(job.getWorkingDirectory()).thenReturn(testWorkingDir.getAbsolutePath());
-        when(job.getControlFile()).thenReturn("warfarin_PK_PRED.ctl");
+        when(job.getControlFile()).thenReturn("Warfarin-ODE-latest.ctl");
         when(job.getId()).thenReturn("MIF_JOB_ID");
         jobProcessor.process(job);
 
         assertTrue("MIF working directory should be created", mifWorkingDir.exists());
-        assertTrue("CTL file should be copied from the source", new File(mifWorkingDir, "warfarin_PK_PRED.ctl").exists());
-        assertTrue("Data file should be copied from the source", new File(mifWorkingDir, "warfarin_conc_pca.csv").exists());
+        assertTrue("CTL file should be copied from the source", new File(mifWorkingDir, "Warfarin-ODE-latest.ctl").exists());
+        assertTrue("Data file should be copied from the source", new File(mifWorkingDir, "warfarin_conc.csv").exists());
     }
 
     @Test
@@ -186,29 +186,29 @@ public class PublishInputsScriptIT {
 
         // Copy the files out of the testdata JAR file
 
-        final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/warfarin_PK_PRED/";
+        final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/Warfarin_ODE/";
 
-        final URL ctlFile = PublishInputsScriptIT.class.getResource(testDataDir + "warfarin_PK_PRED.ctl");
-        final URL dataFile = PublishInputsScriptIT.class.getResource(testDataDir + "warfarin_conc_pca.csv");
+        final URL ctlFile = PublishInputsScriptIT.class.getResource(testDataDir + "Warfarin-ODE-latest.ctl");
+        final URL dataFile = PublishInputsScriptIT.class.getResource(testDataDir + "warfarin_conc.csv");
 
-        FileUtils.copyURLToFile(ctlFile, new File(testWorkingDir, "warfarin/warfarin_PK_PRED.ctl"));
-        FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, "warfarin/warfarin_conc_pca.csv"));
+        FileUtils.copyURLToFile(ctlFile, new File(testWorkingDir, "warfarin/Warfarin-ODE-latest.ctl"));
+        FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, "warfarin/warfarin_conc.csv"));
 
         // Proceed with the test...
 
         LocalJob job = mock(LocalJob.class);
         when(job.getWorkingDirectory()).thenReturn(testWorkingDir.getAbsolutePath());
-        when(job.getControlFile()).thenReturn("warfarin/warfarin_PK_PRED.ctl");
+        when(job.getControlFile()).thenReturn("warfarin/Warfarin-ODE-latest.ctl");
         when(job.getId()).thenReturn("MIF_JOB_ID");
         jobProcessor.process(job);
 
         assertTrue("MIF working directory should be created", mifWorkingDir.exists());
         assertTrue("CTL file should be copied from the source to within the subdirectory",
-            new File(mifWorkingDir, "warfarin/warfarin_PK_PRED.ctl").exists());
+            new File(mifWorkingDir, "warfarin/Warfarin-ODE-latest.ctl").exists());
         assertTrue("Data file should be copied from the source to within the subdirectory",
-            new File(mifWorkingDir, "warfarin/warfarin_conc_pca.csv").exists());
-        assertFalse("CTL file should not be present within the main directory", new File(mifWorkingDir, "warfarin_PK_PRED.ctl").exists());
-        assertFalse("Data file should not be present within the main directory", new File(mifWorkingDir, "warfarin_conc_pca.csv").exists());
+            new File(mifWorkingDir, "warfarin/warfarin_conc.csv").exists());
+        assertFalse("CTL file should not be present within the main directory", new File(mifWorkingDir, "Warfarin-ODE-latest.ctl").exists());
+        assertFalse("Data file should not be present within the main directory", new File(mifWorkingDir, "warfarin_conc.csv").exists());
     }
 
     @Test
