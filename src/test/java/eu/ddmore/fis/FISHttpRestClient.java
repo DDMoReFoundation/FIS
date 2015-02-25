@@ -192,7 +192,7 @@ public class FISHttpRestClient {
         }
         String endpoint = buildEndpoint("convertmdl?fileName=" + urlEncodedFilename+"&outputDir="+urlEncodedOutputName);
         PostMethod postMethod = new PostMethod(endpoint);
-        postMethod.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
+        postMethod.addRequestHeader("accept", MediaType.APPLICATION_JSON);
         return executeMethod(endpoint,postMethod);
 	}
 }
