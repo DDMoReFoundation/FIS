@@ -11,10 +11,10 @@ String mdlConversionScript = "MdlToPharmML.groovy"
 String converterToolboxExecutable = binding.getVariable("converter.toolbox.executable");
 String MDL_FILE_EXT = binding.getVariable("fis.mdl.ext");
 String PHARMML_FILE_EXT = binding.getVariable("fis.pharmml.ext");
-String executionHostFileshare = binding.getVariable("execution.host.fileshare");
+String executionHostFileshareLocal = binding.getVariable("execution.host.fileshare.local");
 
 File workingDir = new File(job.getWorkingDirectory())
-File mifWorkingDir = new File(executionHostFileshare, job.getId());
+File mifWorkingDir = new File(executionHostFileshareLocal, job.getId());
 
 FileUtils.copyDirectory(workingDir, mifWorkingDir, new FileFilter() {
             @Override

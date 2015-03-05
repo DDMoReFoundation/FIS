@@ -43,8 +43,8 @@
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
                     <map>
-                        <entry key="execution.host.fileshare">
-                            <value>${execution.host.fileshare}</value>
+                        <entry key="execution.host.fileshare.local">
+                            <value>${execution.host.fileshare.local}</value>
                         </entry>
                     </map>
                 </constructor-arg>
@@ -67,8 +67,8 @@
                         <entry key="converter.toolbox.executable">
                             <value>${converter.toolbox.executable}</value>
                         </entry>
-                        <entry key="execution.host.fileshare">
-                            <value>${execution.host.fileshare}</value>
+                        <entry key="execution.host.fileshare.local">
+                            <value>${execution.host.fileshare.local}</value>
                         </entry>
                     </map>
                 </constructor-arg>

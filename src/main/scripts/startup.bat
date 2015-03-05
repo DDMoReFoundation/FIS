@@ -15,16 +15,15 @@ SET RETRIEVE_OUTPUTS=%SERVICE_HOME%\scripts\retrieveOutputs.groovy
 SET READ_RESOURCE=%SERVICE_HOME%\scripts\readResource.groovy
 SET WRITE_RESOURCE=%SERVICE_HOME%\scripts\writeResource.groovy
 SET MDL_CONVERTER=%SERVICE_HOME%\scripts\mdlConverter.groovy
-REM  If only local execution will be performed then these are the same path string, e.g. a directory within the system temporary directory.
-REM  Otherwise execution.host.fileshare must point to a directory within a virtual filesystem mapped from the remote host, and
-REM  execution.host.fileshare.remote must point to that directory on the remote host.
-SET EXECUTION_HOST_FILESHARE=%TEMP%\mifshare
+REM  See comment in config.properties regarding the important distinction between these three properties, and what they should be set to.
+SET EXECUTION_HOST_FILESHARE_LOCAL=%TEMP%\mifshare
+SET EXECUTION_HOST_FILESHARE=%EXECUTION_HOST_FILESHARE_LOCAL%
 SET EXECUTION_HOST_FILESHARE_REMOTE=%EXECUTION_HOST_FILESHARE%
 
 REM  If the fileshare location is pointed somewhere else other than within the system temporary directory then
 REM  this directory creation should be removed and the directory created manually if it doesn't already exist.
-IF NOT EXIST "%EXECUTION_HOST_FILESHARE%" (
-    mkdir "%EXECUTION_HOST_FILESHARE%"
+IF NOT EXIST "%EXECUTION_HOST_FILESHARE_LOCAL%" (
+    mkdir "%EXECUTION_HOST_FILESHARE_LOCAL%"
 )
 
 SET params= -Dfis.publishInputs="%PUBLISH_INPUTS%" ^
@@ -33,6 +32,7 @@ SET params= -Dfis.publishInputs="%PUBLISH_INPUTS%" ^
  -Dfis.writeResource="%WRITE_RESOURCE%" ^
  -Dfis.mdlConverter="%MDL_CONVERTER%" ^
  -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-distribution\converter-toolbox\convert.bat" ^
+ -Dexecution.host.fileshare.local="%EXECUTION_HOST_FILESHARE_LOCAL%" ^
  -Dexecution.host.fileshare="%EXECUTION_HOST_FILESHARE%" ^
  -Dexecution.host.fileshare.remote="%EXECUTION_HOST_FILESHARE_REMOTE%"
 REM  If FIS is executing in standalone mode, outside of SEE, then the location of the

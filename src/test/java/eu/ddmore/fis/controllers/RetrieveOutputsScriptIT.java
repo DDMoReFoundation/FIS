@@ -28,7 +28,7 @@ public class RetrieveOutputsScriptIT {
     public TemporaryFolder testDirectory = new TemporaryFolder();
     
     private File testWorkingDir;
-    private File testExecutionHostFileshare;
+    private File testExecutionHostFileshareLocal;
     private File mifWorkingDir;
 
     @Before
@@ -37,8 +37,8 @@ public class RetrieveOutputsScriptIT {
         
         this.testWorkingDir = this.testDirectory.getRoot();
         LOG.debug(String.format("Test working dir %s", this.testWorkingDir));
-        this.testExecutionHostFileshare = this.testWorkingDir;
-        this.mifWorkingDir = new File(this.testExecutionHostFileshare, "MIF_JOB_ID");
+        this.testExecutionHostFileshareLocal = this.testWorkingDir;
+        this.mifWorkingDir = new File(this.testExecutionHostFileshareLocal, "MIF_JOB_ID");
         
         FileUtils.copyDirectory(testDataDir, this.testDirectory.getRoot());
     }
@@ -47,7 +47,7 @@ public class RetrieveOutputsScriptIT {
     public void shouldRetrieveResultFilesFromMIFWorkingDirectory() {
     
         Binding binding = new Binding();
-        binding.setVariable("execution.host.fileshare", this.testExecutionHostFileshare);
+        binding.setVariable("execution.host.fileshare.local", this.testExecutionHostFileshareLocal);
         
         JobProcessor jobProcessor = new JobProcessor(binding);
         jobProcessor.setScriptFile(FileUtils.toFile(RetrieveOutputsScriptIT.class.getResource("/scripts/retrieveOutputs.groovy")));

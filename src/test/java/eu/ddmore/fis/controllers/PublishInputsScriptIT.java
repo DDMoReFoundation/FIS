@@ -39,7 +39,7 @@ public class PublishInputsScriptIT {
     public TemporaryFolder testDirectory = new TemporaryFolder();
 
     private File testWorkingDir;
-    private File testExecutionHostFileshare;
+    private File testExecutionHostFileshareLocal;
     private File mifWorkingDir;
 
     private Binding binding;
@@ -52,14 +52,14 @@ public class PublishInputsScriptIT {
     public void setUp() {
         this.testWorkingDir = this.testDirectory.getRoot();
         LOG.debug(String.format("Test working dir %s", this.testWorkingDir));
-        this.testExecutionHostFileshare = this.testWorkingDir;
-        this.mifWorkingDir = new File(this.testExecutionHostFileshare, "MIF_JOB_ID");
+        this.testExecutionHostFileshareLocal = this.testWorkingDir;
+        this.mifWorkingDir = new File(this.testExecutionHostFileshareLocal, "MIF_JOB_ID");
 
         this.binding = new Binding();
         this.binding.setVariable("converter.toolbox.executable", PATH_TO_CONVERTER_EXE.getPath());
         this.binding.setVariable("fis.mdl.ext", "mdl");
         this.binding.setVariable("fis.pharmml.ext", "xml");
-        this.binding.setVariable("execution.host.fileshare", this.testExecutionHostFileshare);
+        this.binding.setVariable("execution.host.fileshare.local", this.testExecutionHostFileshareLocal);
         this.mockExecutor = mock(Executor.class);
         this.binding.setVariable("ApacheCommonsExecExecutor", this.mockExecutor);
 
