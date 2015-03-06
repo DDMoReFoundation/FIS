@@ -9,12 +9,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -34,8 +31,6 @@ public class ServiceAT extends SystemPropertiesAware {
     private static final Logger LOG = Logger.getLogger(ServiceAT.class);
     
     private FISHttpRestClient teisClient;
-    
-    private static String mdlConversionWrapperScript = "";
 
     private static String nonmemCommand;
 
@@ -46,7 +41,6 @@ public class ServiceAT extends SystemPropertiesAware {
     public static void globalSetUp() throws Exception {
         FileUtils.deleteDirectory(parentWorkingDir);
         parentWorkingDir.mkdir();
-        loadConfigProperties();
         nonmemCommand = System.getProperty("nonmem.command");
     }
 
@@ -62,10 +56,10 @@ public class ServiceAT extends SystemPropertiesAware {
 
         // Copy the files out of the testdata JAR file
 
-        final String SCRIPT_FILE_NAME = "warfarin_PK_PRED.ctl";
-        final String DATA_FILE_NAME = "warfarin_conc_pca.csv";
+        final String SCRIPT_FILE_NAME = "Warfarin-ODE-latest.ctl";
+        final String DATA_FILE_NAME = "warfarin_conc.csv";
 
-        final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/warfarin_PK_PRED/";
+        final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/Warfarin_ODE/";
 
         final URL scriptFile = ServiceAT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
@@ -94,8 +88,8 @@ public class ServiceAT extends SystemPropertiesAware {
 
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
 
-        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "warfarin_PK_PRED.lst").exists());
-        assertTrue("Standard Output Object XML file should have been created in the working directory", new File(workingDir, "warfarin_PK_PRED.SO.xml").exists());
+        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "Warfarin-ODE-latest.lst").exists());
+        assertTrue("Standard Output Object XML file should have been created in the working directory", new File(workingDir, "Warfarin-ODE-latest.SO.xml").exists());
 
         verifyThatFisMetadataFilesExist(workingDir);
 
@@ -112,7 +106,7 @@ public class ServiceAT extends SystemPropertiesAware {
         final String SCRIPT_FILE_NAME = "Warfarin-ODE-latest.xml";
         final String DATA_FILE_NAME = "warfarin_conc.csv";
 
-        final String testDataDir = "/eu/ddmore/testdata/models/PharmML/0.3.1/warfarin_PK_ODE/";
+        final String testDataDir = "/eu/ddmore/testdata/models/PharmML/0.3.1/Warfarin_ODE/";
 
         final URL scriptFile = ServiceAT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
@@ -209,19 +203,6 @@ public class ServiceAT extends SystemPropertiesAware {
 
     private boolean isNotCompleted(final LocalJobStatus jobStatus) {
         return LocalJobStatus.RUNNING.compareTo(jobStatus) >= 0;
-    }
-
-    private static void loadConfigProperties() throws IOException, URISyntaxException {
-        final URL configPropsUrl = ServiceAT.class.getResource("/config.properties");
-        final File configPropsFile = new File(configPropsUrl.toURI());
-
-        final String configPropsContent = FileUtils.readFileToString(configPropsFile);
-
-        Pattern p = Pattern.compile("^converter\\.wrapperscript\\.mdl=(.+\\.groovy)$", Pattern.MULTILINE);
-        Matcher m = p.matcher(configPropsContent);
-        if (m.find()) {
-            mdlConversionWrapperScript = m.group(1);
-        }
     }
 
 }
