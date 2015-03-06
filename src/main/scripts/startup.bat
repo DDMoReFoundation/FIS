@@ -34,9 +34,15 @@ SET params= -Dfis.publishInputs="%PUBLISH_INPUTS%" ^
  -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-distribution\converter-toolbox\convert.bat" ^
  -Dexecution.host.fileshare.local="%EXECUTION_HOST_FILESHARE_LOCAL%" ^
  -Dexecution.host.fileshare="%EXECUTION_HOST_FILESHARE%" ^
- -Dexecution.host.fileshare.remote="%EXECUTION_HOST_FILESHARE_REMOTE%"
-REM  If FIS is executing in standalone mode, outside of SEE, then the location of the
-REM  converter toolbox executable will need to be amended above.
+ -Dexecution.host.fileshare.remote="%EXECUTION_HOST_FILESHARE_REMOTE%" ^
+ -Dmif.userName= ^
+ -Dmif.userPassword=
+REM  - If FIS is executing in standalone mode, outside of SEE, then the location of the
+REM    converter toolbox executable will need to be amended above.
+REM  - If the MIF user credentials are set above then these will be used for MIF job execution,
+REM    otherwise jobs will be executed as the MIF service account user.
+REM  - If a remote MIF is to be used for job execution, then the mif.url property needs to be
+REM    set/overridden in the parameters above (it defaults to localhost in config.properties).
 
 IF NOT DEFINED JAVA_CMD (
     echo FIS is executing in standalone mode, outside of SEE, which would have set JAVA_CMD

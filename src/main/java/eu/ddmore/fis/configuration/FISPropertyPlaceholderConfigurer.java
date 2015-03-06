@@ -54,7 +54,7 @@ public class FISPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigu
             System.err.println("ERROR!!!");
             System.err.println(StringUtils.repeat("*", 60));
             System.err.println(errorMsg);
-            throw new IllegalStateException("Error when initializing service:\n" + errorMsg);
+            throw new IllegalStateException("Error when initialising service:\n" + errorMsg);
         }
     }
 }

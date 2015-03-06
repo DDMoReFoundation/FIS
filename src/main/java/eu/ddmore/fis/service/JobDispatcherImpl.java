@@ -1,6 +1,9 @@
 package eu.ddmore.fis.service;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.google.common.base.Preconditions;
 import com.mango.mif.MIFHttpRestClient;
@@ -17,8 +20,13 @@ import eu.ddmore.fis.domain.LocalJobStatus;
  */
 public class JobDispatcherImpl implements JobDispatcher {
 
+    private final static Logger LOGGER = Logger.getLogger(JobDispatcherImpl.class);
+
+    final static String DEFAULT_MIF_USERNAME = "tel-user";
+
 	private MIFHttpRestClient mifClient;
-	private String mifUserName = "tel-user";
+	private String mifUserName;
+	private String mifUserPassword;
 	private JobResourceProcessor jobResourcePublisher;
 	private CommandRegistry commandRegistry;
 	private String executionHostFileshare;
@@ -45,6 +53,11 @@ public class JobDispatcherImpl implements JobDispatcher {
 			// whatever reason, such as copying files back from the FIS working directory to a user source directory.
 			publishedJob.setOutputFilenamesRegex(clientAvailableConnectorDetails.getOutputFilenamesRegex());
 
+	        LOGGER.info(
+	            String.format("About to submit job execution request:\n  Type = %1$s\n  Execution File = %2$s\n  Execution Parameters = %3$s\n  Submit As User Mode = %4$s\n  User Name = %5$s\n  User Password (Encrypted) = %6$s\n  Request ID = %7$s",
+	            executionRequest.getType(), executionRequest.getExecutionFile(), executionRequest.getExecutionParameters(), executionRequest.getSubmitAsUserMode(), executionRequest.getUserName(), executionRequest.getUserPassword(), executionRequest.getRequestId()
+            ));
+
 			this.mifClient.executeJob(executionRequest);
 		}
 
@@ -53,13 +66,25 @@ public class JobDispatcherImpl implements JobDispatcher {
 
 	private ExecutionRequest buildExecutionRequest(LocalJob job) {
 		Preconditions.checkNotNull(job, "Job can't be null");
-		ExecutionRequestBuilder requestBuilder = new ExecutionRequestBuilder()
+		
+		// Determine whether to execute the job with specific user credentials
+		boolean submitAsUserMode = false;
+		String userName = DEFAULT_MIF_USERNAME;
+		String userPassword = null;
+		if (StringUtils.isNotBlank(this.mifUserName)) {
+		    submitAsUserMode = true;
+		    userName = this.mifUserName;
+		    userPassword = this.mifUserPassword;
+		}
+		
+		final ExecutionRequestBuilder requestBuilder = new ExecutionRequestBuilder()
 			.setRequestId(job.getId())
 			.setName("FIS Service Job")
 			.setExecutionType(job.getExecutionType())
 			.setExecutionFile(job.getControlFile())
-			.setSubmitAsUserMode(false)
-			.setUserName(mifUserName)
+			.setSubmitAsUserMode(submitAsUserMode)
+			.setUserName(userName)
+			.setUserPassword(userPassword)
 			.setExecutionParameters(job.getCommandParameters());
 		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE", getExecutionHostFileshare());
 		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE_REMOTE", getExecutionHostFileshareRemote());
@@ -110,5 +135,23 @@ public class JobDispatcherImpl implements JobDispatcher {
 	public String getExecutionHostFileshareRemote() {
 		return this.executionHostFileshareRemote;
 	}
+	
+	@Value("${mif.userName}")
+	public void setMifUserName(final String mifUserName) {
+	    this.mifUserName = mifUserName;
+	}
+	
+	public String getMifUserName() {
+	    return this.mifUserName;
+	}
+	
+    @Value("${mif.userPassword}")
+    public void setMifUserPassword(final String mifUserPassword) {
+        this.mifUserPassword = mifUserPassword;
+    }
+    
+    public String getMifUserPassword() {
+        return this.mifUserPassword;
+    }
 	
 }
