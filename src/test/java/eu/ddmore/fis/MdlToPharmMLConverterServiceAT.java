@@ -52,7 +52,7 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 	}
 	
 	@Test
-	public void shouldCreateOutputDirectroyIfItDoesntExist() throws IOException {
+	public void shouldCreateOutputDirectoryIfItDoesntExist() throws IOException {
 		final File workingDir = new File(parentWorkingDir, "ReadMdlFile");
 		final String newLocation = "NewLocation";
 		workingDir.mkdir();

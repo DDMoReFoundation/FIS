@@ -28,15 +28,17 @@ File outputDirectory = new File(outputDir);
 
 // Build up the command line to execute
 CommandLine cmdLine = new CommandLine(converterToolboxExecutable)
+BufferedOutputStream stdoutOS
+BufferedOutputStream stderrOS
 
 try {
     // Set up some output streams to handle the standard out and standard error
-    BufferedOutputStream stdoutOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2PharmML.stdout")))
-    BufferedOutputStream stderrOS
-    IOUtils.write("Invoking converter toolbox command : " + cmdLine + "\n\n", stdoutOS, null)
+    stdoutOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2PharmML.stdout")))
+    IOUtils.write("Invoking converter toolbox command : " + cmdLine + "\n\n", stdoutOS)
     stderrOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2PharmML.stderr")))
+    
     if (!(outputDirectory.exists() || outputDirectory.mkdir())) {
-        IOUtils.write("Failed to access/create output directory at specified location : "+outputDirectory.getAbsolutePath(), stderrOS, null)
+        IOUtils.write("Failed to access/create output directory at specified location : "+outputDirectory.getAbsolutePath(), stderrOS)
         return;
     }
     // Build up the command line to execute
@@ -69,14 +71,14 @@ try {
     if(resultFile.exists()){
         resultFile.getAbsolutePath();
     }else{
-        IOUtils.write("Failed to access/create output file at specified location : "+outputDirectory.getAbsolutePath(), stderrOS, null)
+        IOUtils.write("Failed to access/create output file at specified location : "+outputDirectory.getAbsolutePath(), stderrOS)
         return;
     }
 } catch (ExecuteException eex) { // Command has failed or timed out
-    IOUtils.write("\n\nError code " + eex.getExitValue() + " returned from converter toolbox command : " + cmdLine + "\n\n", stderrOS, null)
-    IOUtils.write("ExecuteException cause: " + eex.getMessage(), stderrOS, null)
+    IOUtils.write("\n\nError code " + eex.getExitValue() + " returned from converter toolbox command : " + cmdLine + "\n\n", stderrOS)
+    IOUtils.write("ExecuteException cause: " + eex.getMessage(), stderrOS)
     return;
 } finally {
-    stdoutOS.closeQuietly()
-    stderrOS.closeQuietly()
+    IOUtils.closeQuietly(stdoutOS)
+    IOUtils.closeQuietly(stderrOS)
 }
