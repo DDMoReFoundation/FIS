@@ -13,33 +13,36 @@ import org.apache.log4j.Logger
 
 final Logger LOGGER = Logger.getLogger(getClass())
 
-    File scriptFile = binding.getVariable("scriptFile");
-    String converterToolboxExecutable = binding.getVariable("converter.toolbox.executable");
+File scriptFile = binding.getVariable("scriptFile");
+String converterToolboxExecutable = binding.getVariable("converter.toolbox.executable");
 
-    String fileName = binding.getVariable("fileName");
-    File workingDir = new File(fileName).parentFile
+String fileName = binding.getVariable("fileName");
+File workingDir = new File(fileName).parentFile
 
-    // Ensure that the FIS metadata directory is created
-    File fisMetadataDir = new File(workingDir,".fis");
-    fisMetadataDir.mkdir();
+// Ensure that the FIS metadata directory is created
+File fisMetadataDir = new File(workingDir,".fis");
+fisMetadataDir.mkdir();
 
-    // Build up the command line to execute
-    CommandLine cmdLine = new CommandLine(converterToolboxExecutable)
-    cmdLine.addArgument(new File(fileName).getAbsolutePath()) // Source MDL model file
-    cmdLine.addArgument(new File(fileName).getParentFile().getAbsolutePath()) // Destination directory for the JSON output file
+// Build up the command line to execute
+CommandLine cmdLine = new CommandLine(converterToolboxExecutable)
+cmdLine.addArgument(new File(fileName).getAbsolutePath()) // Source MDL model file
+cmdLine.addArgument(new File(fileName).getParentFile().getAbsolutePath()) // Destination directory for the JSON output file
 
-    // TODO: Remove the hard-coding of these source and target converter versions
-    cmdLine.addArgument("MDL")
-    cmdLine.addArgument("6.0.7")
-    cmdLine.addArgument("JSON")
-    cmdLine.addArgument("6.0.7")
+// TODO: Remove the hard-coding of these source and target converter versions
+cmdLine.addArgument("MDL")
+cmdLine.addArgument("6.0.7")
+cmdLine.addArgument("JSON")
+cmdLine.addArgument("6.0.7")
 
-    LOGGER.info("Invoking converter toolbox command : " + cmdLine); // This could be run from the command line for testing purposes
+LOGGER.info("Invoking converter toolbox command : " + cmdLine); // This could be run from the command line for testing purposes
 
-    // Set up some output streams to handle the standard out and standard error
-    BufferedOutputStream stdoutOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2JSON.stdout")))
+// Set up some output streams to handle the standard out and standard error
+BufferedOutputStream stdoutOS
+BufferedOutputStream stderrOS
+try {
+    stdoutOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2JSON.stdout")))
     IOUtils.write("Invoking converter toolbox command : " + cmdLine + "\n\n", stdoutOS)
-    BufferedOutputStream stderrOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2JSON.stderr")))
+    stderrOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2JSON.stderr")))
 
     // Create the executor object, providing a stream handler that will avoid
     // the child process becoming blocked because nothing is consuming its output,
@@ -52,19 +55,18 @@ final Logger LOGGER = Logger.getLogger(getClass())
     PumpStreamHandler pumpStreamHandler = new PumpStreamHandler(stdoutOS, stderrOS)
     executor.setStreamHandler(pumpStreamHandler)
 
-    try {
-        executor.execute(cmdLine);
-    } catch (ExecuteException eex) { // Command has failed or timed out
-        IOUtils.write("\n\nError code " + eex.getExitValue() + " returned from converter toolbox command : " + cmdLine + "\n\n", stderrOS)
-        IOUtils.write("ExecuteException cause: " + eex.getMessage(), stderrOS)
-        return;
-    } finally {
-        stdoutOS.close()
-        stderrOS.close()
-    }
+    executor.execute(cmdLine);
+} catch (ExecuteException eex) { // Command has failed or timed out
+    IOUtils.write("\n\nError code " + eex.getExitValue() + " returned from converter toolbox command : " + cmdLine + "\n\n", stderrOS)
+    IOUtils.write("ExecuteException cause: " + eex.getMessage(), stderrOS)
+    return;
+} finally {
+    IOUtils.closeQuietly(stdoutOS)
+    IOUtils.closeQuietly(stderrOS)
+}
 
-	File jsonFileName = new File(FilenameUtils.removeExtension(fileName) + ".json")
-    result = FileUtils.readFileToString(jsonFileName)
-	FileUtils.deleteQuietly(jsonFileName)
+File jsonFileName = new File(FilenameUtils.removeExtension(fileName) + ".json")
+result = FileUtils.readFileToString(jsonFileName)
+FileUtils.deleteQuietly(jsonFileName)
 
-	result
+result

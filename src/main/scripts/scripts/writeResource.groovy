@@ -17,37 +17,42 @@ import org.apache.log4j.Logger
 
 final Logger LOGGER = Logger.getLogger(getClass())
 
-    File scriptFile = binding.getVariable("scriptFile");
-    String converterToolboxExecutable = binding.getVariable("converter.toolbox.executable");
-	String fileContent = binding.getVariable("fileContent")
-    String fileName = binding.getVariable("fileName");
+File scriptFile = binding.getVariable("scriptFile");
+String converterToolboxExecutable = binding.getVariable("converter.toolbox.executable");
+String fileContent = binding.getVariable("fileContent")
+String fileName = binding.getVariable("fileName");
 
-	File workingDir = new File(fileName).parentFile
+File workingDir = new File(fileName).parentFile
 
-    // Ensure that the FIS metadata directory is created
-    File fisMetadataDir = new File(workingDir,".fis");
-    fisMetadataDir.mkdir();
+// Ensure that the FIS metadata directory is created
+File fisMetadataDir = new File(workingDir,".fis");
+fisMetadataDir.mkdir();
 
-	File jsonFileName = new File(FilenameUtils.removeExtension(fileName) + ".json")
-	FileUtils.writeStringToFile(jsonFileName, fileContent)
+File jsonFileName = new File(FilenameUtils.removeExtension(fileName) + ".json")
+FileUtils.writeStringToFile(jsonFileName, fileContent)
 
-    // Build up the command line to execute
-    CommandLine cmdLine = new CommandLine(converterToolboxExecutable)
-    cmdLine.addArgument(jsonFileName.path) // Source JSON model file
-    cmdLine.addArgument(new File(fileName).parent) // Destination directory for the MDL output file
+// Build up the command line to execute
+CommandLine cmdLine = new CommandLine(converterToolboxExecutable)
+cmdLine.addArgument(jsonFileName.path) // Source JSON model file
+cmdLine.addArgument(new File(fileName).parent) // Destination directory for the MDL output file
 
-    // TODO: Remove the hard-coding of these source and target converter versions
-	cmdLine.addArgument("JSON")
-	cmdLine.addArgument("6.0.7")
-	cmdLine.addArgument("MDL")
-    cmdLine.addArgument("6.0.7")
+// TODO: Remove the hard-coding of these source and target converter versions
+cmdLine.addArgument("JSON")
+cmdLine.addArgument("6.0.7")
+cmdLine.addArgument("MDL")
+cmdLine.addArgument("6.0.7")
 
-    LOGGER.info("Invoking converter toolbox command : " + cmdLine); // This could be run from the command line for testing purposes
+LOGGER.info("Invoking converter toolbox command : " + cmdLine); // This could be run from the command line for testing purposes
 
-    // Set up some output streams to handle the standard out and standard error
-    BufferedOutputStream stdoutOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "JSON2MDL.stdout")))
+// Set up some output streams to handle the standard out and standard error
+BufferedOutputStream stdoutOS
+BufferedOutputStream stderrOS
+
+
+try {
+    stdoutOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "JSON2MDL.stdout")))
     IOUtils.write("Invoking converter toolbox command : " + cmdLine + "\n\n", stdoutOS)
-    BufferedOutputStream stderrOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "JSON2MDL.stderr")))
+    stderrOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "JSON2MDL.stderr")))
 
     // Create the executor object, providing a stream handler that will avoid
     // the child process becoming blocked because nothing is consuming its output,
@@ -60,18 +65,17 @@ final Logger LOGGER = Logger.getLogger(getClass())
     PumpStreamHandler pumpStreamHandler = new PumpStreamHandler(stdoutOS, stderrOS)
     executor.setStreamHandler(pumpStreamHandler)
 
-    try {
-        executor.execute(cmdLine);
-    } catch (ExecuteException eex) { // Command has failed or timed out
-        IOUtils.write("\n\nError code " + eex.getExitValue() + " returned from converter toolbox command : " + cmdLine + "\n\n", stderrOS)
-        IOUtils.write("ExecuteException cause: " + eex.getMessage(), stderrOS)
-        return;
-    } finally {
-        stdoutOS.close()
-        stderrOS.close()
-    }
+    executor.execute(cmdLine);
+} catch (ExecuteException eex) { // Command has failed or timed out
+    IOUtils.write("\n\nError code " + eex.getExitValue() + " returned from converter toolbox command : " + cmdLine + "\n\n", stderrOS)
+    IOUtils.write("ExecuteException cause: " + eex.getMessage(), stderrOS)
+    return;
+} finally {
+    IOUtils.closeQuietly(stdoutOS)
+    IOUtils.closeQuietly(stderrOS)
+}
 
-	FileUtils.deleteQuietly(jsonFileName)
-	
-	WriteMdlResponse response = new WriteMdlResponse("Successful")
-	response
+FileUtils.deleteQuietly(jsonFileName)
+
+WriteMdlResponse response = new WriteMdlResponse("Successful")
+response
