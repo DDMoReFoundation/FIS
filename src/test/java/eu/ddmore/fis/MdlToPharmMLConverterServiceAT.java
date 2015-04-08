@@ -27,12 +27,6 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 	private static final File parentWorkingDir = new File("target", "convertAT_Test_Working_Dir");
 	private final FISHttpRestClient fisClient = new FISHttpRestClient(System.getProperty("fis.url"));
 	
-	@BeforeClass
-	public static void globalSetUp() throws Exception {
-//		FileUtils.deleteDirectory(parentWorkingDir);
-//		parentWorkingDir.mkdir();
-	}
-
 	@Test
 	public void shouldCorrectlyConvertMdlFile() throws IOException {
 		final File workingDir = new File(parentWorkingDir, "ReadMdlFile");
