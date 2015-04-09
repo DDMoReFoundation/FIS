@@ -199,11 +199,7 @@
             	<directory>src/main/scripts</directory>
         	</testResource>
     	</testResources>
-    	
-        <finalName>${project.name}</finalName>
-        
         <plugins>
-
             <!-- Ensure that groovy classes (not scripts) in src/main/groovy are compiled when Maven build is executed -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -248,7 +244,6 @@
                 <executions>
                     <execution>
                         <configuration>
-                            <finalName>fis</finalName>
                             <descriptors>
                                 <descriptor>${basedir}/src/main/assembly/fis-exec.xml</descriptor>
                             </descriptors>

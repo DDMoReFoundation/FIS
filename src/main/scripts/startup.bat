@@ -10,6 +10,7 @@ IF %SERVICE_HOME:~-1%==\ SET SERVICE_HOME=%SERVICE_HOME:~0,-1%
 
 CD %SERVICE_HOME%
 
+SET SERVICE_BINARY=${project.build.finalName}.${project.packaging}
 SET PUBLISH_INPUTS=%SERVICE_HOME%\scripts\publishInputs.groovy
 SET RETRIEVE_OUTPUTS=%SERVICE_HOME%\scripts\retrieveOutputs.groovy
 SET READ_RESOURCE=%SERVICE_HOME%\scripts\readResource.groovy
@@ -55,6 +56,6 @@ IF NOT DEFINED JAVA_CMD (
     )
 )
 
-%JAVA_CMD% %params% -DFIS_HOME="%SERVICE_HOME%" -jar "%SERVICE_HOME%"\fis.jar
+%JAVA_CMD% %params% -DFIS_HOME="%SERVICE_HOME%" -jar "%SERVICE_HOME%"\%SERVICE_BINARY%
 
 EXIT

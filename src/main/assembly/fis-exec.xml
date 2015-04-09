@@ -21,6 +21,19 @@
             <includes>
                 <include>**/*</include>
             </includes>
+            <excludes>
+                <exclude>startup.bat</exclude>
+                <exclude>startup.sh</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/scripts</directory>
+            <outputDirectory>fis</outputDirectory>
+            <includes>
+                <include>startup.bat</include>
+                <include>startup.sh</include>
+            </includes>
+            <filtered>true</filtered>
         </fileSet>
         <fileSet>
             <directory></directory>
