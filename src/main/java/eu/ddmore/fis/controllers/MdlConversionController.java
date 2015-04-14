@@ -14,21 +14,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class MdlConversionController {
 
-	@Autowired
-	private MdlConversionProcessor conversionProcessor;
+    @Autowired
+    private MdlConversionProcessor conversionProcessor;
 
-	@RequestMapping(value = "convertmdl", method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
+    @RequestMapping(value = "convertmdl", method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody String convertMdlToPharmML(@RequestParam(value="fileName") String fileName, @RequestParam(value="outputDir") String outputDir) {
 
-		// Invoke the mdlConverter Groovy script
+        // Invoke the mdlConverter Groovy script
         return conversionProcessor.process(fileName, outputDir);
     }
 
-	public MdlConversionProcessor getConversionProcessor() {
-		return conversionProcessor;
-	}
+    public MdlConversionProcessor getConversionProcessor() {
+        return conversionProcessor;
+    }
 
-	public void setConversionProcessor(MdlConversionProcessor conversionProcessor) {
-		this.conversionProcessor = conversionProcessor;
-	}
+    public void setConversionProcessor(MdlConversionProcessor conversionProcessor) {
+        this.conversionProcessor = conversionProcessor;
+    }
 }
