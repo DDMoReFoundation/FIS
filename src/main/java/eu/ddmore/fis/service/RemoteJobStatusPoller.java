@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import com.mango.mif.MIFHttpRestClient;
 import com.mango.mif.MIFJobStatusHelper;
 
-import eu.ddmore.fis.controllers.JobResourceProcessor;
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
 

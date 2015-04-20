@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.fis.controllers;
+package eu.ddmore.fis.service;
 
 import eu.ddmore.fis.domain.LocalJob;
 

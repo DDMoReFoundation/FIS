@@ -38,7 +38,7 @@
     
     <bean id="localJobService" class="eu.ddmore.fis.service.LocalJobService" />
     
-    <bean id="jobResourceRetriever" class="eu.ddmore.fis.controllers.JobProcessor" >
+    <bean id="jobResourceRetriever" class="eu.ddmore.fis.service.processors.JobProcessor" >
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
@@ -53,7 +53,7 @@
         <property name="scriptFile" value="${fis.retrieveOutputs}"></property>
     </bean>
     
-    <bean id="jobResourcePublisher" class="eu.ddmore.fis.controllers.JobProcessor" >
+    <bean id="jobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor" >
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
@@ -92,7 +92,7 @@
         <property name="scriptFile" value="${fis.mdlConverter}"></property>
     </bean>
 
-    <bean id="resourceReader" class="eu.ddmore.fis.controllers.ReadProcessor" >
+    <bean id="resourceReader" class="eu.ddmore.fis.controllers.FileProcessor" >
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
@@ -107,7 +107,7 @@
         <property name="scriptFile" value="${fis.readResource}"></property>
     </bean>
 
-    <bean id="resourceWriter" class="eu.ddmore.fis.controllers.WriteProcessor" >
+    <bean id="resourceWriter" class="eu.ddmore.fis.controllers.MdlFileWriter" >
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>

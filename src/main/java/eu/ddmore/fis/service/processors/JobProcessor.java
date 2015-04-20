@@ -1,13 +1,15 @@
-package eu.ddmore.fis.controllers;
+package eu.ddmore.fis.service.processors;
 
 import eu.ddmore.fis.domain.LocalJob;
+import eu.ddmore.fis.service.GroovyScriptExecutor;
+import eu.ddmore.fis.service.JobResourceProcessor;
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
 
 /**
  * Uses a Groovy script to process a job
  */
-public class JobProcessor extends GroovyScriptProcessor implements JobResourceProcessor {
+public class JobProcessor extends GroovyScriptExecutor implements JobResourceProcessor {
 
     public JobProcessor() {
     	super();

@@ -1,4 +1,4 @@
-package eu.ddmore.fis.controllers;
+package eu.ddmore.fis.service;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Required;
 /**
  * Configures and executes a Groovy script
  */
-public abstract class GroovyScriptProcessor {
+public abstract class GroovyScriptExecutor {
     private File scriptFile;
     private Binding binding;
 
-    public GroovyScriptProcessor() {
+    public GroovyScriptExecutor() {
         binding = new Binding();
     }
 
@@ -24,7 +24,7 @@ public abstract class GroovyScriptProcessor {
      * 
      * @param binding
      */
-    public GroovyScriptProcessor(Binding binding) {
+    public GroovyScriptExecutor(Binding binding) {
         this.binding = binding;
     }
 
