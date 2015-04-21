@@ -2,8 +2,6 @@ package eu.ddmore.fis;
 
 import static org.mockito.Mockito.mock;
 
-import java.util.Map;
-
 import org.springframework.boot.actuate.endpoint.HealthEndpoint;
 import org.springframework.boot.actuate.endpoint.ShutdownEndpoint;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +16,7 @@ public class CommonIntegrationTestContextConfiguration {
             return mock(ShutdownEndpoint.class);
         }
         @Bean
-        public HealthEndpoint<Map<String,Object>> healthEndpoint() {
+        public HealthEndpoint healthEndpoint() {
             return mock(HealthEndpoint.class);
         }
         

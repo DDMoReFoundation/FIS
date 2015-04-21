@@ -141,8 +141,11 @@
     </bean>
     
     <bean id="healthcheckController" class="eu.ddmore.fis.controllers.HealthcheckController">
-        <property name="mifClient" ref="mifRestClient" />
         <property name="healthEndpoint" ref="healthEndpoint" />
+    </bean>
+    
+    <bean id="mifHealth" class="eu.ddmore.fis.service.mif.Healthcheck">
+        <property name="mifClient" ref="mifRestClient" />
     </bean>
     
     <bean id="submitController" class="eu.ddmore.fis.controllers.SubmitController">
