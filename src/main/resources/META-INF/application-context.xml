@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
     xmlns:jpa="http://www.springframework.org/schema/data/jpa"
-    xmlns:mvc="http://www.springframework.org/schema/mvc"
-    xmlns:task="http://www.springframework.org/schema/task"
-    xmlns:tx="http://www.springframework.org/schema/tx"
-    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:task="http://www.springframework.org/schema/task"
+    xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
     xsi:schemaLocation="http://www.springframework.org/schema/beans 
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context 
@@ -21,11 +18,13 @@
         http://www.springframework.org/schema/mvc/spring-mvc.xsd
         http://www.springframework.org/schema/util
         http://www.springframework.org/schema/util/spring-util.xsd">
-        
-    <context:annotation-config/>
+
+    <context:annotation-config />
     <bean class="eu.ddmore.fis.configuration.FISPropertyPlaceholderConfigurer">
         <property name="ignoreResourceNotFound" value="true" />
-        <property name="systemPropertiesModeName"><value>SYSTEM_PROPERTIES_MODE_OVERRIDE</value></property>
+        <property name="systemPropertiesModeName">
+            <value>SYSTEM_PROPERTIES_MODE_OVERRIDE</value>
+        </property>
         <property name="locations">
             <list>
                 <value>classpath:application.properties</value>
@@ -33,12 +32,12 @@
             </list>
         </property>
     </bean>
-    
+
     <jpa:repositories base-package="eu.ddmore.fis.repository" />
-    
+
     <bean id="localJobService" class="eu.ddmore.fis.service.LocalJobService" />
-    
-    <bean id="jobResourceRetriever" class="eu.ddmore.fis.service.processors.JobProcessor" >
+
+    <bean id="jobResourceRetriever" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
@@ -52,8 +51,30 @@
         </constructor-arg>
         <property name="scriptFile" value="${fis.retrieveOutputs}"></property>
     </bean>
-    
-    <bean id="jobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor" >
+
+
+    <bean id="jobResourcePublisher" class="eu.ddmore.fis.service.processors.DelegatingJobProcessor">
+        <constructor-arg>
+            <map>
+                <entry key-ref="verbatimJobResourcePublisher">
+                        <bean
+                            class="eu.ddmore.fis.service.processors.InputFilenamePredicate">
+                            <constructor-arg
+                                value="${fis.resourcePublisher.verbatim.filenamePattern}"></constructor-arg>
+                        </bean>
+                </entry>
+                <entry key-ref="mdlJobResourcePublisher">
+                        <bean
+                            class="eu.ddmore.fis.service.processors.InputFilenamePredicate">
+                            <constructor-arg
+                                value="${fis.resourcePublisher.mdl.filenamePattern}"></constructor-arg>
+                        </bean>
+                </entry>
+            </map>
+        </constructor-arg>
+    </bean>
+
+    <bean id="verbatimJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
@@ -74,16 +95,43 @@
                 </constructor-arg>
             </bean>
         </constructor-arg>
-        <property name="scriptFile" value="${fis.publishInputs}"></property>
+        <property name="scriptFile"
+            value="${fis.resourcePublisher.verbatim.publishScript}"></property>
     </bean>
-    
-    <bean id="mdlConversionProcessor" class="eu.ddmore.fis.controllers.MdlConversionProcessor" >
+
+    <bean id="mdlJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
+        <constructor-arg>
+            <bean class="groovy.lang.Binding">
+                <constructor-arg>
+                    <map>
+                        <entry key="fis.mdl.ext">
+                            <value>${fis.mdl.ext}</value>
+                        </entry>
+                        <entry key="fis.pharmml.ext">
+                            <value>${fis.pharmml.ext}</value>
+                        </entry>
+                        <entry key="converter.toolbox.executable">
+                            <value>${converter.toolbox.executable}</value>
+                        </entry>
+                        <entry key="execution.host.fileshare.local">
+                            <value>${execution.host.fileshare.local}</value>
+                        </entry>
+                    </map>
+                </constructor-arg>
+            </bean>
+        </constructor-arg>
+        <property name="scriptFile"
+            value="${fis.resourcePublisher.mdl.publishScript}"></property>
+    </bean>
+
+    <bean id="mdlConversionProcessor" class="eu.ddmore.fis.controllers.MdlConversionProcessor">
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
                     <map>
                         <entry key="converter.toolbox.executable">
-                            <value>${converter.toolbox.executable}</value>
+                            <value>${converter.toolbox.executable}
+                            </value>
                         </entry>
                     </map>
                 </constructor-arg>
@@ -92,13 +140,14 @@
         <property name="scriptFile" value="${fis.mdlConverter}"></property>
     </bean>
 
-    <bean id="resourceReader" class="eu.ddmore.fis.controllers.FileProcessor" >
+    <bean id="resourceReader" class="eu.ddmore.fis.controllers.FileProcessor">
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
                     <map>
                         <entry key="converter.toolbox.executable">
-                            <value>${converter.toolbox.executable}</value>
+                            <value>${converter.toolbox.executable}
+                            </value>
                         </entry>
                     </map>
                 </constructor-arg>
@@ -107,13 +156,14 @@
         <property name="scriptFile" value="${fis.readResource}"></property>
     </bean>
 
-    <bean id="resourceWriter" class="eu.ddmore.fis.controllers.MdlFileWriter" >
+    <bean id="resourceWriter" class="eu.ddmore.fis.controllers.MdlFileWriter">
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
                     <map>
                         <entry key="converter.toolbox.executable">
-                            <value>${converter.toolbox.executable}</value>
+                            <value>${converter.toolbox.executable}
+                            </value>
                         </entry>
                     </map>
                 </constructor-arg>
@@ -124,47 +174,52 @@
 
     <mvc:annotation-driven conversion-service="conversionService" />
     <bean id="conversionService"
-          class="org.springframework.context.support.ConversionServiceFactoryBean">
+        class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <set>
-                <bean class="eu.ddmore.fis.controllers.converters.StringToSubmissionRequestConverter"/>
-                <bean class="eu.ddmore.fis.controllers.converters.SubmissionRequestToStringConverter"/>
-                <bean class="eu.ddmore.fis.controllers.converters.StringToWriteMdlRequestConverter"/>
-                <bean class="eu.ddmore.fis.controllers.converters.StringToWriteMdlResponseConverter"/>
-                <bean class="eu.ddmore.fis.controllers.converters.LocalJobToStringConverter"/>
+                <bean
+                    class="eu.ddmore.fis.controllers.converters.StringToSubmissionRequestConverter" />
+                <bean
+                    class="eu.ddmore.fis.controllers.converters.SubmissionRequestToStringConverter" />
+                <bean
+                    class="eu.ddmore.fis.controllers.converters.StringToWriteMdlRequestConverter" />
+                <bean
+                    class="eu.ddmore.fis.controllers.converters.StringToWriteMdlResponseConverter" />
+                <bean
+                    class="eu.ddmore.fis.controllers.converters.LocalJobToStringConverter" />
             </set>
         </property>
     </bean>
-    
+
     <bean id="shutdownController" class="eu.ddmore.fis.controllers.ShutdownController">
         <property name="mifClient" ref="mifRestClient" />
     </bean>
-    
+
     <bean id="healthcheckController" class="eu.ddmore.fis.controllers.HealthcheckController">
         <property name="healthEndpoint" ref="healthEndpoint" />
     </bean>
-    
+
     <bean id="mifHealth" class="eu.ddmore.fis.service.mif.Healthcheck">
         <property name="mifClient" ref="mifRestClient" />
     </bean>
-    
+
     <bean id="submitController" class="eu.ddmore.fis.controllers.SubmitController">
         <property name="localJobService" ref="localJobService" />
         <property name="jobDispatcher" ref="jobDispatcher" />
     </bean>
-    
+
     <bean id="jobDispatcher" class="eu.ddmore.fis.service.JobDispatcherImpl">
         <property name="mifClient" ref="mifRestClient" />
         <property name="jobResourcePublisher" ref="jobResourcePublisher" />
-        <property name="commandRegistry" ref="commandRegistry"/>
+        <property name="commandRegistry" ref="commandRegistry" />
         <property name="executionHostFileshare" value="${execution.host.fileshare}" />
         <property name="executionHostFileshareRemote" value="${execution.host.fileshare.remote}" />
     </bean>
-    
+
     <bean id="jobsController" class="eu.ddmore.fis.controllers.JobsController">
         <property name="localJobService" ref="localJobService" />
     </bean>
-    
+
     <bean id="mdlConversionController" class="eu.ddmore.fis.controllers.MdlConversionController">
         <property name="conversionProcessor" ref="mdlConversionProcessor" />
     </bean>
@@ -173,67 +228,74 @@
         <property name="readProcessor" ref="resourceReader" />
         <property name="writeProcessor" ref="resourceWriter" />
     </bean>
-   
+
     <bean id="commandRegistry" class="eu.ddmore.fis.service.CommandRegistryImpl">
         <property name="mifClient" ref="mifRestClient" />
     </bean>
-    
-    <bean id="mifRestClient" class="com.mango.mif.MIFHttpRestClient" scope="singleton">
+
+    <bean id="mifRestClient" class="com.mango.mif.MIFHttpRestClient"
+        scope="singleton">
         <constructor-arg>
             <value>${mif.url}</value>
         </constructor-arg>
     </bean>
-    
+
     <bean id="remoteJobStatusPoller" class="eu.ddmore.fis.service.RemoteJobStatusPoller">
         <property name="localJobService" ref="localJobService" />
         <property name="mifClient" ref="mifRestClient" />
         <property name="jobResourceRetriever" ref="jobResourceRetriever" />
     </bean>
-    
-    <task:annotation-driven executor="globalExecutor" scheduler="globalScheduler"/>
-    
-    <task:executor id="globalExecutor" pool-size="1"/>
-    
-    <task:scheduler id="globalScheduler" pool-size="1"/>
-    
-    <bean id="dataSource"
-        class="com.jolbox.bonecp.BoneCPDataSource" destroy-method="close">
+
+    <task:annotation-driven executor="globalExecutor"
+        scheduler="globalScheduler" />
+
+    <task:executor id="globalExecutor" pool-size="1" />
+
+    <task:scheduler id="globalScheduler" pool-size="1" />
+
+    <bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource"
+        destroy-method="close">
         <property name="driverClass" value="org.h2.Driver" />
-        <property name="jdbcUrl" value="jdbc:h2:file:${fis.db.file};LOCK_TIMEOUT=10000" />
+        <property name="jdbcUrl"
+            value="jdbc:h2:file:${fis.db.file};LOCK_TIMEOUT=10000" />
         <property name="username" value="${fis.db.user}" />
         <property name="password" value="${fis.db.password}" />
-        <property name="idleConnectionTestPeriodInMinutes" value="60"/>
-        <property name="idleMaxAgeInMinutes" value="240"/>
-        <property name="maxConnectionsPerPartition" value="30"/>
-        <property name="minConnectionsPerPartition" value="10"/>
-        <property name="partitionCount" value="3"/>
-        <property name="acquireIncrement" value="5"/>
-        <property name="statementsCacheSize" value="100"/>
-        <property name="releaseHelperThreads" value="3"/>
-        
+        <property name="idleConnectionTestPeriodInMinutes"
+            value="60" />
+        <property name="idleMaxAgeInMinutes" value="240" />
+        <property name="maxConnectionsPerPartition" value="30" />
+        <property name="minConnectionsPerPartition" value="10" />
+        <property name="partitionCount" value="3" />
+        <property name="acquireIncrement" value="5" />
+        <property name="statementsCacheSize" value="100" />
+        <property name="releaseHelperThreads" value="3" />
+
     </bean>
-        <!-- Enable annotation style of managing transactions -->
-    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
-    
+    <!-- Enable annotation style of managing transactions -->
+    <tx:annotation-driven transaction-manager="transactionManager"
+        proxy-target-class="true" />
+
     <bean class="org.springframework.orm.jpa.JpaTransactionManager"
-          id="transactionManager">
-        <property name="entityManagerFactory"
-                  ref="entityManagerFactory" />
+        id="transactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
         <property name="jpaDialect">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
+            <bean
+                class="org.springframework.orm.jpa.vendor.HibernateJpaDialect" />
         </property>
     </bean>
- 
+
     <bean id="entityManagerFactory"
-          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />
-        <property name="packagesToScan" value="eu.ddmore.fis.domain"/>
+        <property name="packagesToScan" value="eu.ddmore.fis.domain" />
         <property name="jpaVendorAdapter">
-            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+            <bean
+                class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
                 <property name="generateDdl" value="true" />
-                <property name="showSql" value="false"/>
-                <property name="databasePlatform" value="org.hibernate.dialect.H2Dialect"/>
-                <property name="database" value="HSQL"/>
+                <property name="showSql" value="false" />
+                <property name="databasePlatform"
+                    value="org.hibernate.dialect.H2Dialect" />
+                <property name="database" value="HSQL" />
             </bean>
         </property>
         <property name="jpaProperties">
@@ -242,5 +304,5 @@
             </value>
         </property>
     </bean>
-    
+
 </beans>

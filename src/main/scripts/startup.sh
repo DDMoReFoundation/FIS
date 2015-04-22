@@ -4,11 +4,6 @@ SERVICE_HOME=$(pwd)
 
 
 SERVICE_BINARY=${project.build.finalName}.${project.packaging}
-PUBLISH_INPUTS="$SERVICE_HOME/scripts/publishInputs.groovy"
-RETRIEVE_OUTPUTS="$SERVICE_HOME/scripts/retrieveOutputs.groovy"
-READ_RESOURCE="$SERVICE_HOME/scripts/readResource.groovy"
-WRITE_RESOURCE="$SERVICE_HOME/scripts/writeResource.groovy"
-MDL_CONVERTER="$SERVICE_HOME/scripts/mdlConverter.groovy"
 #  See comment in config.properties regarding the important distinction between these three properties, and what they should be set to.
 EXECUTION_HOST_FILESHARE_LOCAL=/tmp/mifshare
 EXECUTION_HOST_FILESHARE=$EXECUTION_HOST_FILESHARE_LOCAL
@@ -21,8 +16,7 @@ then
     mkdir "$EXECUTION_HOST_FILESHARE_LOCAL"
 fi
 
-params=" -Dfis.publishInputs=\"$PUBLISH_INPUTS\" -Dfis.retrieveOutputs=\"$RETRIEVE_OUTPUTS\" -Dfis.readResource=\"$READ_RESOURCE\" -Dfis.writeResource=\"$WRITE_RESOURCE\" -Dfis.mdlConverter=\"$MDL_CONVERTER\" \
- -Dexecution.host.fileshare.local=\"$EXECUTION_HOST_FILESHARE_LOCAL\" \
+params=" -Dexecution.host.fileshare.local=\"$EXECUTION_HOST_FILESHARE_LOCAL\" \
  -Dexecution.host.fileshare=\"$EXECUTION_HOST_FILESHARE\" \
  -Dexecution.host.fileshare.remote=\"$EXECUTION_HOST_FILESHARE_REMOTE\" \
  -Dmif.userName= -Dmif.userPassword= \

@@ -249,7 +249,31 @@
             </testResource>
         </testResources>
         <plugins>
-
+            
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>prepare-test-instance-fis-home</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/test-fis-home</outputDirectory>
+                            <includeEmptyDirs>true</includeEmptyDirs>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/scripts</directory>
+                                </resource>
+                            </resources>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </execution></executions>
+             </plugin>
             <!-- Ensure that groovy classes (not scripts) in src/main/groovy 
                 are compiled when Maven build is executed -->
             <plugin>

@@ -6,7 +6,6 @@ package eu.ddmore.fis;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
@@ -18,6 +17,6 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 @ImportResource("classpath:META-INF/application-context.xml")
 public class Application {
     public static void main(String[] args) {
-        ApplicationContext ctx = SpringApplication.run(Application.class, args);
+        SpringApplication.run(Application.class, args);
     }
 } 

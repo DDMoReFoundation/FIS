@@ -2,7 +2,6 @@ package eu.ddmore.fis.controllers;
 
 import eu.ddmore.fis.service.GroovyScriptExecutor;
 import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
 /**
  * Uses a file processor that applies some processing implemented in Groovy script 
  * and returns the result of processing.
@@ -26,7 +25,6 @@ public class FileProcessor extends GroovyScriptExecutor {
         Binding binding = getBinding();
         binding.setVariable("scriptFile", getScriptFile());
         binding.setVariable("fileName", fileName);
-        GroovyShell shell = createShell(binding);
-        return (String)execute(shell);
+        return (String)execute(binding);
     }
 }

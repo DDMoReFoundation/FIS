@@ -4,7 +4,6 @@ import eu.ddmore.fis.domain.WriteMdlRequest;
 import eu.ddmore.fis.domain.WriteMdlResponse;
 import eu.ddmore.fis.service.GroovyScriptExecutor;
 import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
 /**
  * Uses a Groovy script to write an MDL resource 
  */
@@ -30,7 +29,6 @@ public class MdlFileWriter extends GroovyScriptExecutor {
         binding.setVariable("scriptFile", getScriptFile());
         binding.setVariable("fileContent", writeRequest.getFileContent());
         binding.setVariable("fileName", writeRequest.getFileName());
-        GroovyShell shell = createShell(binding);
-        return (WriteMdlResponse)execute(shell);
+        return (WriteMdlResponse)execute(binding);
     }
 }

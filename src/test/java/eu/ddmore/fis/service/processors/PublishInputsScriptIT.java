@@ -49,6 +49,8 @@ public class PublishInputsScriptIT {
 
     private JobProcessor jobProcessor;
 
+    private static final String PUBLISH_MDL_INPUTS_SCRIPT="/scripts/publishInputs-mdl.groovy";
+    private static final String PUBLISH_VERBATIM_INPUTS_SCRIPT="/scripts/publishInputs-verbatim.groovy";
     @Before
     public void setUp() {
         this.testWorkingDir = this.testDirectory.getRoot();
@@ -65,12 +67,12 @@ public class PublishInputsScriptIT {
         this.binding.setVariable("ApacheCommonsExecExecutor", this.mockExecutor);
 
         this.jobProcessor = new JobProcessor(this.binding);
-        this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptIT.class.getResource("/scripts/publishInputs.groovy")));
     }
 
     @Test
     public void shouldPublishCTLInputs() throws IOException {
 
+        this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptIT.class.getResource(PUBLISH_VERBATIM_INPUTS_SCRIPT)));
         // Copy the files out of the testdata JAR file
 
         final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/Warfarin_ODE/";
@@ -97,6 +99,7 @@ public class PublishInputsScriptIT {
     @Test
     public void shouldPublishPharmMLInputs() throws IOException {
 
+        this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptIT.class.getResource(PUBLISH_VERBATIM_INPUTS_SCRIPT)));
         // Copy the files out of the testdata JAR file
 
         final String SCRIPT_FILE_NAME = "example3.xml";
@@ -128,6 +131,7 @@ public class PublishInputsScriptIT {
      */
     public void shouldPublishMDLInputs() throws IOException {
 
+        this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptIT.class.getResource(PUBLISH_MDL_INPUTS_SCRIPT)));
         final String targetLang = "PharmML";
         final String outputModelFileExt = ".xml";
 
@@ -184,6 +188,7 @@ public class PublishInputsScriptIT {
 
     @Test
     public void shouldPublishCTLInputsWhenModelFileWithinSubdirectory() throws IOException {
+        this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptIT.class.getResource(PUBLISH_VERBATIM_INPUTS_SCRIPT)));
 
         // Copy the files out of the testdata JAR file
 
@@ -215,6 +220,7 @@ public class PublishInputsScriptIT {
     @Test
     public void shouldPublishPharmMLInputsWhenModelFileWithinSubdirectory() throws IOException {
 
+        this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptIT.class.getResource(PUBLISH_VERBATIM_INPUTS_SCRIPT)));
         // Copy the files out of the testdata JAR file
 
         final String SCRIPT_FILE_NAME = "example3.xml";
@@ -249,6 +255,7 @@ public class PublishInputsScriptIT {
     @Test
     public void shouldPublishMDLInputsWhenModelFileWithinSubdirectory() throws IOException {
 
+        this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptIT.class.getResource(PUBLISH_MDL_INPUTS_SCRIPT)));
         // Copy the files out of the testdata JAR file
 
         final String SCRIPT_FILE_NAME = "warfarin_PK_PRED.mdl";

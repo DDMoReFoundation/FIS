@@ -11,11 +11,6 @@ IF %SERVICE_HOME:~-1%==\ SET SERVICE_HOME=%SERVICE_HOME:~0,-1%
 CD %SERVICE_HOME%
 
 SET SERVICE_BINARY=${project.build.finalName}.${project.packaging}
-SET PUBLISH_INPUTS=%SERVICE_HOME%\scripts\publishInputs.groovy
-SET RETRIEVE_OUTPUTS=%SERVICE_HOME%\scripts\retrieveOutputs.groovy
-SET READ_RESOURCE=%SERVICE_HOME%\scripts\readResource.groovy
-SET WRITE_RESOURCE=%SERVICE_HOME%\scripts\writeResource.groovy
-SET MDL_CONVERTER=%SERVICE_HOME%\scripts\mdlConverter.groovy
 REM  See comment in config.properties regarding the important distinction between these three properties, and what they should be set to.
 SET EXECUTION_HOST_FILESHARE_LOCAL=%TEMP%\mifshare
 SET EXECUTION_HOST_FILESHARE=%EXECUTION_HOST_FILESHARE_LOCAL%
@@ -27,12 +22,7 @@ IF NOT EXIST "%EXECUTION_HOST_FILESHARE_LOCAL%" (
     mkdir "%EXECUTION_HOST_FILESHARE_LOCAL%"
 )
 
-SET params= -Dfis.publishInputs="%PUBLISH_INPUTS%" ^
- -Dfis.retrieveOutputs="%RETRIEVE_OUTPUTS%" ^
- -Dfis.readResource="%READ_RESOURCE%" ^
- -Dfis.writeResource="%WRITE_RESOURCE%" ^
- -Dfis.mdlConverter="%MDL_CONVERTER%" ^
- -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-distribution\converter-toolbox\convert.bat" ^
+SET params= -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-distribution\converter-toolbox\convert.bat" ^
  -Dexecution.host.fileshare.local="%EXECUTION_HOST_FILESHARE_LOCAL%" ^
  -Dexecution.host.fileshare="%EXECUTION_HOST_FILESHARE%" ^
  -Dexecution.host.fileshare.remote="%EXECUTION_HOST_FILESHARE_REMOTE%" ^
