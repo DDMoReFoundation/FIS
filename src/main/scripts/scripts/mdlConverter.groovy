@@ -11,6 +11,11 @@ import org.apache.commons.exec.PumpStreamHandler
 
 import org.apache.log4j.Logger
 
+/**
+ * This script will prepare and invoke converter toolbox command to convert MDL to pharmML.
+ * It will return result file path on success or empty string on failure along with errors logged to error log. 
+ */
+
 final Logger LOGGER = Logger.getLogger(getClass())
 
 File scriptFile = binding.getVariable("scriptFile");
@@ -36,7 +41,7 @@ try {
     stdoutOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2PharmML.stdout")))
     IOUtils.write("Invoking converter toolbox command : " + cmdLine + "\n\n", stdoutOS)
     stderrOS = new BufferedOutputStream(new FileOutputStream(new File(fisMetadataDir, "MDL2PharmML.stderr")))
-    
+
     if (!(outputDirectory.exists() || outputDirectory.mkdir())) {
         IOUtils.write("Failed to access/create output directory at specified location : "+outputDirectory.getAbsolutePath(), stderrOS)
         return;
