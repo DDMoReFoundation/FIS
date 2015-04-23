@@ -3,6 +3,7 @@
  ******************************************************************************/
 package eu.ddmore.fis;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -10,7 +11,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -40,8 +40,10 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 		
 		String output = fisClient.convertMdlToPharmML(mdlFileFullPath, outputFileFullPath);
 		
+		assertFalse("Output path should not be empty", output.isEmpty());
 		//Checks if returned file location does exist.
 		assertTrue("Output file should be created", new File(output).exists());
+		
 		
 	}
 	
