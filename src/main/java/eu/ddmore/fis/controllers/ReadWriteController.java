@@ -18,10 +18,10 @@ import eu.ddmore.fis.domain.WriteMdlResponse;
 public class ReadWriteController {
 
 	@Autowired
-	private ReadProcessor readProcessor;
+	private FileProcessor readProcessor;
 
 	@Autowired
-	private WriteProcessor writeProcessor;
+	private MdlFileWriter writeProcessor;
 
 	@RequestMapping(value = "readmdl", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody String readMdl(@RequestParam(value="fileName") String fileName) {
@@ -37,19 +37,19 @@ public class ReadWriteController {
     	return writeProcessor.process(writeRequest);
     }
 
-	public ReadProcessor getReadProcessor() {
+	public FileProcessor getReadProcessor() {
 		return readProcessor;
 	}
 
-	public void setReadProcessor(ReadProcessor readProcessor) {
+	public void setReadProcessor(FileProcessor readProcessor) {
 		this.readProcessor = readProcessor;
 	}
 
-    public WriteProcessor getWriteProcessor() {
+    public MdlFileWriter getWriteProcessor() {
 		return writeProcessor;
 	}
 
-	public void setWriteProcessor(WriteProcessor writeProcessor) {
+	public void setWriteProcessor(MdlFileWriter writeProcessor) {
 		this.writeProcessor = writeProcessor;
 	}
 }

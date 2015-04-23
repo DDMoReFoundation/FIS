@@ -1,4 +1,4 @@
-package eu.ddmore.fis.controllers;
+package eu.ddmore.fis.service.processors;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -12,6 +12,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
+import eu.ddmore.fis.service.processors.JobProcessor;
 
 
 @RunWith(MockitoJUnitRunner.class)

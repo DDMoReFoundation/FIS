@@ -35,39 +35,24 @@ String modelExt = FilenameUtils.getExtension(origControlFile.getName());
 // We ensure that subdirectory structure is maintained
 File controlFileInMifWorkingDir = new File(mifWorkingDir, origControlFile.getPath())
 
-// If copying mock data
 File mockDataDir = new File(scriptFile.getParentFile().getParentFile(),"mockData")
-
-if (MDL_FILE_EXT.equals(modelExt)) {
-
-    String newModelFileName;
-
-    File xmlVersionInMockDataDir = new File(mockDataDir, modelName + "." + PHARMML_FILE_EXT)
-    if (xmlVersionInMockDataDir.exists()) {
-        // Mock converted file exists in mockData dir
-        newModelFileName = modelName + "." + PHARMML_FILE_EXT
-        FileUtils.copyFile( xmlVersionInMockDataDir, new File(mifWorkingDir, newModelFileName) )
-        File data = new File(mockDataDir, modelName + ".csv")
-        if (data.exists()) {
-            FileUtils.copyFile( data, new File(mifWorkingDir, modelName + "_data.csv") )
-        }
+String newModelFileName;
+File xmlVersionInMockDataDir = new File(mockDataDir, modelName + "." + PHARMML_FILE_EXT)
+if (xmlVersionInMockDataDir.exists()) {
+    // Mock converted file exists in mockData dir   
+    newModelFileName = modelName + "." + PHARMML_FILE_EXT
+    FileUtils.copyFile( xmlVersionInMockDataDir, new File(mifWorkingDir, newModelFileName) )
+    File data = new File(mockDataDir, modelName + ".csv")
+    if (data.exists()) {
+        FileUtils.copyFile( data, new File(mifWorkingDir, modelName + "_data.csv") )
     }
-    else {
-        // Need to convert the MDL into PharmML or direct to NMTRAN using the Converter Toolbox command-line launch script
-
-        // GroovyShell shell = new GroovyShell(binding)
-        // def script = shell.parse( new File(scriptFile.getParentFile(), "MdlToPharmML.groovy") )
-        // newModelFileName = script.doConvert(origControlFile, controlFileInMifWorkingDir, fisMetadataDir)
-
-        def convWrapper = this.class.classLoader.parseClass(new File(scriptFile.getParentFile(), mdlConversionScript));
-        newModelFileName = convWrapper.newInstance(binding).doConvert(origControlFile, controlFileInMifWorkingDir, fisMetadataDir)
-
-        if (newModelFileName == null) {
-            // Conversion failed
-            job.setStatus(LocalJobStatus.FAILED)
-            return;
-        }
+} else {
+    def convWrapper = this.class.classLoader.parseClass(new File(scriptFile.getParentFile(), mdlConversionScript));
+    newModelFileName = convWrapper.newInstance(binding).doConvert(origControlFile, controlFileInMifWorkingDir, fisMetadataDir)
+    if (newModelFileName == null) {
+        // Conversion failed
+        job.setStatus(LocalJobStatus.FAILED)
+        return;
     }
-
-    job.setControlFile(newModelFileName);
 }
+job.setControlFile(newModelFileName);

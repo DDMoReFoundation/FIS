@@ -15,7 +15,7 @@ public class ServiceHealthcheckAT extends SystemPropertiesAware {
     @Test
     public void shouldHealthcheckService() {
         FISHttpRestClient fisClient = new FISHttpRestClient(System.getProperty("fis.url"));
-        assertEquals("ok",fisClient.healthcheck());
+        assertEquals("UP",fisClient.healthcheck());
     }
     
 }

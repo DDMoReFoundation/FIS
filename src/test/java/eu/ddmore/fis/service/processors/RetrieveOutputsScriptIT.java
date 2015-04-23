@@ -1,4 +1,4 @@
-package eu.ddmore.fis.controllers;
+package eu.ddmore.fis.service.processors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -17,6 +17,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import eu.ddmore.fis.domain.LocalJob;
+import eu.ddmore.fis.service.processors.JobProcessor;
 import groovy.lang.Binding;
 
 @RunWith(MockitoJUnitRunner.class)

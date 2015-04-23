@@ -28,7 +28,6 @@ import com.mango.mif.MIFHttpRestClient;
 import com.mango.mif.domain.ClientAvailableConnectorDetails;
 import com.mango.mif.domain.ExecutionRequest;
 
-import eu.ddmore.fis.controllers.JobResourceProcessor;
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
 

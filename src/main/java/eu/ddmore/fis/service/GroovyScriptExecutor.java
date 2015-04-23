@@ -1,4 +1,4 @@
-package eu.ddmore.fis.controllers;
+package eu.ddmore.fis.service;
 
 import groovy.lang.Binding;
 import groovy.lang.GroovyShell;
@@ -7,14 +7,16 @@ import java.io.File;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import com.google.common.base.Preconditions;
+
 /**
  * Configures and executes a Groovy script
  */
-public abstract class GroovyScriptProcessor {
+public abstract class GroovyScriptExecutor {
     private File scriptFile;
     private Binding binding;
 
-    public GroovyScriptProcessor() {
+    public GroovyScriptExecutor() {
         binding = new Binding();
     }
 
@@ -24,11 +26,12 @@ public abstract class GroovyScriptProcessor {
      * 
      * @param binding
      */
-    public GroovyScriptProcessor(Binding binding) {
+    public GroovyScriptExecutor(Binding binding) {
+        Preconditions.checkNotNull(binding, "Binding can't be null");
         this.binding = binding;
     }
 
-    protected GroovyShell createShell(Binding binding) {
+    private GroovyShell createShell(Binding binding) {
         return new GroovyShell(this.getClass().getClassLoader(), binding);
     }
 
@@ -41,9 +44,10 @@ public abstract class GroovyScriptProcessor {
      * @param shell
      * @return result of the script evaluation
      */
-    protected Object execute(GroovyShell shell) {
+    protected Object execute(Binding binding) {
+        Preconditions.checkNotNull(binding, "Binding can't be null");
         try {
-            return shell.evaluate(scriptFile);
+            return createShell(binding).evaluate(scriptFile);
         } catch (Exception e) {
             throw new RuntimeException(String.format("Couldn't execute script %s.", scriptFile), e);
         }
@@ -51,6 +55,8 @@ public abstract class GroovyScriptProcessor {
 
     @Required
     public void setScriptFile(File scriptFile) {
+        Preconditions.checkNotNull(scriptFile, "Script file must not be null");
+        Preconditions.checkState(scriptFile.exists(), String.format("File '%s' must exist", scriptFile));
         this.scriptFile = scriptFile;
     }
 

@@ -54,7 +54,7 @@ public class SubmitControllerIT extends SystemPropertiesAware {
     // This is where the output from FIS and MIF can be found
     private File workingDir = new File("target", "SubmitControllerIT_Test_Working_Dir");
 
-    @Value("${execution.host.fileshare}") // Set to "target/Test_Execution_Host_Fileshare" in tests.properties
+    @Value("${execution.host.fileshare}")
     private String executionHostFileshare;
     @Value("${execution.host.fileshare.remote}")
     private String executionHostFileshareRemote;
