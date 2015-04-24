@@ -1,0 +1,1 @@
+This is mock archive, it doesn't have 'zip' extension for easy modification in IDE and also because CTS is not file-extension aware.
