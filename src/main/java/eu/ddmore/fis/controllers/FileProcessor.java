@@ -24,7 +24,7 @@ public class FileProcessor extends GroovyScriptExecutor {
     public String process(String fileName) {
         Binding binding = getBinding();
         binding.setVariable("scriptFile", getScriptFile());
-        binding.setVariable("fileName", fileName);
+        binding.setVariable("filePath", fileName);
         return (String)execute(binding);
     }
 }

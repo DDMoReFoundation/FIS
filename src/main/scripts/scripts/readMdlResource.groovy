@@ -1,11 +1,6 @@
 /*******************************************************************************
  * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-import org.apache.commons.io.FileUtils
-import org.apache.log4j.Logger
-
-import com.google.common.base.Preconditions
-
 import eu.ddmore.archive.Archive
 import eu.ddmore.archive.ArchiveFactory
 import eu.ddmore.archive.Entry
@@ -15,8 +10,14 @@ import eu.ddmore.convertertoolbox.domain.LanguageVersion
 import eu.ddmore.fis.service.cts.ConverterToolboxService
 import groovy.json.JsonOutput
 
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
+import org.apache.log4j.Logger
+
+import com.google.common.base.Preconditions
+
 /**
- * This script invokes converter toolbox service to convert MDL to pharmML.
+ * This script invokes converter toolbox service to convert MDL to JSON.
  * It will return result file path on success or empty string.
  * Any Exception is wrapped by Groovy interpreter in Runtime Exception and should be handled by the clients.
  * Conversion Report is dumped to json in the output directory 
@@ -26,7 +27,7 @@ import groovy.json.JsonOutput
  * Parameters
  */
 final String inputFilePath = binding.getVariable("filePath");
-final String outputDir = binding.getVariable("outputDir");
+//TODO This needs to be unified with mdlConverter.groovy final String outputDir = binding.getVariable("outputDir");
 
 /**
  * Variables
@@ -36,10 +37,9 @@ final File scriptFile = binding.getVariable("scriptFile");
 final ArchiveFactory archiveFactory = binding.getVariable("archiveFactory");
 final ConverterToolboxService converterToolboxService = binding.getVariable("converterToolboxService");
 final LanguageVersion from = binding.getVariable("mdlLanguage");
-final LanguageVersion to = binding.getVariable("pharmmlLanguage");
+final LanguageVersion to = binding.getVariable("jsonLanguage");
 final String outputArchiveName = binding.getVariable("fis.cts.output.archive");
 final String outputConversionReport = binding.getVariable("fis.cts.output.conversionReport");
-
 
 /**
  * Script
@@ -50,7 +50,7 @@ File workingDir = inputFile.parentFile
 File fisMetadataDir = new File(workingDir,".fis");
 fisMetadataDir.mkdir();
 
-File outputDirectory = new File(outputDir);
+File outputDirectory = fisMetadataDir;// TODO see comment - outputDir);
 
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
 Archive archive = archiveFactory.createArchive(archiveFile);
@@ -77,13 +77,16 @@ try {
     File resultFile = new File(outputDirectory,resultEntry.getFileName());
     resultFile = resultEntry.extractFile(resultFile);
     Preconditions.checkNotNull(resultFile, "Extracted Archive entry ${resultEntry} was null.");
-    return resultFile.getAbsolutePath();
+    
+    result = FileUtils.readFileToString(resultFile)
+    FileUtils.deleteQuietly(resultFile)
+    return result;
 } finally {
     archive.close();
     String conversionReportText = "No conversion report was generated for ${inputFile}";
     if(conversionReport!=null) {
         conversionReportText = JsonOutput.toJson(conversionReport);
     }
-    new File(fisMetadataDir, outputConversionReport) << conversionReportText;
+    new File(outputDirectory, outputConversionReport) << conversionReportText;
     FileUtils.deleteQuietly(archive.getArchiveFile());
 }

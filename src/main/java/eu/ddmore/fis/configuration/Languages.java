@@ -35,6 +35,13 @@ public class Languages {
     public LanguageVersion pharmmlLanguage(@Value("${fis.pharmml.name}") String language, @Value("${fis.pharmml.version}") String version) {
         return new LanguageVersion(language, parseVersion(version));
     }
+
+
+    @Bean
+    @Autowired(required=true)
+    public LanguageVersion jsonLanguage(@Value("${fis.json.name}") String language, @Value("${fis.json.version}") String version) {
+        return new LanguageVersion(language, parseVersion(version));
+    }
     
     @VisibleForTesting
     Version parseVersion(String version) {
