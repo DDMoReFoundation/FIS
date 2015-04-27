@@ -28,7 +28,7 @@ public class MdlFileWriter extends GroovyScriptExecutor {
         Binding binding = getBinding();
         binding.setVariable("scriptFile", getScriptFile());
         binding.setVariable("fileContent", writeRequest.getFileContent());
-        binding.setVariable("fileName", writeRequest.getFileName());
+        binding.setVariable("filePath", writeRequest.getFileName());
         return (WriteMdlResponse)execute(binding);
     }
 }
