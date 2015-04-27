@@ -30,6 +30,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
+import eu.ddmore.archive.Archive;
+import eu.ddmore.archive.exception.ArchiveException;
 import eu.ddmore.convertertoolbox.domain.Conversion;
 import eu.ddmore.convertertoolbox.domain.ConversionCapability;
 import eu.ddmore.convertertoolbox.domain.ConversionReport;
@@ -71,19 +73,23 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
     }
 
     @Override
-    public Collection<ConversionCapability> getConversions() throws ConvererToolboxServiceException {
+    public Collection<ConversionCapability> getConversionCapabilities() throws ConverterToolboxServiceException {
         return getServiceDescriptorResource().getContent().getCapabilities();
     }
 
     @Override
-    public ConversionReport convert(Archive archive, LanguageVersion from, LanguageVersion to) throws ConvererToolboxServiceException {
+    public ConversionReport convert(Archive archive, LanguageVersion from, LanguageVersion to) throws ConverterToolboxServiceException {
         Preconditions.checkNotNull(archive, "Archive can't be null.");
-        return convert(archive, from, to, archive.getArchiveFile());
+        try {
+            return convert(archive, from, to, archive.getArchiveFile());
+        } catch (ArchiveException e) {
+            throw new ConverterToolboxServiceException("Could not retrieve Archive file",e);
+        }
     }
 
     @Override
     public ConversionReport convert(Archive archive, LanguageVersion from, LanguageVersion to, File outputFile)
-            throws ConvererToolboxServiceException {
+            throws ConverterToolboxServiceException {
         Preconditions.checkNotNull(archive, "Archive can't be null.");
         Preconditions.checkNotNull(from, "Source language can't be null.");
         Preconditions.checkNotNull(to, "Target language can't be null.");
@@ -109,7 +115,7 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
         restTemplate.delete(conversion.getLink(LinkRelation.DELETE.getRelation()).getHref());
     }
 
-    private void retrieveResult(File archiveFile, ConversionResource conversion) throws ConvererToolboxServiceException {
+    private void retrieveResult(File archiveFile, ConversionResource conversion) throws ConverterToolboxServiceException {
         Link resultLink = conversion.getLink(LinkRelation.RESULT.getRelation());
         if(resultLink!=null) {
             ResponseEntity<ByteArrayResource> response = restTemplate.getForEntity(resultLink.getHref(), ByteArrayResource.class);
@@ -120,15 +126,15 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
         }
     }
 
-    private void dumpResultToFile(File file, ByteArrayResource body) throws ConvererToolboxServiceException {
+    private void dumpResultToFile(File file, ByteArrayResource body) throws ConverterToolboxServiceException {
         try (InputStream in = body.getInputStream(); OutputStream out = new FileOutputStream(file)){
             IOUtils.copy(in,out);
         } catch (IOException e) {
-            throw new ConvererToolboxServiceException(String.format("Could not write conversion result to %s", file), e);
+            throw new ConverterToolboxServiceException(String.format("Could not write conversion result to %s", file), e);
         }
     }
 
-    private ConversionResource monitor(final ConversionResource conversion) throws ConvererToolboxServiceException {
+    private ConversionResource monitor(final ConversionResource conversion) throws ConverterToolboxServiceException {
         ConversionResource conversionResource = conversion;
         ConversionStatus status = conversion.getContent().getStatus();
         while(ConversionStatus.Completed.compareTo(status)>0) {
@@ -144,7 +150,7 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
         return conversionResource;
     }
 
-    private ConversionResource getConversionResource(ConversionResource conversionResource) throws ConvererToolboxServiceException {
+    private ConversionResource getConversionResource(ConversionResource conversionResource) throws ConverterToolboxServiceException {
         String conversionUrl = conversionResource.getLink(LinkRelation.SELF.getRelation()).getHref();
         LOG.debug(String.format("Retrieving conversion from %s.",conversionUrl));
         ResponseEntity<ConversionResource> response = restTemplate.getForEntity(conversionUrl, ConversionResource.class);
@@ -152,9 +158,13 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
         return response.getBody();
     }
 
-    private ConversionResource submit(ServiceDescriptorResource serviceDescriptorResource, Archive archive, Conversion conversion) throws ConvererToolboxServiceException {
+    private ConversionResource submit(ServiceDescriptorResource serviceDescriptorResource, Archive archive, Conversion conversion) throws ConverterToolboxServiceException {
         MultiValueMap<String,Object> requestParams = new LinkedMultiValueMap<String,Object>();
-        requestParams.add("file", new FileSystemResource(archive.getArchiveFile()));
+        try {
+            requestParams.add("file", new FileSystemResource(archive.getArchiveFile()));
+        } catch (ArchiveException e) {
+            throw new ConverterToolboxServiceException("Could not get Archive file",e);
+        }
         requestParams.add("conversion", conversionMapper.convert(conversion));
         ResponseEntity<ConversionResource> response = restTemplate.postForEntity(serviceDescriptorResource.getLink(LinkRelation.SUBMIT.getRelation()).getHref(), requestParams, ConversionResource.class);
         checkStatus(response);
@@ -188,21 +198,29 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
         }).isEmpty();
     }
     
-    private ServiceDescriptorResource getServiceDescriptorResource() throws ConvererToolboxServiceException {
+    private ServiceDescriptorResource getServiceDescriptorResource() throws ConverterToolboxServiceException {
         ResponseEntity<ServiceDescriptorResource> response = restTemplate.getForEntity(ctsUrl, ServiceDescriptorResource.class);
         checkStatus(response);
         return response.getBody();
     }
     
-    private void checkStatus(ResponseEntity<?> response) throws ConvererToolboxServiceException {
+    private void checkStatus(ResponseEntity<?> response) throws ConverterToolboxServiceException {
         if(!response.getStatusCode().is2xxSuccessful()||!response.hasBody()) {
-            throw new ConvererToolboxServiceException(String.format("Converter Toolbox Service communication error. Request status %s : %s",response.getStatusCode().value(), response.getStatusCode().getReasonPhrase()));
+            throw new ConverterToolboxServiceException(String.format("Converter Toolbox Service communication error. Request status %s : %s",response.getStatusCode().value(), response.getStatusCode().getReasonPhrase()));
         }
     }
     
     @VisibleForTesting
     void setConversionMapper(ConversionToStringConverter conversionMapper) {
         this.conversionMapper = conversionMapper;
+    }
+
+    @Override
+    public boolean isConversionSupported(LanguageVersion from, LanguageVersion to) throws ConverterToolboxServiceException {
+        Preconditions.checkNotNull(from, "Source language can't be null.");
+        Preconditions.checkNotNull(to, "Target language can't be null.");
+        ServiceDescriptorResource serviceDescriptorResource = getServiceDescriptorResource();
+        return isConversionSupported(serviceDescriptorResource.getContent(), from, to);
     }
 
 }

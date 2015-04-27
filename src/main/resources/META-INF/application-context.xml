@@ -36,6 +36,8 @@
     <jpa:repositories base-package="eu.ddmore.fis.repository" />
 
     <bean id="localJobService" class="eu.ddmore.fis.service.LocalJobService" />
+    
+    <bean id="archiveFactory" class="eu.ddmore.archive.ArchiveFactory" />
 
     <bean id="jobResourceRetriever" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
@@ -129,9 +131,19 @@
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
                     <map>
-                        <entry key="converter.toolbox.executable">
-                            <value>${converter.toolbox.executable}
-                            </value>
+                        <entry key="fis.cts.output.conversionReport">
+                            <value>${fis.cts.output.conversionReport}</value>
+                        </entry>
+                        <entry key="fis.cts.output.archive">
+                            <value>${fis.cts.output.archive}</value>
+                        </entry>
+                        <entry key="converterToolboxService" value-ref="converterToolboxService">
+                        </entry>
+                        <entry key="mdlLanguage" value-ref="mdlLanguage">
+                        </entry>
+                        <entry key="pharmmlLanguage" value-ref="pharmmlLanguage">
+                        </entry>
+                        <entry key="archiveFactory" value-ref="archiveFactory">
                         </entry>
                     </map>
                 </constructor-arg>

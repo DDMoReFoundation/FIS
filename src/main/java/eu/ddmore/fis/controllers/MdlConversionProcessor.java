@@ -19,7 +19,7 @@ public class MdlConversionProcessor extends GroovyScriptExecutor {
     public String process(String fileName, String outputDir) {
         Binding binding = getBinding();
         binding.setVariable("scriptFile", getScriptFile());
-        binding.setVariable("fileName", fileName);
+        binding.setVariable("filePath", fileName);
         binding.setVariable("outputDir", outputDir);
         return (String)execute(binding);
     }

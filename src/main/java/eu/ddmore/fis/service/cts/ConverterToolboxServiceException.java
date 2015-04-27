@@ -7,13 +7,13 @@ package eu.ddmore.fis.service.cts;
 /**
  * Exception thrown by {@link ConverterToolboxService } 
  */
-public class ConvererToolboxServiceException extends Exception {
+public class ConverterToolboxServiceException extends Exception {
     private static final long serialVersionUID = 1L;
 
     /**
      * @param message the error message
      */
-    public ConvererToolboxServiceException(String message) {
+    public ConverterToolboxServiceException(String message) {
         super(message);
     }
 
@@ -21,7 +21,7 @@ public class ConvererToolboxServiceException extends Exception {
      * @param message the error message
      * @param cause the cause
      */
-    public ConvererToolboxServiceException(String message, Throwable cause) {
+    public ConverterToolboxServiceException(String message, Throwable cause) {
         super(message, cause);
     }
 

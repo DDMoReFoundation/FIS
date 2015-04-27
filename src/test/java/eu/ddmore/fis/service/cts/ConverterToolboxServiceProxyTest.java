@@ -4,6 +4,7 @@
 package eu.ddmore.fis.service.cts;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -37,6 +38,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.google.common.collect.Lists;
 
+import eu.ddmore.archive.Archive;
+import eu.ddmore.archive.Entry;
+import eu.ddmore.archive.exception.ArchiveException;
 import eu.ddmore.convertertoolbox.domain.Conversion;
 import eu.ddmore.convertertoolbox.domain.ConversionCapability;
 import eu.ddmore.convertertoolbox.domain.ConversionReport;
@@ -79,40 +83,40 @@ public class ConverterToolboxServiceProxyTest {
         instance.setConversionMapper(conversionToStringConverter);
     }
 
-    @Test(expected = ConvererToolboxServiceException.class)
-    public void getConversions_shouldThrowExceptionIfThereIsACommunicationIssue() throws ConvererToolboxServiceException {
+    @Test(expected = ConverterToolboxServiceException.class)
+    public void getConversions_shouldThrowExceptionIfThereIsACommunicationIssue() throws ConverterToolboxServiceException {
         ResponseEntity<ServiceDescriptorResource> notFoundResponse = new ResponseEntity<ServiceDescriptorResource>(HttpStatus.NOT_FOUND);
         when(restTemplate.getForEntity(any(String.class), same(ServiceDescriptorResource.class))).thenReturn(notFoundResponse);
-        instance.getConversions();
+        instance.getConversionCapabilities();
     }
 
     @Test
-    public void getConversions_shouldReturnListOfSupportedConversions() throws ConvererToolboxServiceException {
+    public void getConversions_shouldReturnListOfSupportedConversions() throws ConverterToolboxServiceException {
         ServiceDescriptorResource mockServiceDescriptorResource = createMockServiceDescriptorResource();
         ResponseEntity<ServiceDescriptorResource> mockResponse = new ResponseEntity<ServiceDescriptorResource>(
                 mockServiceDescriptorResource, HttpStatus.OK);
         when(restTemplate.getForEntity(eq(MOCK_HOME_URL), same(ServiceDescriptorResource.class))).thenReturn(mockResponse);
-        Collection<ConversionCapability> capabilities = instance.getConversions();
+        Collection<ConversionCapability> capabilities = instance.getConversionCapabilities();
         assertEquals(2, capabilities.size());
     }
 
     @Test(expected = NullPointerException.class)
-    public void convert_shouldThrowRuntimeExceptionIfArchiveIsNull() throws ConvererToolboxServiceException {
+    public void convert_shouldThrowRuntimeExceptionIfArchiveIsNull() throws ConverterToolboxServiceException {
         instance.convert(null, from("A"), to("B").iterator().next());
     }
 
     @Test(expected = NullPointerException.class)
-    public void convert_shouldThrowRuntimeExceptionIfSourceLanguageIsNull() throws ConvererToolboxServiceException {
+    public void convert_shouldThrowRuntimeExceptionIfSourceLanguageIsNull() throws ConverterToolboxServiceException {
         instance.convert(mock(Archive.class), null, to("B").iterator().next());
     }
 
     @Test(expected = NullPointerException.class)
-    public void convert_shouldThrowRuntimeExceptionIfTargetLanguageIsNull() throws ConvererToolboxServiceException {
+    public void convert_shouldThrowRuntimeExceptionIfTargetLanguageIsNull() throws ConverterToolboxServiceException {
         instance.convert(mock(Archive.class), from("A"), null);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void convert_shouldThrowRuntimeExceptionIfRequestedConversionIsNotSupported() throws ConvererToolboxServiceException {
+    public void convert_shouldThrowRuntimeExceptionIfRequestedConversionIsNotSupported() throws ConverterToolboxServiceException, ArchiveException {
         ServiceDescriptorResource mockServiceDescriptorResource = createMockServiceDescriptorResource();
         ResponseEntity<ServiceDescriptorResource> mockResponse = new ResponseEntity<ServiceDescriptorResource>(
                 mockServiceDescriptorResource, HttpStatus.OK);
@@ -123,7 +127,7 @@ public class ConverterToolboxServiceProxyTest {
     }
 
     @Test
-    public void convert_shouldPerformTheConversion() throws ConvererToolboxServiceException, IOException {
+    public void convert_shouldPerformTheConversion() throws ConverterToolboxServiceException, IOException, ArchiveException {
         ServiceDescriptorResource mockServiceDescriptorResource = createMockServiceDescriptorResource();
         ResponseEntity<ServiceDescriptorResource> mockResponse = new ResponseEntity<ServiceDescriptorResource>(
                 mockServiceDescriptorResource, HttpStatus.OK);
@@ -131,9 +135,9 @@ public class ConverterToolboxServiceProxyTest {
         File archiveFile = tempArchiveLocation.newFile();
         Archive archive = mock(Archive.class);
         when(archive.getArchiveFile()).thenReturn(archiveFile);
-        Archive.Entry mainEntry = mock(Archive.Entry.class);
+        Entry mainEntry = mock(Entry.class);
         when(mainEntry.getFilePath()).thenReturn("mock/path/to/file.ext");
-        List<Archive.Entry> mainEntries = Lists.newArrayList(mainEntry);
+        List<Entry> mainEntries = Lists.newArrayList(mainEntry);
         when(archive.getMainEntries()).thenReturn(mainEntries);
         
         //mocking submission
@@ -178,13 +182,13 @@ public class ConverterToolboxServiceProxyTest {
     }
     
     @Test
-    public void prepareConversion_shouldUseFirstMainEntry() {
+    public void prepareConversion_shouldUseFirstMainEntry() throws ArchiveException {
         Archive archive = mock(Archive.class);
-        Archive.Entry firstMainEntry = mock(Archive.Entry.class);
+        Entry firstMainEntry = mock(Entry.class);
         when(firstMainEntry.getFilePath()).thenReturn("first.ext");
-        Archive.Entry secondMainEntry = mock(Archive.Entry.class);
+        Entry secondMainEntry = mock(Entry.class);
         when(secondMainEntry.getFilePath()).thenReturn("second.ext");
-        List<Archive.Entry> mainEntries = Lists.newArrayList(firstMainEntry,secondMainEntry);
+        List<Entry> mainEntries = Lists.newArrayList(firstMainEntry,secondMainEntry);
         when(archive.getMainEntries()).thenReturn(mainEntries);
         when(archive.getArchiveFile()).thenReturn(mock(File.class));
         Conversion conversion = instance.prepareConversion(archive, from("A"), to("B").iterator().next());
@@ -193,14 +197,33 @@ public class ConverterToolboxServiceProxyTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void prepareConversion_shouldThrowExceptionIfNoMainEntries() {
+    public void prepareConversion_shouldThrowExceptionIfNoMainEntries() throws ArchiveException {
         Archive archive = mock(Archive.class);
-        List<Archive.Entry> mainEntries = Lists.newArrayList();
+        List<Entry> mainEntries = Lists.newArrayList();
         when(archive.getMainEntries()).thenReturn(mainEntries);
         when(archive.getArchiveFile()).thenReturn(mock(File.class));
         instance.prepareConversion(archive, from("A"), to("B").iterator().next());
     }
 
+    @Test
+    public void isConversionSupported_shouldReturnTRUEIfConversionIsSupported() throws ConverterToolboxServiceException {
+        ServiceDescriptorResource mockServiceDescriptorResource = createMockServiceDescriptorResource();
+        ResponseEntity<ServiceDescriptorResource> mockResponse = new ResponseEntity<ServiceDescriptorResource>(
+                mockServiceDescriptorResource, HttpStatus.OK);
+        when(restTemplate.getForEntity(eq(MOCK_HOME_URL), same(ServiceDescriptorResource.class))).thenReturn(mockResponse);
+        assertTrue("Conversion from A to B should be supported",instance.isConversionSupported(from("A"), to("B").iterator().next()));
+    }
+
+    @Test
+    public void isConversionSupported_shouldReturnFALSEIfConversionIsNotSupported() throws ConverterToolboxServiceException {
+        ServiceDescriptorResource mockServiceDescriptorResource = createMockServiceDescriptorResource();
+        ResponseEntity<ServiceDescriptorResource> mockResponse = new ResponseEntity<ServiceDescriptorResource>(
+                mockServiceDescriptorResource, HttpStatus.OK);
+        when(restTemplate.getForEntity(eq(MOCK_HOME_URL), same(ServiceDescriptorResource.class))).thenReturn(mockResponse);
+        assertFalse("Conversion from A to F should not be supported",instance.isConversionSupported(from("A"), to("F").iterator().next()));
+    }
+    
+    
     private ServiceDescriptorResource createMockServiceDescriptorResource() {
         ServiceDescriptorResource mockServiceDescriptorResource = mock(ServiceDescriptorResource.class);
         ServiceDescriptor serviceDescriptor = mock(ServiceDescriptor.class);
