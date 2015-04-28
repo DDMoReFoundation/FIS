@@ -83,6 +83,7 @@ public class WriteMdlResourceMdlFileWriterIT {
         this.binding.setVariable("archiveFactory",archiveFactory);
         this.binding.setVariable("fis.cts.output.conversionReport", "conversionReport.log");
         this.binding.setVariable("fis.cts.output.archive", "archive.phex");
+        this.binding.setVariable("fis.metadata.dir", ".fis");
         
         this.fileWriter = new MdlFileWriter(this.binding);
         fileWriter.setScriptFile(FileUtils.toFile(WriteMdlResourceMdlFileWriterIT.class.getResource(CONVERTER_SCRIPT)));

@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -47,6 +48,7 @@ import eu.ddmore.fis.service.RemoteJobStatusPoller;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { CommonIntegrationTestContextConfiguration.class })
+@Ignore("Waiting for Main Entries support in PHEX")
 public class SubmitControllerIT extends SystemPropertiesAware {
 
     private static final Logger LOG = Logger.getLogger(SubmitControllerIT.class);

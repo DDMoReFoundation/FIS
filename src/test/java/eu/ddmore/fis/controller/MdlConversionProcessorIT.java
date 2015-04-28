@@ -81,6 +81,7 @@ public class MdlConversionProcessorIT {
         this.binding.setVariable("archiveFactory",archiveFactory);
         this.binding.setVariable("fis.cts.output.conversionReport", "conversionReport.log");
         this.binding.setVariable("fis.cts.output.archive", "archive.phex");
+        this.binding.setVariable("fis.metadata.dir", ".fis");
         
         this.conversionProcessor = new MdlConversionProcessor(this.binding);
         conversionProcessor.setScriptFile(FileUtils.toFile(MdlConversionProcessorIT.class.getResource(MDL_CONVERTER_SCRIPT)));

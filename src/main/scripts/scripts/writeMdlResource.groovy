@@ -43,6 +43,7 @@ final LanguageVersion from = binding.getVariable("jsonLanguage");
 final LanguageVersion to = binding.getVariable("mdlLanguage");
 final String outputArchiveName = binding.getVariable("fis.cts.output.archive");
 final String outputConversionReport = binding.getVariable("fis.cts.output.conversionReport");
+final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
 
 /**
  * Script
@@ -50,7 +51,7 @@ final String outputConversionReport = binding.getVariable("fis.cts.output.conver
 File outputFile = new File(outputFilePath)
 File workingDir = outputFile.parentFile
 // Ensure that the FIS metadata directory is created
-File fisMetadataDir = new File(workingDir,".fis");
+File fisMetadataDir = new File(workingDir,FIS_METADATA_DIR);
 fisMetadataDir.mkdir();
 
 LOG.debug("Working directory: ${workingDir}");

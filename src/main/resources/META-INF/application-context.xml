@@ -76,22 +76,24 @@
         </constructor-arg>
     </bean>
 
+    <bean id="jobArchiveProvisioner" class="eu.ddmore.fis.service.processors.internal.JobArchiveProvisioner" />
     <bean id="verbatimJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
                     <map>
-                        <entry key="fis.mdl.ext">
-                            <value>${fis.mdl.ext}</value>
+                        <entry key="fis.cts.output.archive">
+                            <value>${fis.cts.output.archive}</value>
                         </entry>
-                        <entry key="fis.pharmml.ext">
-                            <value>${fis.pharmml.ext}</value>
-                        </entry>
-                        <entry key="converter.toolbox.executable">
-                            <value>${converter.toolbox.executable}</value>
+                        <entry key="fis.metadata.dir">
+                            <value>${fis.metadata.dir}</value>
                         </entry>
                         <entry key="execution.host.fileshare.local">
                             <value>${execution.host.fileshare.local}</value>
+                        </entry>
+                        <entry key="archiveFactory" value-ref="archiveFactory">
+                        </entry>
+                        <entry key="jobArchiveProvisioner" value-ref="jobArchiveProvisioner">
                         </entry>
                     </map>
                 </constructor-arg>
@@ -106,17 +108,33 @@
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
                     <map>
+                        <entry key="fis.cts.output.conversionReport">
+                            <value>${fis.cts.output.conversionReport}</value>
+                        </entry>
+                        <entry key="fis.cts.output.archive">
+                            <value>${fis.cts.output.archive}</value>
+                        </entry>
                         <entry key="fis.mdl.ext">
                             <value>${fis.mdl.ext}</value>
                         </entry>
                         <entry key="fis.pharmml.ext">
                             <value>${fis.pharmml.ext}</value>
                         </entry>
-                        <entry key="converter.toolbox.executable">
-                            <value>${converter.toolbox.executable}</value>
+                        <entry key="fis.metadata.dir">
+                            <value>${fis.metadata.dir}</value>
                         </entry>
                         <entry key="execution.host.fileshare.local">
                             <value>${execution.host.fileshare.local}</value>
+                        </entry>
+                        <entry key="archiveFactory" value-ref="archiveFactory">
+                        </entry>
+                        <entry key="converterToolboxService" value-ref="converterToolboxService">
+                        </entry>
+                        <entry key="jobArchiveProvisioner" value-ref="jobArchiveProvisioner">
+                        </entry>
+                        <entry key="mdlLanguage" value-ref="mdlLanguage">
+                        </entry>
+                        <entry key="pharmmlLanguage" value-ref="pharmmlLanguage">
                         </entry>
                     </map>
                 </constructor-arg>
@@ -136,6 +154,9 @@
                         </entry>
                         <entry key="fis.cts.output.archive">
                             <value>${fis.cts.output.archive}</value>
+                        </entry>
+                        <entry key="fis.metadata.dir">
+                            <value>${fis.metadata.dir}</value>
                         </entry>
                         <entry key="converterToolboxService" value-ref="converterToolboxService">
                         </entry>
@@ -163,6 +184,9 @@
                         <entry key="fis.cts.output.archive">
                             <value>${fis.cts.output.archive}</value>
                         </entry>
+                        <entry key="fis.metadata.dir">
+                            <value>${fis.metadata.dir}</value>
+                        </entry>
                         <entry key="converterToolboxService" value-ref="converterToolboxService">
                         </entry>
                         <entry key="mdlLanguage" value-ref="mdlLanguage">
@@ -183,9 +207,22 @@
             <bean class="groovy.lang.Binding">
                 <constructor-arg>
                     <map>
-                        <entry key="converter.toolbox.executable">
-                            <value>${converter.toolbox.executable}
-                            </value>
+                        <entry key="fis.cts.output.conversionReport">
+                            <value>${fis.cts.output.conversionReport}</value>
+                        </entry>
+                        <entry key="fis.cts.output.archive">
+                            <value>${fis.cts.output.archive}</value>
+                        </entry>
+                        <entry key="fis.metadata.dir">
+                            <value>${fis.metadata.dir}</value>
+                        </entry>
+                        <entry key="converterToolboxService" value-ref="converterToolboxService">
+                        </entry>
+                        <entry key="mdlLanguage" value-ref="mdlLanguage">
+                        </entry>
+                        <entry key="jsonLanguage" value-ref="jsonLanguage">
+                        </entry>
+                        <entry key="archiveFactory" value-ref="archiveFactory">
                         </entry>
                     </map>
                 </constructor-arg>
