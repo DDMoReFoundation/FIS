@@ -30,6 +30,11 @@
             <artifactId>mif-examples</artifactId>
             <version>3.0.16-ddmore</version>
         </dependency>
+        <dependency>
+            <groupId>eu.ddmore</groupId>
+            <artifactId>converter-toolbox-service-domain</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+        </dependency>
         <!-- end DDMoRe and Mango packages -->
         <!-- Third-Party Dependencies -->
         <dependency>
