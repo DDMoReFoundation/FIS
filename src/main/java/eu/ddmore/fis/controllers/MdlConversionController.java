@@ -20,7 +20,7 @@ public class MdlConversionController {
     @RequestMapping(value = "convertmdl", method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody String convertMdlToPharmML(@RequestParam(value="fileName") String fileName, @RequestParam(value="outputDir") String outputDir) {
 
-        // Invoke the mdlConverter Groovy script
+        // Invoke the MDL -> PharmML converter
         return conversionProcessor.process(fileName, outputDir);
     }
 
