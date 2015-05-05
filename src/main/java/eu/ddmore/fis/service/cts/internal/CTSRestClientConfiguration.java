@@ -46,7 +46,7 @@ public class CTSRestClientConfiguration {
         restTemplate.setMessageConverters(converters);
         return restTemplate;
     }
- 
+
     /**
      * 
      * @return converter capable of handling HAL-enabled domain objects

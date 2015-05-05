@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.mango.mif.MIFHttpRestClient;
 
+import eu.ddmore.fis.service.cts.CTSShutdown;
+
 @Controller
 @RequestMapping("/shutdown")
 public class ShutdownController {
@@ -26,6 +28,7 @@ public class ShutdownController {
     
 	private MIFHttpRestClient mifClient;
 
+    private CTSShutdown ctsShutdown;
     /**
      * Kills MIF and FIS itself. It will not fail if it can't communicate with MIF - MIF not running should not prevent FIS from shutting down. 
      * @return 'OK' if the request was processed correctly. 
@@ -37,8 +40,12 @@ public class ShutdownController {
         } catch(Exception ex) {
             LOG.warn("Exception was thrown when tried to kill MIF", ex);
         }
+        try {
+            ctsShutdown.invoke();
+        } catch(Exception ex) {
+            LOG.warn("Exception was thrown when tried to kill CTS", ex);
+        }
         shutdownEndpoint.invoke();
-        
         return "OK";
     }
 
@@ -53,5 +60,14 @@ public class ShutdownController {
     
     public void setShutdownEndpoint(ShutdownEndpoint shutdownEndpoint) {
         this.shutdownEndpoint = shutdownEndpoint;
+    }
+
+    @Required
+    public void setCtsShutdown(CTSShutdown ctsShutdown) {
+        this.ctsShutdown = ctsShutdown;
+    }
+    
+    public CTSShutdown getCtsShutdown() {
+        return ctsShutdown;
     }
 }

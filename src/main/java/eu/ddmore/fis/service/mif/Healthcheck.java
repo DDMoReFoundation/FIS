@@ -11,15 +11,14 @@ import org.springframework.stereotype.Component;
 
 import com.mango.mif.MIFHttpRestClient;
 
+import eu.ddmore.fis.service.HealthDetail;
+
 
 /**
  * Invokes health check on MIF instance
  */
 @Component("mifHealth")
 public class Healthcheck implements HealthIndicator {
-
-    public static final String ERROR = "error";
-    public static final String URL = "url";
 
     private MIFHttpRestClient mifClient;
     
@@ -29,7 +28,7 @@ public class Healthcheck implements HealthIndicator {
     @Override
     public Health health() {
         if(!mifClient.healthcheck()) {
-            return Health.down().withDetail(ERROR, "MIF is not running").withDetail(URL, mifUrl).build();
+            return Health.down().withDetail(HealthDetail.ERROR, "MIF is not running").withDetail(HealthDetail.URL, mifUrl).build();
         } else {
             return Health.up().build();
         }

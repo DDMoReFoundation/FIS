@@ -39,16 +39,53 @@
     
     <bean id="archiveFactory" class="eu.ddmore.archive.ArchiveFactory" />
 
+
+    <bean class="groovy.lang.Binding" id="commonBinding"
+        abstract="true">
+        <!-- Important!!! - if you want to add more entries to the map in inheriting bean, don't forget to:
+        add merge="true" attribute to map in inheriting constructor
+        specify index="0" in inheriting bean constructor
+         -->
+        <constructor-arg index="0">
+            <map>
+                <entry key="fis.cts.output.conversionReport">
+                    <value>${fis.cts.output.conversionReport}</value>
+                </entry>
+                <entry key="fis.cts.output.archive">
+                    <value>${fis.cts.output.archive}</value>
+                </entry>
+                <entry key="fis.mdl.ext">
+                    <value>${fis.mdl.ext}</value>
+                </entry>
+                <entry key="fis.pharmml.ext">
+                    <value>${fis.pharmml.ext}</value>
+                </entry>
+                <entry key="fis.metadata.dir">
+                    <value>${fis.metadata.dir}</value>
+                </entry>
+                <entry key="execution.host.fileshare.local">
+                    <value>${execution.host.fileshare.local}</value>
+                </entry>
+                <entry key="archiveFactory" value-ref="archiveFactory">
+                </entry>
+                <entry key="converterToolboxService" value-ref="converterToolboxService">
+                </entry>
+                <entry key="jobArchiveProvisioner" value-ref="jobArchiveProvisioner">
+                </entry>
+                <entry key="mdlLanguage" value-ref="mdlLanguage">
+                </entry>
+                <entry key="pharmmlLanguage" value-ref="pharmmlLanguage">
+                </entry>
+                <entry key="jsonLanguage" value-ref="jsonLanguage">
+                </entry>
+            </map>
+        </constructor-arg>
+    </bean>
+
+
     <bean id="jobResourceRetriever" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
-            <bean class="groovy.lang.Binding">
-                <constructor-arg>
-                    <map>
-                        <entry key="execution.host.fileshare.local">
-                            <value>${execution.host.fileshare.local}</value>
-                        </entry>
-                    </map>
-                </constructor-arg>
+            <bean parent="commonBinding">
             </bean>
         </constructor-arg>
         <property name="scriptFile" value="${fis.retrieveOutputs}"></property>
@@ -79,24 +116,7 @@
     <bean id="jobArchiveProvisioner" class="eu.ddmore.fis.service.processors.internal.JobArchiveProvisioner" />
     <bean id="verbatimJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
-            <bean class="groovy.lang.Binding">
-                <constructor-arg>
-                    <map>
-                        <entry key="fis.cts.output.archive">
-                            <value>${fis.cts.output.archive}</value>
-                        </entry>
-                        <entry key="fis.metadata.dir">
-                            <value>${fis.metadata.dir}</value>
-                        </entry>
-                        <entry key="execution.host.fileshare.local">
-                            <value>${execution.host.fileshare.local}</value>
-                        </entry>
-                        <entry key="archiveFactory" value-ref="archiveFactory">
-                        </entry>
-                        <entry key="jobArchiveProvisioner" value-ref="jobArchiveProvisioner">
-                        </entry>
-                    </map>
-                </constructor-arg>
+            <bean parent="commonBinding">
             </bean>
         </constructor-arg>
         <property name="scriptFile"
@@ -105,39 +125,7 @@
 
     <bean id="mdlJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
-            <bean class="groovy.lang.Binding">
-                <constructor-arg>
-                    <map>
-                        <entry key="fis.cts.output.conversionReport">
-                            <value>${fis.cts.output.conversionReport}</value>
-                        </entry>
-                        <entry key="fis.cts.output.archive">
-                            <value>${fis.cts.output.archive}</value>
-                        </entry>
-                        <entry key="fis.mdl.ext">
-                            <value>${fis.mdl.ext}</value>
-                        </entry>
-                        <entry key="fis.pharmml.ext">
-                            <value>${fis.pharmml.ext}</value>
-                        </entry>
-                        <entry key="fis.metadata.dir">
-                            <value>${fis.metadata.dir}</value>
-                        </entry>
-                        <entry key="execution.host.fileshare.local">
-                            <value>${execution.host.fileshare.local}</value>
-                        </entry>
-                        <entry key="archiveFactory" value-ref="archiveFactory">
-                        </entry>
-                        <entry key="converterToolboxService" value-ref="converterToolboxService">
-                        </entry>
-                        <entry key="jobArchiveProvisioner" value-ref="jobArchiveProvisioner">
-                        </entry>
-                        <entry key="mdlLanguage" value-ref="mdlLanguage">
-                        </entry>
-                        <entry key="pharmmlLanguage" value-ref="pharmmlLanguage">
-                        </entry>
-                    </map>
-                </constructor-arg>
+            <bean parent="commonBinding">
             </bean>
         </constructor-arg>
         <property name="scriptFile"
@@ -146,28 +134,7 @@
 
     <bean id="mdlConversionProcessor" class="eu.ddmore.fis.controllers.MdlConversionProcessor">
         <constructor-arg>
-            <bean class="groovy.lang.Binding">
-                <constructor-arg>
-                    <map>
-                        <entry key="fis.cts.output.conversionReport">
-                            <value>${fis.cts.output.conversionReport}</value>
-                        </entry>
-                        <entry key="fis.cts.output.archive">
-                            <value>${fis.cts.output.archive}</value>
-                        </entry>
-                        <entry key="fis.metadata.dir">
-                            <value>${fis.metadata.dir}</value>
-                        </entry>
-                        <entry key="converterToolboxService" value-ref="converterToolboxService">
-                        </entry>
-                        <entry key="mdlLanguage" value-ref="mdlLanguage">
-                        </entry>
-                        <entry key="pharmmlLanguage" value-ref="pharmmlLanguage">
-                        </entry>
-                        <entry key="archiveFactory" value-ref="archiveFactory">
-                        </entry>
-                    </map>
-                </constructor-arg>
+            <bean parent="commonBinding">
             </bean>
         </constructor-arg>
         <property name="scriptFile" value="${fis.mdlConverter}"></property>
@@ -175,28 +142,7 @@
 
     <bean id="resourceReader" class="eu.ddmore.fis.controllers.FileProcessor">
         <constructor-arg>
-            <bean class="groovy.lang.Binding">
-                <constructor-arg>
-                    <map>
-                        <entry key="fis.cts.output.conversionReport">
-                            <value>${fis.cts.output.conversionReport}</value>
-                        </entry>
-                        <entry key="fis.cts.output.archive">
-                            <value>${fis.cts.output.archive}</value>
-                        </entry>
-                        <entry key="fis.metadata.dir">
-                            <value>${fis.metadata.dir}</value>
-                        </entry>
-                        <entry key="converterToolboxService" value-ref="converterToolboxService">
-                        </entry>
-                        <entry key="mdlLanguage" value-ref="mdlLanguage">
-                        </entry>
-                        <entry key="jsonLanguage" value-ref="jsonLanguage">
-                        </entry>
-                        <entry key="archiveFactory" value-ref="archiveFactory">
-                        </entry>
-                    </map>
-                </constructor-arg>
+            <bean parent="commonBinding">
             </bean>
         </constructor-arg>
         <property name="scriptFile" value="${fis.readResource}"></property>
@@ -204,28 +150,7 @@
 
     <bean id="resourceWriter" class="eu.ddmore.fis.controllers.MdlFileWriter">
         <constructor-arg>
-            <bean class="groovy.lang.Binding">
-                <constructor-arg>
-                    <map>
-                        <entry key="fis.cts.output.conversionReport">
-                            <value>${fis.cts.output.conversionReport}</value>
-                        </entry>
-                        <entry key="fis.cts.output.archive">
-                            <value>${fis.cts.output.archive}</value>
-                        </entry>
-                        <entry key="fis.metadata.dir">
-                            <value>${fis.metadata.dir}</value>
-                        </entry>
-                        <entry key="converterToolboxService" value-ref="converterToolboxService">
-                        </entry>
-                        <entry key="mdlLanguage" value-ref="mdlLanguage">
-                        </entry>
-                        <entry key="jsonLanguage" value-ref="jsonLanguage">
-                        </entry>
-                        <entry key="archiveFactory" value-ref="archiveFactory">
-                        </entry>
-                    </map>
-                </constructor-arg>
+            <bean parent="commonBinding">
             </bean>
         </constructor-arg>
         <property name="scriptFile" value="${fis.writeResource}"></property>
@@ -252,6 +177,7 @@
 
     <bean id="shutdownController" class="eu.ddmore.fis.controllers.ShutdownController">
         <property name="mifClient" ref="mifRestClient" />
+        <property name="ctsShutdown" ref="ctsShutdown" />
     </bean>
 
     <bean id="healthcheckController" class="eu.ddmore.fis.controllers.HealthcheckController">
@@ -260,6 +186,12 @@
 
     <bean id="mifHealth" class="eu.ddmore.fis.service.mif.Healthcheck">
         <property name="mifClient" ref="mifRestClient" />
+    </bean>
+    
+    <bean id="ctsHealth" class="eu.ddmore.fis.service.cts.Healthcheck">
+    </bean>
+    
+    <bean id="ctsShutdown" class="eu.ddmore.fis.service.cts.CTSShutdown">
     </bean>
 
     <bean id="submitController" class="eu.ddmore.fis.controllers.SubmitController">

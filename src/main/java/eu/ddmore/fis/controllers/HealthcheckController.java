@@ -3,6 +3,7 @@
  ******************************************************************************/
 package eu.ddmore.fis.controllers;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
@@ -26,21 +27,25 @@ import eu.ddmore.fis.service.mif.Healthcheck;
  */
 @Controller
 @RequestMapping("/healthcheck")
-@Deprecated
 public class HealthcheckController {
-    
+    private static final Logger LOG = Logger.getLogger(HealthcheckController.class);
     private HealthEndpoint healthEndpoint;
     
     @Autowired(required=true)
     @Qualifier("mifHealth")
 	private Healthcheck mifHealthcheck;
+
+    @Autowired(required=true)
+    @Qualifier("ctsHealth")
+    private eu.ddmore.fis.service.cts.Healthcheck ctsHealthcheck;
 	
 	/**
 	 * Checks the health of mif and of FIS itself. 
-	 * @return 'ok' if everything is ok, 'MIF is not running' if MIF is down. 
+	 * @return 'UP' if everything is ok, error message otherwise. 
 	 */
     @RequestMapping(method=RequestMethod.GET, produces={MediaType.TEXT_HTML_VALUE})
     public @ResponseBody String healthcheck() {
+        LOG.debug("Handling healthcheck request");
         Health mifHealth = mifHealthcheck.health();
         if(!mifHealth.getStatus().equals(Status.UP)) {
             Object error = mifHealth.getDetails().get(Healthcheck.ERROR);
@@ -50,7 +55,17 @@ public class HealthcheckController {
                 return "MIF is not running";
             }
         }
+        Health ctsHealth = ctsHealthcheck.health();
+        if(!ctsHealth.getStatus().equals(Status.UP)) {
+            Object error = ctsHealth.getDetails().get(Healthcheck.ERROR);
+            if(error!=null) {
+                return error.toString();
+            } else {
+                return "CTS is not running";
+            }
+        }
         Status fisStatus = healthEndpoint.invoke().getStatus();
+        LOG.debug(String.format("System health is %s", fisStatus));
         return fisStatus.getCode();
     }
 

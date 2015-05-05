@@ -63,7 +63,8 @@ public class JobArchiveProvisionerTest {
 
     @Test(expected=IllegalStateException.class)
     public void shouldThrowExceptionIfNoMainEntriesInArchive() throws ArchiveException, IOException {
-        when(archive.getMainEntries()).thenReturn(mock(List.class));
+        List<Entry> emptyEntries = Lists.newArrayList();
+        when(archive.getMainEntries()).thenReturn(emptyEntries);
         new JobArchiveProvisioner().provision(job, archive, mifJobDirectory);
     }
 
@@ -80,7 +81,7 @@ public class JobArchiveProvisionerTest {
         
         provisioner.provision(job, archive, mifJobDirectory);
         
-        verify(job).setControlFile("/path/to/control/file");
+        verify(job).setControlFile("path/to/control/file"); //job must have a relative path to the control file
         verify(archive).extractArchiveTo(eq(mifJobDirectory));
         verify(archive).close();
         PowerMockito.verifyStatic(times(0));

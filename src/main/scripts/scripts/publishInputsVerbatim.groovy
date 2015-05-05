@@ -58,13 +58,20 @@ String modelExt = FilenameUtils.getExtension(origControlFile.getName());
 
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
 Archive archive = archiveFactory.createArchive(archiveFile);
-archive.open();
-
-fisJobWorkingDir.traverse type:FILES, excludeFilter:~/.*\.fis.*/, visit:{ String relativePath = it.getPath().replace(fisJobWorkingDir.getPath(),""); LOG.debug("Processing Job input file: ${it.getName()}, which will be added into Archive at location: ${relativePath}"); archive.addFileToArchive(it, relativePath) }
-
-Entry controlFileEntry = archive.getEntry(origControlFile.getPath())
-archive.getMainEntries().add(controlFileEntry);
-archive.close();
+try {
+    archive.open();
+    
+    fisJobWorkingDir.traverse type:FILES, excludeFilter:~/.*\.fis.*/, visit:{ String relativePath = it.getParentFile().getPath().replace(fisJobWorkingDir.getPath(),""); LOG.debug("Processing Job input file: ${it.getName()}, which will be added into Archive at location: ${relativePath}"); archive.addFile(it, relativePath) }
+    if(LOG.isDebugEnabled()) {
+        LOG.debug("Control File Path ${origControlFile.getPath()}")
+        archive.getEntries().each {LOG.debug("Archive Entry ${it.getFilePath()}") }
+    }
+    
+    Entry controlFileEntry = archive.getEntry(origControlFile.getPath())
+    archive.addMainEntry(controlFileEntry);
+} finally {
+    archive.close();
+}
 
 try {
     jobArchiveProvisioner.provision(job, archive, mifJobWorkingDir)

@@ -55,13 +55,16 @@ File outputDirectory = fisMetadataDir;// TODO see comment - outputDir);
 
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
 Archive archive = archiveFactory.createArchive(archiveFile);
+try {
+    archive.open();
+    Entry en = archive.addFile(inputFile,"/");
+    archive.addMainEntry(en);
+} finally {
+    archive.close();
+}
 
-archive.open();
-Entry en = archive.addFileToArchive(inputFile,"/");
-archive.getMainEntries().add(en);
-archive.close();
 
-if( converterToolboxService.isConversionSupported(from,to) ) {
+if(!converterToolboxService.isConversionSupported(from,to) ) {
     throw new IllegalStateException("Requested conversion from ${from} to ${to} is not supported by Converter Toolbox Service.")
 }
 
@@ -73,8 +76,8 @@ try {
         return ""
     }
     archive.open();
-    Preconditions.checkState(archive.getMainEntries().size()>0, "Archive with the result of conversion had no main entries.");
-    Entry resultEntry = archive.getMainEntries().get(0);
+    Preconditions.checkState(!archive.getMainEntries().isEmpty(), "Archive with the result of conversion had no main entries.");
+    Entry resultEntry = archive.getMainEntries().iterator().next();
     File resultFile = new File(outputDirectory,resultEntry.getFileName());
     resultFile = resultEntry.extractFile(resultFile);
     Preconditions.checkNotNull(resultFile, "Extracted Archive entry ${resultEntry} was null.");
@@ -83,11 +86,10 @@ try {
     FileUtils.deleteQuietly(resultFile)
     return result;
 } finally {
-    archive.close();
     String conversionReportText = "No conversion report was generated for ${inputFile}";
     if(conversionReport!=null) {
         conversionReportText = JsonOutput.toJson(conversionReport);
     }
     new File(fisMetadataDir, outputConversionReport) << conversionReportText;
-    FileUtils.deleteQuietly(archive.getArchiveFile());
+    archive.close();
 }

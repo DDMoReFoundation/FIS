@@ -37,7 +37,7 @@ public class FISPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigu
 
     private void validateProperties(Properties properties) {
         final String[] requiredProperties = new String[] {
-            "fis.retrieveOutputs", "mif.url", "converter.toolbox.executable", "execution.host.fileshare.local", "execution.host.fileshare", "execution.host.fileshare.remote"
+            "fis.retrieveOutputs", "mif.url", "fis.cts.url", "execution.host.fileshare.local", "execution.host.fileshare", "execution.host.fileshare.remote"
         };
         StringBuilder builder = new StringBuilder();
         for(String prop : requiredProperties) {

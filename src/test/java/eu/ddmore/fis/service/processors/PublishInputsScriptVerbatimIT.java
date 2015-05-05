@@ -91,15 +91,15 @@ public class PublishInputsScriptVerbatimIT {
     public void shouldPublishCTLInputs() throws IOException, ArchiveException {
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptVerbatimIT.class.getResource(PUBLISH_VERBATIM_INPUTS_SCRIPT)));
         // Copy the files out of the testdata JAR file
-
         final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/Warfarin_ODE/";
         final String ctlFileName = "Warfarin-ODE-latest.ctl";
         final String dataFileName = "warfarin_conc.csv";
-        final URL ctlFile = PublishInputsScriptVerbatimIT.class.getResource(testDataDir + ctlFileName);
-        final URL dataFile = PublishInputsScriptVerbatimIT.class.getResource(testDataDir + dataFileName);
 
-        FileUtils.copyURLToFile(ctlFile, new File(testWorkingDir, ctlFileName));
-        FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, dataFileName));
+
+        final File scriptFile = new File(testWorkingDir, ctlFileName);
+        final File dataFile = new File(testWorkingDir, dataFileName);
+        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(testDataDir + ctlFileName), scriptFile);
+        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(testDataDir + dataFileName), dataFile);
 
         // Proceed with the test...
 
@@ -113,8 +113,8 @@ public class PublishInputsScriptVerbatimIT {
         jobProcessor.process(job);
 
         assertTrue("Archive is created in FIS metadata directory.", new File(testWorkingDir, ".fis/archive.phex").exists());
-        verify(archive).addFileToArchive(any(File.class), eq(File.separator+ctlFileName));
-        verify(archive).addFileToArchive(any(File.class), eq(File.separator+dataFileName));
+        verify(archive).addFile(eq(scriptFile), eq(""));
+        verify(archive).addFile(eq(dataFile), eq(""));
         verify(jobArchiveProvisioner).provision(same(job), same(archive), eq(mifJobWorkingDir));
     }
 
@@ -124,14 +124,13 @@ public class PublishInputsScriptVerbatimIT {
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptVerbatimIT.class.getResource(PUBLISH_VERBATIM_INPUTS_SCRIPT)));
         // Copy the files out of the testdata JAR file
         final String testDataDir = "/eu/ddmore/testdata/models/PharmML/0.3.0/example3/";
-
         final String modelFileName = "example3.xml";
-        final String dataFileName = "example3_data.csv"; // or _full_data_MDV.csv ?
+        final String dataFileName = "example3_data.csv";
 
-        final URL scriptFile = PublishInputsScriptVerbatimIT.class.getResource(testDataDir + modelFileName);
-        FileUtils.copyURLToFile(scriptFile, new File(testWorkingDir, modelFileName));
-        final URL dataFile = PublishInputsScriptVerbatimIT.class.getResource(testDataDir + dataFileName);
-        FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, dataFileName));
+        final File scriptFile = new File(testWorkingDir, modelFileName);
+        final File dataFile = new File(testWorkingDir, dataFileName);
+        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(testDataDir + modelFileName), scriptFile);
+        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(testDataDir + dataFileName), dataFile);
 
         // Proceed with the test...
 
@@ -145,8 +144,8 @@ public class PublishInputsScriptVerbatimIT {
         jobProcessor.process(job);
 
         assertTrue("Archive is created in FIS metadata directory.", new File(testWorkingDir, ".fis/archive.phex").exists());
-        verify(archive).addFileToArchive(any(File.class), eq(File.separator+modelFileName));
-        verify(archive).addFileToArchive(any(File.class), eq(File.separator+dataFileName));
+        verify(archive).addFile(eq(scriptFile), eq(""));
+        verify(archive).addFile(eq(dataFile), eq(""));
         verify(jobArchiveProvisioner).provision(same(job), same(archive), eq(mifJobWorkingDir));
     }
     
@@ -162,12 +161,11 @@ public class PublishInputsScriptVerbatimIT {
         final String modelFileInSubDir = "warfarin"+File.separator+modelFileName;
         final String dataFileInSubDir = "warfarin"+File.separator+dataFileName;
         
-        final URL ctlFile = PublishInputsScriptVerbatimIT.class.getResource(testDataDir + modelFileName);
-        final URL dataFile = PublishInputsScriptVerbatimIT.class.getResource(testDataDir + dataFileName);
-
+        final File ctlFile = new File(testWorkingDir, modelFileInSubDir);
+        final File dataFile = new File(testWorkingDir, dataFileInSubDir);
         
-        FileUtils.copyURLToFile(ctlFile, new File(testWorkingDir, modelFileInSubDir));
-        FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, "warfarin/warfarin_conc.csv"));
+        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(testDataDir + modelFileName), ctlFile);
+        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(testDataDir + dataFileName), dataFile);
 
         // Proceed with the test...
 
@@ -181,8 +179,8 @@ public class PublishInputsScriptVerbatimIT {
         jobProcessor.process(job);
 
         assertTrue("Archive is created in FIS metadata directory.", new File(testWorkingDir, ".fis/archive.phex").exists());
-        verify(archive).addFileToArchive(any(File.class), eq(File.separator+modelFileInSubDir));
-        verify(archive).addFileToArchive(any(File.class), eq(File.separator+dataFileInSubDir));
+        verify(archive).addFile(eq(ctlFile), eq(File.separator+"warfarin"));
+        verify(archive).addFile(eq(dataFile), eq(File.separator+"warfarin"));
         verify(jobArchiveProvisioner).provision(same(job), same(archive), eq(mifJobWorkingDir));
     }
 
@@ -197,10 +195,11 @@ public class PublishInputsScriptVerbatimIT {
         final String dataFileName = "example3_data.csv";
         final String dataFileInSubDir = "example3" + File.separator + dataFileName;
 
-        final URL scriptFile = PublishInputsScriptVerbatimIT.class.getResource(testDataDir + modelFileName);
-        FileUtils.copyURLToFile(scriptFile, new File(testWorkingDir, modelFileInSubDir));
-        final URL dataFile = PublishInputsScriptVerbatimIT.class.getResource(testDataDir + dataFileName);
-        FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, dataFileInSubDir));
+        final File scriptFile = new File(testWorkingDir, modelFileInSubDir);
+        final File dataFile = new File(testWorkingDir, dataFileInSubDir);
+        
+        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(testDataDir + modelFileName), scriptFile);
+        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(testDataDir + dataFileName), dataFile);
 
         // Proceed with the test...
 
@@ -214,8 +213,8 @@ public class PublishInputsScriptVerbatimIT {
         jobProcessor.process(job);
 
         assertTrue("Archive is created in FIS metadata directory.", new File(testWorkingDir, ".fis/archive.phex").exists());
-        verify(archive).addFileToArchive(any(File.class), eq(File.separator+modelFileInSubDir));
-        verify(archive).addFileToArchive(any(File.class), eq(File.separator+dataFileInSubDir));
+        verify(archive).addFile(eq(scriptFile), eq(File.separator+"example3"));
+        verify(archive).addFile(eq(dataFile), eq(File.separator+"example3"));
         verify(jobArchiveProvisioner).provision(same(job), same(archive), eq(mifJobWorkingDir));
     }
 

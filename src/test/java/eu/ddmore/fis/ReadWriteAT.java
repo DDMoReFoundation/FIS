@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -21,7 +22,7 @@ import eu.ddmore.fis.domain.WriteMdlResponse;
  * Verifies that standalone service fulfils functional requirements.
  */
 public class ReadWriteAT extends SystemPropertiesAware {
-
+    private static final Logger LOG = Logger.getLogger(ReadWriteAT.class);
 	private static final String TEST_DATA_DIR = "/eu/ddmore/testdata/models/%s/6.0.7/Warfarin_ODE/";
 	private static final String MDL_FILE_NAME = "Warfarin-ODE-latest.mdl";
 	private static final String JSON_FILE_NAME = "Warfarin-ODE-latest.output.json";
@@ -49,7 +50,7 @@ public class ReadWriteAT extends SystemPropertiesAware {
 
 		final String mdlFileFullPath = mdlFile.getAbsolutePath().replace('\\', '/');
 		String jsonFormat = fisClient.readMdl(mdlFileFullPath);
-
+		LOG.debug(jsonFormat);
 		assertTrue("Should be some data returned", jsonFormat.length() > 1000);
 		assertTrue("Returned data should contain some sort of parameter object",
 			jsonFormat.contains("\"warfarin_PK_ODE_par\":{"));
@@ -59,12 +60,6 @@ public class ReadWriteAT extends SystemPropertiesAware {
 			jsonFormat.contains("\"warfarin_PK_ODE_mdl\":{"));
 		assertTrue("Returned data should contain some sort of task object",
 			jsonFormat.contains("\"warfarin_PK_ODE_task\":{"));
-// WAS: This was checking the R-output JSON not the parsed-in-to-R JSON
-//		final File jsonFile = new File(workingDir, JSON_FILE_NAME + ".tmp");
-//		FileUtils.copyURLToFile(JSON_FILE_URL, jsonFile);
-//		String expected = FileUtils.readFileToString(jsonFile);
-//		assertEquals("MDL file should be correctly read.", expected, jsonFormat);
-
 		final String jsonFileFullPath = mdlFileFullPath.replace(MDL_FILE_NAME, JSON_FILE_NAME);
 		final File f = new File(jsonFileFullPath);
 		assertTrue("Temporary JSON file should not be present.", !f.exists());

@@ -109,6 +109,7 @@ public class MdlConversionProcessorIT {
         
         ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.SUCCESS);
+        when(converterToolboxService.isConversionSupported(same(mdlLanguage), same(pharmmlLanguage))).thenReturn(true);
         when(converterToolboxService.convert(any(Archive.class), same(mdlLanguage), same(pharmmlLanguage))).thenReturn(conversionReport);
         
         //when
@@ -141,6 +142,7 @@ public class MdlConversionProcessorIT {
         
         ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.FAILURE);
+        when(converterToolboxService.isConversionSupported(same(mdlLanguage), same(pharmmlLanguage))).thenReturn(true);
         when(converterToolboxService.convert(any(Archive.class), same(mdlLanguage), same(pharmmlLanguage))).thenReturn(conversionReport);
         
         //when
@@ -152,7 +154,7 @@ public class MdlConversionProcessorIT {
     }
     
     @Test(expected=RuntimeException.class)
-    public void shouldReThrowExceptionIfErrorHappensAsRuntimeException() throws IOException, ConverterToolboxServiceException {
+    public void shouldReThrowExceptionIfRuntimeExceptionOccurs() throws IOException, ConverterToolboxServiceException {
         //Given conversion in error
         File outputDir = this.testDirectory.newFolder();
         
@@ -171,7 +173,33 @@ public class MdlConversionProcessorIT {
         
         ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.FAILURE);
+        when(converterToolboxService.isConversionSupported(same(mdlLanguage), same(pharmmlLanguage))).thenReturn(true);
         doThrow(ConverterToolboxServiceException.class).when(converterToolboxService).convert(any(Archive.class), same(mdlLanguage), same(pharmmlLanguage));
+        
+        //when
+        conversionProcessor.process(mdlFile.getAbsolutePath(), outputDir.getAbsolutePath());
+    }
+    @Test(expected=RuntimeException.class)
+    public void shouldThrowIllegalStateExceptionIfConversionIsNotSupported() throws IOException, ConverterToolboxServiceException {
+        //Given conversion in error
+        File outputDir = this.testDirectory.newFolder();
+        
+        Archive archive = mock(Archive.class);
+        Entry resultEntry = mock(Entry.class);
+        File resultEntryFile = new File("/mock/path/to/file.ext");
+        File expectedResultFile = new File(outputDir,"file.ext");
+        when(resultEntry.extractFile(eq(expectedResultFile))).thenReturn(expectedResultFile);
+        when(resultEntry.getFileName()).thenReturn(resultEntryFile.getName());
+        List<Entry> mainEntries = Lists.newArrayList(resultEntry);
+        when(archive.getMainEntries()).thenReturn(mainEntries);
+        when(archiveFactory.createArchive(any(File.class))).thenReturn(archive);
+        
+        File mdlFile = new File(outputDir, "test.mdl");
+        FileUtils.writeStringToFile(mdlFile, "This is mock MDL file contents");
+        
+        ConversionReport conversionReport = new ConversionReport();
+        conversionReport.setReturnCode(ConversionReportOutcomeCode.FAILURE);
+        when(converterToolboxService.isConversionSupported(same(mdlLanguage), same(pharmmlLanguage))).thenReturn(false);
         
         //when
         conversionProcessor.process(mdlFile.getAbsolutePath(), outputDir.getAbsolutePath());

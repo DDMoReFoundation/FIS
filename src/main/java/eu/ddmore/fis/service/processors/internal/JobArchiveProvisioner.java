@@ -43,7 +43,7 @@ public class JobArchiveProvisioner {
         LOG.debug(String.format("Provisioning FIS job inputs to %s.", mifJobWorkingDir));
         try {
             archive.open();
-            Preconditions.checkState(archive.getMainEntries().size()>0, "Archive with the result of conversion had no main entries.");
+            Preconditions.checkState(!archive.getMainEntries().isEmpty(), "Archive with the result of conversion had no main entries.");
             if(mifArchiveSupport) {
                 LOG.debug("MIF supports Archive. Copying archive...");
                 mifJobWorkingDir.mkdirs();
@@ -52,14 +52,18 @@ public class JobArchiveProvisioner {
             } else {
                 LOG.debug("MIF does not support Archive. Extracting archive contents...");
                 archive.extractArchiveTo(mifJobWorkingDir);
-                Entry resultEntry = archive.getMainEntries().get(0);
-                job.setControlFile(resultEntry.getFilePath());
+                Entry resultEntry = archive.getMainEntries().iterator().next();
+                job.setControlFile(/* we have to remove the leading '/' so the path is relative */toExternalPath(resultEntry.getFilePath()));
             }
         } finally {
             archive.close();
         }
     }
     
+    private String toExternalPath(String filePath) {
+        return filePath.substring(1);
+    }
+
     public void setMifArchiveSupport(boolean mifArchiveSupport) {
         this.mifArchiveSupport = mifArchiveSupport;
     }

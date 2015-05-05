@@ -110,6 +110,7 @@ public class ReadMdlResourceFileProcessorIT {
         
         ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.SUCCESS);
+        when(converterToolboxService.isConversionSupported(same(mdlLanguage), same(jsonLanguage))).thenReturn(true);
         when(converterToolboxService.convert(any(Archive.class), same(mdlLanguage), same(jsonLanguage))).thenReturn(conversionReport);
         
         //when
@@ -141,6 +142,7 @@ public class ReadMdlResourceFileProcessorIT {
         
         ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.FAILURE);
+        when(converterToolboxService.isConversionSupported(same(mdlLanguage), same(jsonLanguage))).thenReturn(true);
         when(converterToolboxService.convert(any(Archive.class), same(mdlLanguage), same(jsonLanguage))).thenReturn(conversionReport);
         
         //when
@@ -170,6 +172,7 @@ public class ReadMdlResourceFileProcessorIT {
         
         ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.FAILURE);
+        when(converterToolboxService.isConversionSupported(same(mdlLanguage), same(jsonLanguage))).thenReturn(true);
         doThrow(ConverterToolboxServiceException.class).when(converterToolboxService).convert(any(Archive.class), same(mdlLanguage), same(jsonLanguage));
         
         //when

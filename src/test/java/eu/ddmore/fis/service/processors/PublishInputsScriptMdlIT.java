@@ -106,24 +106,28 @@ public class PublishInputsScriptMdlIT {
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptMdlIT.class.getResource(PUBLISH_MDL_INPUTS_SCRIPT)));
         // Prepare FIS Job working directory
 
-        final String SCRIPT_FILE_NAME = "warfarin_PK_PRED.mdl";
-        final String DATA_FILE_NAME = "warfarin_conc_pca.csv";
+        final String modelFileName = "warfarin_PK_PRED.mdl";
+        final String dataFileName = "warfarin_conc_pca.csv";
         final String testDataDir = "/eu/ddmore/testdata/models/mdl/warfarin_PK_PRED/";
-        final URL scriptFile = PublishInputsScriptMdlIT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
-        FileUtils.copyURLToFile(scriptFile, new File(testWorkingDir, "warfarin/" + SCRIPT_FILE_NAME));
-        final URL dataFile = PublishInputsScriptMdlIT.class.getResource(testDataDir + DATA_FILE_NAME);
-        FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, "warfarin/" + DATA_FILE_NAME));
+        final String modelFileInSubDir = "warfarin"+File.separator+modelFileName;
+        final String dataFileInSubDir = "warfarin"+File.separator+dataFileName;
 
+        final File scriptFile = new File(testWorkingDir, modelFileInSubDir);
+        final File dataFile = new File(testWorkingDir, dataFileInSubDir);
+        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(testDataDir + modelFileName), scriptFile);
+        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(testDataDir + dataFileName), dataFile);
+        
         // Prepare FIS Job
         LocalJob job = mock(LocalJob.class);
         when(job.getWorkingDirectory()).thenReturn(testWorkingDir.getAbsolutePath());
-        when(job.getControlFile()).thenReturn("warfarin/" + SCRIPT_FILE_NAME);
+        when(job.getControlFile()).thenReturn(modelFileInSubDir);
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
         // mock conversion and Archive
-        Archive archive = mockSuccessfulConversionArchive(testWorkingDir, "warfarin/" + SCRIPT_FILE_NAME);
+        Archive archive = mockSuccessfulConversionArchive(testWorkingDir, modelFileInSubDir);
         ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.SUCCESS);
+        when(converterToolboxService.isConversionSupported(same(mdlLanguage), same(pharmmlLanguage))).thenReturn(true);
         when(converterToolboxService.convert(same(archive), same(mdlLanguage), same(pharmmlLanguage))).thenReturn(conversionReport);
         
         //When
@@ -133,7 +137,8 @@ public class PublishInputsScriptMdlIT {
         verify(this.converterToolboxService).convert(any(Archive.class), same(mdlLanguage), same(pharmmlLanguage));
         assertTrue("Conversion Report file exists", new File(testWorkingDir, ".fis/conversionReport.log").exists());
         assertTrue("Archive is created in FIS metadata directory.", new File(testWorkingDir, ".fis/archive.phex").exists());
-        verify(archive, times(2)).addFileToArchive(any(File.class), any(String.class));
+        verify(archive).addFile(eq(scriptFile), any(String.class));
+        verify(archive).addFile(eq(dataFile), any(String.class));
         verify(jobArchiveProvisioner).provision(same(job), same(archive), eq(mifJobWorkingDir));
     }
 
@@ -141,24 +146,27 @@ public class PublishInputsScriptMdlIT {
     public void shouldPublishMDLInputsWhenModelFileWithinSubdirectory() throws IOException, ConverterToolboxServiceException, ArchiveException {
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptMdlIT.class.getResource(PUBLISH_MDL_INPUTS_SCRIPT)));
         // Prepare FIS Job working directory
-        final String SCRIPT_FILE_NAME = "warfarin_PK_PRED.mdl";
-        final String DATA_FILE_NAME = "warfarin_conc_pca.csv";
+        final String modelFileName = "warfarin_PK_PRED.mdl";
+        final String dataFileName = "warfarin_conc_pca.csv";
         final String testDataDir = "/eu/ddmore/testdata/models/mdl/warfarin_PK_PRED/";
-        final URL scriptFile = PublishInputsScriptMdlIT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
-        FileUtils.copyURLToFile(scriptFile, new File(testWorkingDir, "warfarin/" + SCRIPT_FILE_NAME));
-        final URL dataFile = PublishInputsScriptMdlIT.class.getResource(testDataDir + DATA_FILE_NAME);
-        FileUtils.copyURLToFile(dataFile, new File(testWorkingDir, "warfarin/" + DATA_FILE_NAME));
+        final String modelFileInSubDir = "warfarin"+File.separator+modelFileName;
+        final String dataFileInSubDir = "warfarin"+File.separator+dataFileName;
 
+        final File scriptFile = new File(testWorkingDir, modelFileInSubDir);
+        final File dataFile = new File(testWorkingDir, dataFileInSubDir);
+        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(testDataDir + modelFileName), scriptFile);
+        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(testDataDir + dataFileName), dataFile);
         // Prepare FIS Job
         LocalJob job = mock(LocalJob.class);
         when(job.getWorkingDirectory()).thenReturn(testWorkingDir.getAbsolutePath());
-        when(job.getControlFile()).thenReturn("warfarin/" + SCRIPT_FILE_NAME);
+        when(job.getControlFile()).thenReturn(modelFileInSubDir);
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
         // mock conversion and Archive
-        Archive archive = mockSuccessfulConversionArchive(testWorkingDir, "warfarin/" + SCRIPT_FILE_NAME);
+        Archive archive = mockSuccessfulConversionArchive(testWorkingDir, modelFileInSubDir);
         ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.SUCCESS);
+        when(converterToolboxService.isConversionSupported(same(mdlLanguage), same(pharmmlLanguage))).thenReturn(true);
         when(converterToolboxService.convert(same(archive), same(mdlLanguage), same(pharmmlLanguage))).thenReturn(conversionReport);
         
         //When
@@ -168,8 +176,8 @@ public class PublishInputsScriptMdlIT {
         verify(this.converterToolboxService).convert(any(Archive.class), same(mdlLanguage), same(pharmmlLanguage));
         assertTrue("Conversion Report file exists", new File(testWorkingDir, ".fis/conversionReport.log").exists());
         assertTrue("Archive is created in FIS metadata directory.", new File(testWorkingDir, ".fis/archive.phex").exists());
-        
-        verify(archive, times(2)).addFileToArchive(any(File.class), any(String.class));
+        verify(archive).addFile(eq(scriptFile), any(String.class));
+        verify(archive).addFile(eq(dataFile), any(String.class));
         verify(jobArchiveProvisioner).provision(same(job), same(archive), eq(mifJobWorkingDir));
     }
 
@@ -192,6 +200,7 @@ public class PublishInputsScriptMdlIT {
         Archive archive = mockSuccessfulConversionArchive(testWorkingDir, SCRIPT_FILE_NAME);
         ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.SUCCESS);
+        when(converterToolboxService.isConversionSupported(same(mdlLanguage), same(pharmmlLanguage))).thenReturn(true);
         when(converterToolboxService.convert(same(archive), same(mdlLanguage), same(pharmmlLanguage))).thenReturn(conversionReport);
         
         //When
@@ -203,7 +212,7 @@ public class PublishInputsScriptMdlIT {
         assertTrue("Archive is created in FIS metadata directory.", new File(testWorkingDir, ".fis/archive.phex").exists());
         
         // We expect 3 times, because there are two files in mock conversion results
-        verify(archive, times(3)).addFileToArchive(any(File.class), any(String.class));
+        verify(archive, times(3)).addFile(any(File.class), any(String.class));
         verify(jobArchiveProvisioner).provision(same(job), same(archive), eq(mifJobWorkingDir));
     }
     

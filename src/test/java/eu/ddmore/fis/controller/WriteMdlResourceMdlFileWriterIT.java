@@ -107,6 +107,7 @@ public class WriteMdlResourceMdlFileWriterIT {
         
         ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.SUCCESS);
+        when(converterToolboxService.isConversionSupported(same(jsonLanguage), same(mdlLanguage))).thenReturn(true);
         when(converterToolboxService.convert(any(Archive.class), same(jsonLanguage), same(mdlLanguage))).thenReturn(conversionReport);
         
         WriteMdlRequest request = new WriteMdlRequest();
@@ -138,6 +139,7 @@ public class WriteMdlResourceMdlFileWriterIT {
         
         ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.FAILURE);
+        when(converterToolboxService.isConversionSupported(same(jsonLanguage), same(mdlLanguage))).thenReturn(true);
         when(converterToolboxService.convert(any(Archive.class), same(jsonLanguage), same(mdlLanguage))).thenReturn(conversionReport);
 
         WriteMdlRequest request = new WriteMdlRequest();
@@ -167,6 +169,7 @@ public class WriteMdlResourceMdlFileWriterIT {
         
         ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.FAILURE);
+        when(converterToolboxService.isConversionSupported(same(jsonLanguage), same(mdlLanguage))).thenReturn(true);
         doThrow(ConverterToolboxServiceException.class).when(converterToolboxService).convert(any(Archive.class), same(jsonLanguage), same(mdlLanguage));
 
         WriteMdlRequest request = new WriteMdlRequest();

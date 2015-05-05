@@ -81,6 +81,7 @@ public class ConverterToolboxServiceProxyTest {
     public void setUp() {
         instance = new ConverterToolboxServiceProxy(restTemplate, MOCK_HOME_URL);
         instance.setConversionMapper(conversionToStringConverter);
+        instance.setLinkRelationTemplate("%s");
     }
 
     @Test(expected = ConverterToolboxServiceException.class)
@@ -194,6 +195,8 @@ public class ConverterToolboxServiceProxyTest {
         Conversion conversion = instance.prepareConversion(archive, from("A"), to("B").iterator().next());
         
         assertEquals("first.ext",conversion.getInputFileName());
+        verify(archive).open();
+        verify(archive).close();
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -203,6 +206,8 @@ public class ConverterToolboxServiceProxyTest {
         when(archive.getMainEntries()).thenReturn(mainEntries);
         when(archive.getArchiveFile()).thenReturn(mock(File.class));
         instance.prepareConversion(archive, from("A"), to("B").iterator().next());
+        verify(archive).open();
+        verify(archive).close();
     }
 
     @Test

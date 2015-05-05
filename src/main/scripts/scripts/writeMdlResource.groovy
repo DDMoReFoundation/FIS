@@ -64,15 +64,19 @@ File outputDirectory = fisMetadataDir;// TODO see comment - outputDir);
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
 Archive archive = archiveFactory.createArchive(archiveFile);
 
-archive.open();
-Entry en = archive.addFileToArchive(jsonFileName,"/");
-archive.getMainEntries().add(en);
-archive.close();
+try {
+    archive.open();
+    Entry en = archive.addFile(jsonFileName,"/");
+    archive.addMainEntry(en);
+} finally {
+    archive.close();
+}
+
 
 ConversionReport conversionReport = null;
 
 try {
-    if( converterToolboxService.isConversionSupported(from,to) ) {
+    if(!converterToolboxService.isConversionSupported(from,to) ) {
         throw new IllegalStateException("Requested conversion from ${from} to ${to} is not supported by Converter Toolbox Service.")
     }
     
@@ -82,8 +86,8 @@ try {
         return new WriteMdlResponse("Failed: conversion of ${jsonFileName} failed.")
     }
     archive.open();
-    Preconditions.checkState(archive.getMainEntries().size()>0, "Archive with the result of conversion had no main entries.");
-    Entry resultEntry = archive.getMainEntries().get(0);
+    Preconditions.checkState(!archive.getMainEntries().isEmpty(), "Archive with the result of conversion had no main entries.");
+    Entry resultEntry = archive.getMainEntries().iterator().next();
     File resultFile = outputFile;
     resultFile = resultEntry.extractFile(resultFile);
     Preconditions.checkNotNull(resultFile, "Extracted Archive entry ${resultEntry} was null.");
@@ -97,7 +101,6 @@ try {
     WriteMdlResponse response = new WriteMdlResponse("Failed: ${ex.getMessage()}");
     return response
 } finally {
-    archive.close();
     String conversionReportText = "No conversion report was generated for ${jsonFileName}";
     if(conversionReport!=null) {
         conversionReportText = JsonOutput.toJson(conversionReport);
@@ -105,5 +108,5 @@ try {
     File conversionReportLog = new File(fisMetadataDir, outputConversionReport);
     LOG.debug("Writing conversion report to ${conversionReportLog}.");
     conversionReportLog << conversionReportText;
-    FileUtils.deleteQuietly(archive.getArchiveFile());
+    archive.close();
 }

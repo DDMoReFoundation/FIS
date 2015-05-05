@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -51,7 +52,7 @@ import eu.ddmore.fis.service.cts.internal.ConversionToStringConverter;
  * 
  * This implementation uses RestTemplate for REST communication, any RuntimeExceptions thrown by it
  * are passed directly to the client layer since they represent invalid system state (e.g. remote service
- * being unavailable). Clients should not capture these.
+ * being unavailable, 404 errors etc.). Clients should not capture these.
  * 
  */
 @Service("converterToolboxService")
@@ -59,12 +60,18 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
     private static final Logger LOG = Logger.getLogger(ConverterToolboxServiceProxy.class);
     private final RestTemplate restTemplate;
     private final String ctsUrl;
-
+    
+    @Value("${fis.cts.link.relation.template:ddmore:%s}")
+    private String linkRelationTemplate;
+    
     @Autowired(required=true)
     private ConversionToStringConverter conversionMapper;
     
     @Value("${fis.cts.pollingDelay:1}")
     private long pollingDelay;
+    
+    @Value("${fis.cts.debug:false}")
+    private boolean skipConversionRemoval;
 
     @Autowired(required=true)
     public ConverterToolboxServiceProxy(@Qualifier("ctsRestTemplate") RestTemplate restTemplate, @Value("${fis.cts.url}") String ctsUrl) {
@@ -112,11 +119,21 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
     }
     
     private void removeConversion(ConversionResource conversion) {
-        restTemplate.delete(conversion.getLink(LinkRelation.DELETE.getRelation()).getHref());
+        if(skipConversionRemoval) {
+            LOG.warn("Skipping conversion removal");
+            return;
+        }
+        Link deleteLink = conversion.getLink(toExternalForm(LinkRelation.DELETE.getRelation()));
+        if(deleteLink!=null) {
+            LOG.debug(String.format("Removing conversion at %s.",deleteLink.getHref()));
+            restTemplate.delete(deleteLink.getHref());
+        } else {
+            LOG.warn(String.format("No %s relation link available for conversion %s", LinkRelation.DELETE.getRelation(), conversion.getId()));
+        }
     }
 
     private void retrieveResult(File archiveFile, ConversionResource conversion) throws ConverterToolboxServiceException {
-        Link resultLink = conversion.getLink(LinkRelation.RESULT.getRelation());
+        Link resultLink = conversion.getLink(toExternalForm(LinkRelation.RESULT.getRelation()));
         if(resultLink!=null) {
             ResponseEntity<ByteArrayResource> response = restTemplate.getForEntity(resultLink.getHref(), ByteArrayResource.class);
             checkStatus(response);
@@ -127,6 +144,7 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
     }
 
     private void dumpResultToFile(File file, ByteArrayResource body) throws ConverterToolboxServiceException {
+        LOG.debug(String.format("Dumping result Archive from CTS to %s", file));
         try (InputStream in = body.getInputStream(); OutputStream out = new FileOutputStream(file)){
             IOUtils.copy(in,out);
         } catch (IOException e) {
@@ -151,10 +169,14 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
     }
 
     private ConversionResource getConversionResource(ConversionResource conversionResource) throws ConverterToolboxServiceException {
-        String conversionUrl = conversionResource.getLink(LinkRelation.SELF.getRelation()).getHref();
+        Link conversionLink = conversionResource.getLink(LinkRelation.SELF.getRelation());
+        Preconditions.checkState(conversionLink!=null, String.format("Link with %s relation was not found.", LinkRelation.SELF.getRelation()));
+        String conversionUrl = conversionLink.getHref();
         LOG.debug(String.format("Retrieving conversion from %s.",conversionUrl));
         ResponseEntity<ConversionResource> response = restTemplate.getForEntity(conversionUrl, ConversionResource.class);
         checkStatus(response);
+        LOG.debug(response.getBody().getContent());
+        LOG.debug(response.getBody());
         return response.getBody();
     }
 
@@ -163,22 +185,36 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
         try {
             requestParams.add("file", new FileSystemResource(archive.getArchiveFile()));
         } catch (ArchiveException e) {
-            throw new ConverterToolboxServiceException("Could not get Archive file",e);
+            throw new ConverterToolboxServiceException("Could not prepare archive file for upload.",e);
         }
         requestParams.add("conversion", conversionMapper.convert(conversion));
-        ResponseEntity<ConversionResource> response = restTemplate.postForEntity(serviceDescriptorResource.getLink(LinkRelation.SUBMIT.getRelation()).getHref(), requestParams, ConversionResource.class);
+        Link submitLink = serviceDescriptorResource.getLink(toExternalForm(LinkRelation.SUBMIT.getRelation()));
+        Preconditions.checkState(submitLink!=null, String.format("Link with %s relation was not found.", LinkRelation.SUBMIT.getRelation()));
+        LOG.debug(String.format("Submitting conversion to %s", submitLink.getHref()));
+        ResponseEntity<ConversionResource> response = null;
+        try {
+            response = restTemplate.postForEntity(submitLink.getHref(), requestParams, ConversionResource.class);
+        } catch (HttpClientErrorException ex) {
+            throw new ConverterToolboxServiceException(String.format("Couldn't submit conversion, CTS response: [%s]",ex.getResponseBodyAsString()), ex);
+        }
         checkStatus(response);
         return response.getBody();
     }
     
     @VisibleForTesting
     Conversion prepareConversion(Archive archive, LanguageVersion from, LanguageVersion to) {
-        if(archive.getMainEntries().size()==0) {
-            throw new IllegalArgumentException("No main entries were specified in the Archive");
-        }
-        String mainEntry = archive.getMainEntries().get(0).getFilePath();
-        if(archive.getMainEntries().size()>1) {
-            LOG.warn(String.format("There are %s main entries in the archive, first (%s) will be used for conversion",archive.getMainEntries().size(),mainEntry));
+        String mainEntry = null;
+        try {
+            archive.open();
+            if(archive.getMainEntries().size()==0) {
+                throw new IllegalArgumentException("No main entries were specified in the Archive");
+            }
+            mainEntry = archive.getMainEntries().iterator().next().getFilePath();
+            if(archive.getMainEntries().size()>1) {
+                LOG.warn(String.format("There are %s main entries in the archive, first (%s) will be used as input for conversion",archive.getMainEntries().size(),mainEntry));
+            }
+        } finally {
+            archive.close();
         }
         Conversion conversion = new Conversion();
         conversion.setFrom(from);
@@ -188,8 +224,8 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
     }
 
     private boolean isConversionSupported(ServiceDescriptor serviceDescriptor, final LanguageVersion from, final LanguageVersion to) {
-        Collection<ConversionCapability> conversions = serviceDescriptor.getCapabilities();
-        return conversions.size()==0||!Collections2.filter(conversions, new Predicate<ConversionCapability>() {
+        Collection<ConversionCapability> capabilities = serviceDescriptor.getCapabilities();
+        return capabilities.size()>0&&!Collections2.filter(capabilities, new Predicate<ConversionCapability>() {
             @Override
             public boolean apply(ConversionCapability candidate) {
                 return candidate.getSource().equals(from) && candidate.getTarget().contains(to);
@@ -199,8 +235,11 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
     }
     
     private ServiceDescriptorResource getServiceDescriptorResource() throws ConverterToolboxServiceException {
+        LOG.debug(String.format("Retrieving CTS Service Descriptor from %s", ctsUrl));
         ResponseEntity<ServiceDescriptorResource> response = restTemplate.getForEntity(ctsUrl, ServiceDescriptorResource.class);
         checkStatus(response);
+        LOG.debug(response.getBody().getContent());
+        LOG.debug(response.getBody());
         return response.getBody();
     }
     
@@ -210,9 +249,18 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
         }
     }
     
+    private String toExternalForm(String relation) {
+        return String.format(linkRelationTemplate, relation);
+    }
+    
     @VisibleForTesting
     void setConversionMapper(ConversionToStringConverter conversionMapper) {
         this.conversionMapper = conversionMapper;
+    }
+
+    @VisibleForTesting
+    void setLinkRelationTemplate(String linkRelationTemplate) {
+        this.linkRelationTemplate = linkRelationTemplate;
     }
 
     @Override

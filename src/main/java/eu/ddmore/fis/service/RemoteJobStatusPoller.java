@@ -37,9 +37,9 @@ public class RemoteJobStatusPoller {
     }
     
     private void updateJobStatus(final LocalJob job) {
-        LOG.debug(String.format("Job %s is %s", job.getId(), job.getStatus()));
+        LOG.debug(String.format("Job [%s] Local status is %s", job.getId(), job.getStatus()));
         String remoteJobStatus = mifClient.checkStatus(job.getId());
-        LOG.debug(String.format("MIF status is: %s",remoteJobStatus));
+        LOG.debug(String.format("Job [%s] TES job status is: %s",job.getId(), remoteJobStatus));
         LocalJob localJob = job;
         if("NOT_AVAILABLE".equals(remoteJobStatus)) {
             return;

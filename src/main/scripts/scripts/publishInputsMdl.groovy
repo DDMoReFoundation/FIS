@@ -63,15 +63,21 @@ String modelExt = FilenameUtils.getExtension(origControlFile.getName());
 
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
 Archive archive = archiveFactory.createArchive(archiveFile);
-archive.open();
 
-fisJobWorkingDir.traverse type:FILES, excludeFilter:~/.*\.fis.*/, visit:{ String relativePath = it.getPath().replace(fisJobWorkingDir.getPath(),""); LOG.debug("Processing Job input file: ${it.getName()}, which will be added into Archive at location: ${relativePath}"); archive.addFileToArchive(it, relativePath) }
+try {
+    archive.open();
+    fisJobWorkingDir.traverse type:FILES, excludeFilter:~/.*\.fis.*/, visit:{ String relativePath = it.getParentFile().getPath().replace(fisJobWorkingDir.getPath(),""); LOG.debug("Processing Job input file: ${it.getName()}, which will be added into Archive at location: ${relativePath}"); archive.addFile(it, relativePath) }
+    if(LOG.isDebugEnabled()) {
+        LOG.debug("Control File Path ${origControlFile.getPath()}")
+        archive.getEntries().each {LOG.debug("Archive Entry ${it.getFilePath()}") }
+    }
+    Entry controlFileEntry = archive.getEntry(origControlFile.getPath())
+    archive.addMainEntry(controlFileEntry);
+} finally {
+    archive.close();
+}
 
-Entry controlFileEntry = archive.getEntry(origControlFile.getPath())
-archive.getMainEntries().add(controlFileEntry);
-archive.close();
-
-if( converterToolboxService.isConversionSupported(from,to) ) {
+if(!converterToolboxService.isConversionSupported(from,to) ) {
     throw new IllegalStateException("Requested conversion from ${from} to ${to} is not supported by Converter Toolbox Service.")
 }
 
@@ -138,15 +144,15 @@ void useMockPharmml(File mockDataDir, String modelName, String pharmmlFileExt, A
         archive.open();
         File xmlVersionInMockDataDir = new File(mockDataDir, modelName + "." + pharmmlFileExt)
         String newModelFileName = modelName + "." + pharmmlFileExt
-        Entry modelEntry = archive.addFileToArchive( xmlVersionInMockDataDir, newModelFileName)
+        Entry modelEntry = archive.addFile( xmlVersionInMockDataDir, newModelFileName)
         File data = new File(mockDataDir, modelName + ".csv")
         if (data.exists()) {
-            archive.addFileToArchive( data, modelName + "_data.csv" )
+            archive.addFile( data, modelName + "_data.csv" )
         } else {
             LOG.debug("Mock data file: ${data} doesn't exist.");
         }
-        archive.getMainEntries().clear();
-        archive.getMainEntries().add(modelEntry);
+        archive.setMainEntries([]);
+        archive.addMainEntry(modelEntry);
     } finally {
         archive.close();
     }
