@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import eu.ddmore.fis.service.HealthDetail;
 import eu.ddmore.fis.service.mif.Healthcheck;
 
 /**
@@ -48,7 +49,7 @@ public class HealthcheckController {
         LOG.debug("Handling healthcheck request");
         Health mifHealth = mifHealthcheck.health();
         if(!mifHealth.getStatus().equals(Status.UP)) {
-            Object error = mifHealth.getDetails().get(Healthcheck.ERROR);
+            Object error = mifHealth.getDetails().get(HealthDetail.ERROR);
             if(error!=null) {
                 return error.toString();
             } else {
@@ -57,7 +58,7 @@ public class HealthcheckController {
         }
         Health ctsHealth = ctsHealthcheck.health();
         if(!ctsHealth.getStatus().equals(Status.UP)) {
-            Object error = ctsHealth.getDetails().get(Healthcheck.ERROR);
+            Object error = ctsHealth.getDetails().get(HealthDetail.ERROR);
             if(error!=null) {
                 return error.toString();
             } else {
