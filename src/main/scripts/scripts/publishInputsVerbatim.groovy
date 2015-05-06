@@ -60,6 +60,12 @@ String modelName = FilenameUtils.getBaseName(origControlFile.getName());
 String modelExt = FilenameUtils.getExtension(origControlFile.getName());
 
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
+
+if(archiveFile.exists()) {
+    LOG.warn("Archive file ${archiveFile} already exists, removed.");
+    FileUtils.deleteQuietly(archiveFile)
+}
+
 Archive archive = archiveFactory.createArchive(archiveFile);
 try {
     archive.open();

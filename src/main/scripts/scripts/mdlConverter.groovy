@@ -53,6 +53,12 @@ fisMetadataDir.mkdir();
 File outputDirectory = new File(outputDir);
 
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
+
+if(archiveFile.exists()) {
+    LOG.warn("Archive file ${archiveFile} already exists, removed.");
+    FileUtils.deleteQuietly(archiveFile)
+}
+
 Archive archive = archiveFactory.createArchive(archiveFile);
 try {
     archive.open();
@@ -86,6 +92,9 @@ try {
     if(conversionReport!=null) {
         conversionReportText = JsonOutput.toJson(conversionReport);
     }
-    new File(fisMetadataDir, outputConversionReport) << conversionReportText;
+    File conversionReportFile = new File(fisMetadataDir, outputConversionReport);
+    LOG.debug("Writing conversion report to ${conversionReportFile}.");
+    FileUtils.deleteQuietly(conversionReportFile)
+    conversionReportFile << conversionReportText;
     archive.close();
 }

@@ -25,7 +25,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.Lists;
 
@@ -216,17 +218,22 @@ public class PublishInputsScriptMdlIT {
         verify(jobArchiveProvisioner).provision(same(job), same(archive), eq(mifJobWorkingDir));
     }
     
-    private Archive mockSuccessfulConversionArchive(File fisJobDir, String ctlFileName) throws IOException, ArchiveException {
-        File fisMetadataDir = new File(fisJobDir, ".fis");
-        Archive archive = mock(Archive.class);
+    private Archive mockSuccessfulConversionArchive(final File fisJobDir, final String ctlFileName) throws IOException, ArchiveException {
+        final Archive archive = mock(Archive.class);
         Entry resultEntry = mock(Entry.class);
         when(resultEntry.getFilePath()).thenReturn(ctlFileName).thenReturn("file.xml");
         List<Entry> mainEntries = Lists.newArrayList(resultEntry);
         when(archive.getMainEntries()).thenReturn(mainEntries);
-        when(archiveFactory.createArchive(any(File.class))).thenReturn(archive);
-        File phexFile = new File(fisMetadataDir, PHEX_ARCHIVE);
-        FileUtils.writeStringToFile(phexFile, "This is mock Phex file contents");
-        when(archive.getArchiveFile()).thenReturn(phexFile);
+        when(archiveFactory.createArchive(any(File.class))).then(new Answer<Archive>() {
+            @Override
+            public Archive answer(InvocationOnMock invocation) throws Throwable {
+                File fisMetadataDir = new File(fisJobDir, ".fis");
+                File phexFile = new File(fisMetadataDir, PHEX_ARCHIVE);
+                FileUtils.writeStringToFile(phexFile, "This is mock Phex file contents");
+                when(archive.getArchiveFile()).thenReturn(phexFile);
+                return archive;
+            }
+        });
         return archive;
     }
 
