@@ -290,9 +290,7 @@
             </bean>
         </property>
         <property name="jpaProperties">
-            <value>
-                hibernate.generate_statistics = false
-            </value>
+            <value>hibernate.generate_statistics = false</value>
         </property>
     </bean>
 
