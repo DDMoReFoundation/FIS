@@ -130,8 +130,7 @@
                 <constructor-arg>
                     <map>
                         <entry key="converter.toolbox.executable">
-                            <value>${converter.toolbox.executable}
-                            </value>
+                            <value>${converter.toolbox.executable}</value>
                         </entry>
                     </map>
                 </constructor-arg>
@@ -146,8 +145,7 @@
                 <constructor-arg>
                     <map>
                         <entry key="converter.toolbox.executable">
-                            <value>${converter.toolbox.executable}
-                            </value>
+                            <value>${converter.toolbox.executable}</value>
                         </entry>
                     </map>
                 </constructor-arg>
@@ -162,8 +160,7 @@
                 <constructor-arg>
                     <map>
                         <entry key="converter.toolbox.executable">
-                            <value>${converter.toolbox.executable}
-                            </value>
+                            <value>${converter.toolbox.executable}</value>
                         </entry>
                     </map>
                 </constructor-arg>
@@ -299,9 +296,7 @@
             </bean>
         </property>
         <property name="jpaProperties">
-            <value>
-                hibernate.generate_statistics = false
-            </value>
+            <value>hibernate.generate_statistics = false</value>
         </property>
     </bean>
 
