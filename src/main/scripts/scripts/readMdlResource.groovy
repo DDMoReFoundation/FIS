@@ -8,7 +8,6 @@ import eu.ddmore.convertertoolbox.domain.ConversionReport
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode
 import eu.ddmore.convertertoolbox.domain.LanguageVersion
 import eu.ddmore.fis.service.cts.ConverterToolboxService
-import freemarker.template.utility.Collections12;
 import groovy.json.JsonOutput
 
 import org.apache.commons.io.FileUtils
