@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -125,6 +126,20 @@ public class ConverterToolboxServiceProxyTest {
         Archive archive = mock(Archive.class);
         when(archive.getArchiveFile()).thenReturn(mock(File.class));
         instance.convert(archive, from("A"), to("not-existing-language").iterator().next());
+    }
+    
+
+    @Test(expected=ConverterToolboxServiceException.class)
+    public void convert_shouldThrowConverterToolboxExceptionForArchiveException() throws ConverterToolboxServiceException, IOException, ArchiveException {
+        ServiceDescriptorResource mockServiceDescriptorResource = createMockServiceDescriptorResource();
+        ResponseEntity<ServiceDescriptorResource> mockResponse = new ResponseEntity<ServiceDescriptorResource>(
+                mockServiceDescriptorResource, HttpStatus.OK);
+        when(restTemplate.getForEntity(eq(MOCK_HOME_URL), same(ServiceDescriptorResource.class))).thenReturn(mockResponse);
+        File archiveFile = tempArchiveLocation.newFile();
+        Archive archive = mock(Archive.class);
+        when(archive.getArchiveFile()).thenReturn(archiveFile);
+        doThrow(ArchiveException.class).when(archive).open();
+        instance.convert(archive, from("A"), to("B").iterator().next());
     }
 
     @Test
