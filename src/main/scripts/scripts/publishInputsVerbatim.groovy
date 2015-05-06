@@ -45,7 +45,10 @@ final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
 final File fisJobWorkingDir = new File(job.getWorkingDirectory())
 final File mifJobWorkingDir = new File(executionHostFileshareLocal, job.getId());
 
-LOG.debug("Job ${job.getId()}, fis working dir: ${fisJobWorkingDir}, mif working dir: ${mifJobWorkingDir}");
+/**
+ * Script
+ */
+LOG.debug("Job ${job.getId()}, FIS working dir: ${fisJobWorkingDir}, MIF working dir: ${mifJobWorkingDir}");
 
 // Ensure that the FIS metadata directory is created
 File fisMetadataDir = new File(fisJobWorkingDir,FIS_METADATA_DIR);

@@ -41,7 +41,6 @@ final String outputArchiveName = binding.getVariable("fis.cts.output.archive");
 final String outputConversionReport = binding.getVariable("fis.cts.output.conversionReport");
 final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
 
-
 /**
  * Script
  */

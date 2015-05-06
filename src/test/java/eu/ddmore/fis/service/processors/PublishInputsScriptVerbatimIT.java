@@ -13,7 +13,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -34,7 +33,6 @@ import eu.ddmore.archive.Entry;
 import eu.ddmore.archive.exception.ArchiveException;
 import eu.ddmore.convertertoolbox.domain.LanguageVersion;
 import eu.ddmore.fis.domain.LocalJob;
-import eu.ddmore.fis.service.cts.ConverterToolboxService;
 import eu.ddmore.fis.service.cts.ConverterToolboxServiceException;
 import eu.ddmore.fis.service.processors.internal.JobArchiveProvisioner;
 import groovy.lang.Binding;

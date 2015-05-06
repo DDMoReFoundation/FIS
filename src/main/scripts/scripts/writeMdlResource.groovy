@@ -30,7 +30,6 @@ import groovy.json.JsonOutput
  */
 final String outputFilePath = binding.getVariable("filePath");
 final String fileContent = binding.getVariable("fileContent")
-//TODO This needs to be unified with mdlConverter.groovy final String outputDir = binding.getVariable("outputDir");
 
 /**
  * Variables
@@ -59,7 +58,7 @@ LOG.debug("Working directory: ${workingDir}");
 File jsonFileName = new File(FilenameUtils.removeExtension(outputFilePath) + ".json")
 FileUtils.writeStringToFile(jsonFileName, fileContent)
 
-File outputDirectory = fisMetadataDir;// TODO see comment - outputDir);
+File outputDirectory = fisMetadataDir;
 
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
 Archive archive = archiveFactory.createArchive(archiveFile);

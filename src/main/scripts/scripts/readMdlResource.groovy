@@ -8,6 +8,7 @@ import eu.ddmore.convertertoolbox.domain.ConversionReport
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode
 import eu.ddmore.convertertoolbox.domain.LanguageVersion
 import eu.ddmore.fis.service.cts.ConverterToolboxService
+import freemarker.template.utility.Collections12;
 import groovy.json.JsonOutput
 
 import org.apache.commons.io.FileUtils
@@ -27,7 +28,6 @@ import com.google.common.base.Preconditions
  * Parameters
  */
 final String inputFilePath = binding.getVariable("filePath");
-//TODO This needs to be unified with mdlConverter.groovy final String outputDir = binding.getVariable("outputDir");
 
 /**
  * Variables
@@ -51,7 +51,7 @@ File workingDir = inputFile.parentFile
 File fisMetadataDir = new File(workingDir,FIS_METADATA_DIR);
 fisMetadataDir.mkdir();
 
-File outputDirectory = fisMetadataDir;// TODO see comment - outputDir);
+File outputDirectory = fisMetadataDir;
 
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
 Archive archive = archiveFactory.createArchive(archiveFile);

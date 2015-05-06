@@ -50,6 +50,9 @@ final File mockDataDir = new File(scriptFile.getParentFile().getParentFile(),"mo
 final File fisJobWorkingDir = new File(job.getWorkingDirectory())
 final File mifJobWorkingDir = new File(executionHostFileshareLocal, job.getId());
 
+/**
+ * Script
+ */
 LOG.debug("Job ${job.getId()}, fis working dir: ${fisJobWorkingDir}, mif working dir: ${mifJobWorkingDir}");
 
 // Ensure that the FIS metadata directory is created
