@@ -3,6 +3,8 @@
  ******************************************************************************/
 package eu.ddmore.fis.service.cts;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -32,7 +34,8 @@ public class CTSShutdown implements Shutdown {
     @Override
     public void invoke() {
         try {
-            ResponseEntity<String> response = restTemplate.postForEntity(String.format("%s/%s",ctsUrl,shutdownEndpoint), null, String.class, new Object[0]);
+            @SuppressWarnings("rawtypes")
+            ResponseEntity<Map> response = restTemplate.postForEntity(String.format("%s/%s",ctsUrl,shutdownEndpoint), null, Map.class, new Object[0]);
             LOG.info(String.format("Remote Converter Toolbox Service at [%s] responded with status [%s] and content [%s] to shutdown request.", ctsUrl, response.getStatusCode(), response.getBody()));
         } catch(Exception ex) {
             LOG.error(String.format("Error when trying to shutdown Converter Toolbox Service at [%s].", ctsUrl),ex);
