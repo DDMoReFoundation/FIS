@@ -23,7 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -46,13 +46,16 @@ import eu.ddmore.fis.service.cts.internal.ConversionToStringConverter;
 
 
 /**
- * A proxy translating ConverterToolboxService interface calls into CTS REST API calls
+ * A proxy translating {@link ConverterToolboxService} interface calls into CTS REST API calls
  * 
  * This implementation uses the calling Thread to perform monitoring.
  * 
- * This implementation uses RestTemplate for REST communication, any RuntimeExceptions thrown by it
- * are passed directly to the client layer since they represent invalid system state (e.g. remote service
- * being unavailable, 404 errors etc.). Clients should not capture these.
+ * Note, this class is thread-safe and should be kept this way, since it can be invoked by concurrently by FIS HTTP request handlers.
+ * 
+ * This implementation uses {@link RestTemplate} for REST communication, any {@link RuntimeException} indicating HTTP communication error thrown by {@link RestTemplate}
+ * are wrapped in {@link ConverterToolboxServiceException}.
+ * 
+ * Errors being a result of incorrect usage (e.g. null-pointer arguments, client requesting non-existing conversions etc.) result in Runtime Exceptions
  * 
  */
 @Service("converterToolboxService")
@@ -87,11 +90,13 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
     @Override
     public ConversionReport convert(Archive archive, LanguageVersion from, LanguageVersion to) throws ConverterToolboxServiceException {
         Preconditions.checkNotNull(archive, "Archive can't be null.");
+        File archiveLocation = null;
         try {
-            return convert(archive, from, to, archive.getArchiveFile());
+            archiveLocation = archive.getArchiveFile();
         } catch (ArchiveException e) {
-            throw new ConverterToolboxServiceException("Could not retrieve Archive file",e);
+            throw new IllegalStateException("Could not retrieve input Archive's file.",e);
         }
+        return convert(archive, from, to, archiveLocation);
     }
 
     @Override
@@ -126,16 +131,27 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
         Link deleteLink = conversion.getLink(toExternalForm(LinkRelation.DELETE.getRelation()));
         if(deleteLink!=null) {
             LOG.debug(String.format("Removing conversion at %s.",deleteLink.getHref()));
-            restTemplate.delete(deleteLink.getHref());
+            try {
+                restTemplate.delete(deleteLink.getHref());
+            } catch (HttpStatusCodeException ex) {
+                // this is non-critical
+                LOG.error("Could not delete conversion on CTS",ex);
+            }
         } else {
             LOG.warn(String.format("No %s relation link available for conversion %s", LinkRelation.DELETE.getRelation(), conversion.getId()));
         }
     }
-
-    private void retrieveResult(File archiveFile, ConversionResource conversion) throws ConverterToolboxServiceException {
+    
+    @VisibleForTesting
+    void retrieveResult(File archiveFile, ConversionResource conversion) throws ConverterToolboxServiceException {
         Link resultLink = conversion.getLink(toExternalForm(LinkRelation.RESULT.getRelation()));
         if(resultLink!=null) {
-            ResponseEntity<ByteArrayResource> response = restTemplate.getForEntity(resultLink.getHref(), ByteArrayResource.class);
+            ResponseEntity<ByteArrayResource> response = null;
+            try {
+                response = restTemplate.getForEntity(resultLink.getHref(), ByteArrayResource.class);
+            } catch (HttpStatusCodeException ex) {
+                throw new ConverterToolboxServiceException(String.format("Couldn't retrieve result archive: [%s]",ex.getResponseBodyAsString()), ex);
+            }
             checkStatus(response);
             dumpResultToFile(archiveFile, response.getBody());
         } else {
@@ -160,32 +176,39 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
             try {
                 Thread.sleep(TimeUnit.SECONDS.toMillis(pollingDelay ));
             } catch (InterruptedException e) {
-                LOG.error(e);
+                throw new RuntimeException("Error when monitoring conversion status.",e);
             }
             conversionResource = getConversionResource(conversionResource);
             status = conversionResource.getContent().getStatus();
         }
         return conversionResource;
     }
-
-    private ConversionResource getConversionResource(ConversionResource conversionResource) throws ConverterToolboxServiceException {
+    
+    @VisibleForTesting
+    ConversionResource getConversionResource(ConversionResource conversionResource) throws ConverterToolboxServiceException {
         Link conversionLink = conversionResource.getLink(LinkRelation.SELF.getRelation());
         Preconditions.checkState(conversionLink!=null, String.format("Link with %s relation was not found.", LinkRelation.SELF.getRelation()));
         String conversionUrl = conversionLink.getHref();
         LOG.debug(String.format("Retrieving conversion from %s.",conversionUrl));
-        ResponseEntity<ConversionResource> response = restTemplate.getForEntity(conversionUrl, ConversionResource.class);
+        ResponseEntity<ConversionResource> response = null;
+        try {
+            response = restTemplate.getForEntity(conversionUrl, ConversionResource.class);
+        } catch (HttpStatusCodeException ex) {
+            throw new ConverterToolboxServiceException(String.format("Couldn't retrieve latest status of conversion: [%s]",ex.getResponseBodyAsString()), ex);
+        }
         checkStatus(response);
         LOG.debug(response.getBody().getContent());
         LOG.debug(response.getBody());
         return response.getBody();
     }
-
-    private ConversionResource submit(ServiceDescriptorResource serviceDescriptorResource, Archive archive, Conversion conversion) throws ConverterToolboxServiceException {
+    
+    @VisibleForTesting
+    ConversionResource submit(ServiceDescriptorResource serviceDescriptorResource, Archive archive, Conversion conversion) throws ConverterToolboxServiceException {
         MultiValueMap<String,Object> requestParams = new LinkedMultiValueMap<String,Object>();
         try {
             requestParams.add("file", new FileSystemResource(archive.getArchiveFile()));
         } catch (ArchiveException e) {
-            throw new ConverterToolboxServiceException("Could not prepare archive file for upload.",e);
+            throw new IllegalStateException("Could not prepare archive file for upload.",e);
         }
         requestParams.add("conversion", conversionMapper.convert(conversion));
         Link submitLink = serviceDescriptorResource.getLink(toExternalForm(LinkRelation.SUBMIT.getRelation()));
@@ -194,7 +217,7 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
         ResponseEntity<ConversionResource> response = null;
         try {
             response = restTemplate.postForEntity(submitLink.getHref(), requestParams, ConversionResource.class);
-        } catch (HttpClientErrorException ex) {
+        } catch (HttpStatusCodeException ex) {
             throw new ConverterToolboxServiceException(String.format("Couldn't submit conversion, CTS response: [%s]",ex.getResponseBodyAsString()), ex);
         }
         checkStatus(response);
@@ -230,13 +253,17 @@ public class ConverterToolboxServiceProxy implements ConverterToolboxService {
             public boolean apply(ConversionCapability candidate) {
                 return candidate.getSource().equals(from) && candidate.getTarget().contains(to);
             }
-            
         }).isEmpty();
     }
     
     private ServiceDescriptorResource getServiceDescriptorResource() throws ConverterToolboxServiceException {
         LOG.debug(String.format("Retrieving CTS Service Descriptor from %s", ctsUrl));
-        ResponseEntity<ServiceDescriptorResource> response = restTemplate.getForEntity(ctsUrl, ServiceDescriptorResource.class);
+        ResponseEntity<ServiceDescriptorResource> response = null;
+        try {
+            response = restTemplate.getForEntity(ctsUrl, ServiceDescriptorResource.class);
+        } catch (HttpStatusCodeException ex) {
+            throw new ConverterToolboxServiceException(String.format("Couldn't contact Converter Toolbox Service, response: [%s]",ex.getResponseBodyAsString()), ex);
+        }
         checkStatus(response);
         LOG.debug(response.getBody().getContent());
         LOG.debug(response.getBody());

@@ -13,11 +13,15 @@ import eu.ddmore.convertertoolbox.domain.LanguageVersion;
 
 
 /**
- * Represents Converter Toolbox Service instance
+ * Represents Converter Toolbox Service instance.
+ * 
+ * Implementations of this interface are expected to throw ConverterToolboxServiceException in any case when processing failure (e.g. communication error, converter runtime failure etc.).
+ * Any errors being a result of incorrect inputs should result in appropriate RuntimeException.
+ * 
  */
 public interface ConverterToolboxService {
     /**
-     * Performs conversion of the resource specified by first main entry in the input {@link Archive} and puts the resulting Archive
+     * Performs conversion of the resource specified by the first main entry in the input {@link Archive} and puts the resulting Archive
      * to outputFile.
      * 
      * Note the input archive should be closed and should not be modified in parallel.
@@ -46,9 +50,9 @@ public interface ConverterToolboxService {
     ConversionReport convert(Archive archive, LanguageVersion from, LanguageVersion to) throws ConverterToolboxServiceException;
 
     /**
-     * @throws ConverterToolboxServiceException if there is a problem performing the operation
      * @return a list of supported conversions
-    */
+     * @throws ConverterToolboxServiceException if there is a problem performing the operation
+     */
     Collection<ConversionCapability> getConversionCapabilities() throws ConverterToolboxServiceException;
     
     /**

@@ -25,15 +25,11 @@ public class ReadWriteController {
 
 	@RequestMapping(value = "readmdl", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody String readMdl(@RequestParam(value="fileName") String fileName) {
-
-		// Invoke the readResource Groovy script
         return readProcessor.process(fileName);
     }
 
     @RequestMapping(value = "writemdl", method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody WriteMdlResponse writeMdl(@RequestParam(value="writeRequest") WriteMdlRequest writeRequest) {
-
-    	// Invoke the writeResource Groovy script
     	return writeProcessor.process(writeRequest);
     }
 

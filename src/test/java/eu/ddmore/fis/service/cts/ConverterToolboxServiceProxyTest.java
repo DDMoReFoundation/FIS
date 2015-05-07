@@ -35,6 +35,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.collect.Lists;
@@ -129,16 +130,14 @@ public class ConverterToolboxServiceProxyTest {
     }
     
 
-    @Test(expected=ConverterToolboxServiceException.class)
-    public void convert_shouldThrowConverterToolboxExceptionForArchiveException() throws ConverterToolboxServiceException, IOException, ArchiveException {
+    @Test(expected=IllegalStateException.class)
+    public void convert_shouldThrowIllegalStateExceptionForArchiveException() throws ConverterToolboxServiceException, IOException, ArchiveException {
         ServiceDescriptorResource mockServiceDescriptorResource = createMockServiceDescriptorResource();
         ResponseEntity<ServiceDescriptorResource> mockResponse = new ResponseEntity<ServiceDescriptorResource>(
                 mockServiceDescriptorResource, HttpStatus.OK);
         when(restTemplate.getForEntity(eq(MOCK_HOME_URL), same(ServiceDescriptorResource.class))).thenReturn(mockResponse);
-        File archiveFile = tempArchiveLocation.newFile();
         Archive archive = mock(Archive.class);
-        when(archive.getArchiveFile()).thenReturn(archiveFile);
-        doThrow(ArchiveException.class).when(archive).open();
+        doThrow(ArchiveException.class).when(archive).getArchiveFile();
         instance.convert(archive, from("A"), to("B").iterator().next());
     }
 
@@ -242,7 +241,74 @@ public class ConverterToolboxServiceProxyTest {
         when(restTemplate.getForEntity(eq(MOCK_HOME_URL), same(ServiceDescriptorResource.class))).thenReturn(mockResponse);
         assertFalse("Conversion from A to F should not be supported",instance.isConversionSupported(from("A"), to("F").iterator().next()));
     }
+
+    @Test(expected = ConverterToolboxServiceException.class)
+    public void isConversionSupported_shouldThrowExceptionIfHTTPError() throws ConverterToolboxServiceException {
+        HttpStatusCodeException exception = mock(HttpStatusCodeException.class);
+        when(exception.getResponseBodyAsString()).thenReturn("Mock error");
+        doThrow(exception).when(restTemplate).getForEntity(any(String.class), same(ServiceDescriptorResource.class));
+        instance.isConversionSupported(from("A"), to("F").iterator().next());
+    }
+
+    @Test(expected = ConverterToolboxServiceException.class)
+    public void getConversionCapabilities_shouldThrowExceptionIfHTTPError() throws ConverterToolboxServiceException {
+        HttpStatusCodeException exception = mock(HttpStatusCodeException.class);
+        when(exception.getResponseBodyAsString()).thenReturn("Mock error");
+        doThrow(exception).when(restTemplate).getForEntity(any(String.class), same(ServiceDescriptorResource.class));
+        instance.getConversionCapabilities();
+    }
+
+    @Test(expected = ConverterToolboxServiceException.class)
+    public void getConversionResource_shouldThrowConverterToolboxServiceExceptionIfHTTPError() throws ConverterToolboxServiceException {
+        ConversionResource runningConversionResource = mock(ConversionResource.class);
+        Conversion runningConversion = mock(Conversion.class);
+        when(runningConversionResource.getContent()).thenReturn(runningConversion);
+        when(runningConversionResource.getLink(LinkRelation.SELF.getRelation())).thenReturn(new Link(MOCK_SELF_URL));
+        HttpStatusCodeException exception = mock(HttpStatusCodeException.class);
+        when(exception.getResponseBodyAsString()).thenReturn("Mock error");
+        doThrow(exception).when(restTemplate).getForEntity(any(String.class), same(ConversionResource.class));
+        instance.getConversionResource(runningConversionResource);
+    }
     
+    @Test(expected = ConverterToolboxServiceException.class)
+    public void submit_shouldThrowConverterToolboxServiceExceptionIfHTTPError() throws ConverterToolboxServiceException, ArchiveException, IOException {
+        ServiceDescriptorResource mockServiceDescriptorResource = createMockServiceDescriptorResource();
+        File archiveFile = tempArchiveLocation.newFile();
+        Archive archive = mock(Archive.class);
+        when(archive.getArchiveFile()).thenReturn(archiveFile);
+        Entry mainEntry = mock(Entry.class);
+        when(mainEntry.getFilePath()).thenReturn("mock/path/to/file.ext");
+        List<Entry> mainEntries = Lists.newArrayList(mainEntry);
+        when(archive.getMainEntries()).thenReturn(mainEntries);
+        Conversion newConversion = mock(Conversion.class);
+        
+        
+        HttpStatusCodeException exception = mock(HttpStatusCodeException.class);
+        when(exception.getResponseBodyAsString()).thenReturn("Mock error");
+        doThrow(exception).when(restTemplate).postForEntity(eq(MOCK_SUBMIT_URL), any(MultiValueMap.class), same(ConversionResource.class));
+        instance.submit(mockServiceDescriptorResource,archive, newConversion);
+    }
+
+    @Test(expected = ConverterToolboxServiceException.class)
+    public void retrieveResult_shouldThrowConverterToolboxServiceExceptionIfHTTPError() throws ConverterToolboxServiceException, ArchiveException, IOException {
+        File archiveFile = tempArchiveLocation.newFile();
+        Archive archive = mock(Archive.class);
+        when(archive.getArchiveFile()).thenReturn(archiveFile);
+        Entry mainEntry = mock(Entry.class);
+        when(mainEntry.getFilePath()).thenReturn("mock/path/to/file.ext");
+        List<Entry> mainEntries = Lists.newArrayList(mainEntry);
+        when(archive.getMainEntries()).thenReturn(mainEntries);
+        ConversionResource conversionResource = mock(ConversionResource.class);
+        Conversion conversion = mock(Conversion.class);
+        when(conversionResource.getContent()).thenReturn(conversion);
+        when(conversionResource.getLink(LinkRelation.RESULT.getRelation())).thenReturn(new Link(MOCK_RESULT_URL));
+
+        
+        HttpStatusCodeException exception = mock(HttpStatusCodeException.class);
+        when(exception.getResponseBodyAsString()).thenReturn("Mock error");
+        doThrow(exception).when(restTemplate).getForEntity(eq(MOCK_RESULT_URL),same(ByteArrayResource.class));
+        instance.retrieveResult(mock(File.class), conversionResource);
+    }
     
     private ServiceDescriptorResource createMockServiceDescriptorResource() {
         ServiceDescriptorResource mockServiceDescriptorResource = mock(ServiceDescriptorResource.class);
