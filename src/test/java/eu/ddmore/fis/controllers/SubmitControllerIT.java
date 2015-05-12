@@ -101,7 +101,7 @@ public class SubmitControllerIT extends SystemPropertiesAware {
         final String MODEL_FILE_NAME = "Warfarin-ODE-latest.ctl";
         final String DATA_FILE_NAME = "warfarin_conc.csv";
 
-        final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/Warfarin_ODE/";
+        final String testDataDir = "/test-models/NM-TRAN/7.2.0/Warfarin_ODE/";
 
         final URL scriptFile = SubmitControllerIT.class.getResource(testDataDir + MODEL_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(workingDir, MODEL_FILE_NAME));

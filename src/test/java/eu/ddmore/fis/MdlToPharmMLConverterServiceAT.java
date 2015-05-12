@@ -20,7 +20,7 @@ import org.junit.rules.TemporaryFolder;
  * Verifies that MDL to PharmML HTTP endpoint conforms to API.
  */
 public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
-	private static final String TEST_DATA_DIR = "/eu/ddmore/testdata/models/%s/6.0.7/Warfarin_ODE/";
+	private static final String TEST_DATA_DIR = "/test-models/%s/6.0.7/Warfarin_ODE/";
 	private static final String MDL_FILE_NAME = "Warfarin-ODE-latest.mdl";
 
 	private static final URL MDL_FILE_URL = MdlToPharmMLConverterServiceAT.class.getResource(String.format(TEST_DATA_DIR, "mdl") + MDL_FILE_NAME);

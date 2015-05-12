@@ -23,7 +23,7 @@ import eu.ddmore.fis.domain.WriteMdlResponse;
  */
 public class ReadWriteAT extends SystemPropertiesAware {
     private static final Logger LOG = Logger.getLogger(ReadWriteAT.class);
-	private static final String TEST_DATA_DIR = "/eu/ddmore/testdata/models/%s/6.0.7/Warfarin_ODE/";
+	private static final String TEST_DATA_DIR = "/test-models/%s/6.0.7/Warfarin_ODE/";
 	private static final String MDL_FILE_NAME = "Warfarin-ODE-latest.mdl";
 	private static final String JSON_FILE_NAME = "Warfarin-ODE-latest.output.json";
 

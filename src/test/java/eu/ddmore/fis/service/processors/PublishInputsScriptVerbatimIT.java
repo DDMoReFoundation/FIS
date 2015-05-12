@@ -91,7 +91,7 @@ public class PublishInputsScriptVerbatimIT {
     public void shouldPublishCTLInputs() throws IOException, ArchiveException {
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptVerbatimIT.class.getResource(PUBLISH_VERBATIM_INPUTS_SCRIPT)));
         // Copy the files out of the testdata JAR file
-        final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/Warfarin_ODE/";
+        final String testDataDir = "/test-models/NM-TRAN/7.2.0/Warfarin_ODE/";
         final String ctlFileName = "Warfarin-ODE-latest.ctl";
         final String dataFileName = "warfarin_conc.csv";
 
@@ -123,7 +123,7 @@ public class PublishInputsScriptVerbatimIT {
 
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptVerbatimIT.class.getResource(PUBLISH_VERBATIM_INPUTS_SCRIPT)));
         // Copy the files out of the testdata JAR file
-        final String testDataDir = "/eu/ddmore/testdata/models/PharmML/0.3.0/example3/";
+        final String testDataDir = "/test-models/PharmML/0.3.0/example3/";
         final String modelFileName = "example3.xml";
         final String dataFileName = "example3_data.csv";
 
@@ -155,7 +155,7 @@ public class PublishInputsScriptVerbatimIT {
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptVerbatimIT.class.getResource(PUBLISH_VERBATIM_INPUTS_SCRIPT)));
 
         // Copy the files out of the testdata JAR file
-        final String testDataDir = "/eu/ddmore/testdata/models/NM-TRAN/7.2.0/Warfarin_ODE/";
+        final String testDataDir = "/test-models/NM-TRAN/7.2.0/Warfarin_ODE/";
         final String modelFileName = "Warfarin-ODE-latest.ctl";
         final String dataFileName = "warfarin_conc.csv";
         final String modelFileInSubDir = "warfarin"+File.separator+modelFileName;
@@ -188,7 +188,7 @@ public class PublishInputsScriptVerbatimIT {
     public void shouldPublishPharmMLInputsWhenModelFileWithinSubdirectory() throws IOException, ConverterToolboxServiceException, ArchiveException {
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptVerbatimIT.class.getResource(PUBLISH_VERBATIM_INPUTS_SCRIPT)));
         // Copy the files out of the testdata JAR file
-        final String testDataDir = "/eu/ddmore/testdata/models/PharmML/0.3.0/example3/";
+        final String testDataDir = "/test-models/PharmML/0.3.0/example3/";
         
         final String modelFileName = "example3.xml";
         final String modelFileInSubDir = "example3" + File.separator + modelFileName;

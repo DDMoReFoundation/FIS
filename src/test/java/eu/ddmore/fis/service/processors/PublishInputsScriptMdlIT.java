@@ -110,7 +110,7 @@ public class PublishInputsScriptMdlIT {
 
         final String modelFileName = "warfarin_PK_PRED.mdl";
         final String dataFileName = "warfarin_conc_pca.csv";
-        final String testDataDir = "/eu/ddmore/testdata/models/mdl/warfarin_PK_PRED/";
+        final String testDataDir = "/test-models/mdl/warfarin_PK_PRED/";
         final String modelFileInSubDir = "warfarin"+File.separator+modelFileName;
         final String dataFileInSubDir = "warfarin"+File.separator+dataFileName;
 
@@ -150,7 +150,7 @@ public class PublishInputsScriptMdlIT {
         // Prepare FIS Job working directory
         final String modelFileName = "warfarin_PK_PRED.mdl";
         final String dataFileName = "warfarin_conc_pca.csv";
-        final String testDataDir = "/eu/ddmore/testdata/models/mdl/warfarin_PK_PRED/";
+        final String testDataDir = "/test-models/mdl/warfarin_PK_PRED/";
         final String modelFileInSubDir = "warfarin"+File.separator+modelFileName;
         final String dataFileInSubDir = "warfarin"+File.separator+dataFileName;
 
@@ -188,7 +188,7 @@ public class PublishInputsScriptMdlIT {
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptMdlIT.class.getResource(PUBLISH_MDL_INPUTS_SCRIPT)));
         // Prepare FIS Job working directory
         final String SCRIPT_FILE_NAME = "MockGeneratedPharmML.mdl";
-        final String testDataDir = "/eu/ddmore/testdata/MDL_with_mock_PharmML/";
+        final String testDataDir = "/test-models/MDL_with_mock_PharmML/";
         final URL scriptFile = PublishInputsScriptMdlIT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(testWorkingDir, SCRIPT_FILE_NAME));
 
