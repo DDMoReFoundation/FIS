@@ -108,11 +108,11 @@ public class PublishInputsScriptMdlIT {
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptMdlIT.class.getResource(PUBLISH_MDL_INPUTS_SCRIPT)));
         // Prepare FIS Job working directory
 
-        final String modelFileName = "warfarin_PK_PRED.mdl";
-        final String dataFileName = "warfarin_conc_pca.csv";
-        final String testDataDir = "/test-models/mdl/warfarin_PK_PRED/";
-        final String modelFileInSubDir = "warfarin"+File.separator+modelFileName;
-        final String dataFileInSubDir = "warfarin"+File.separator+dataFileName;
+        final String modelFileName = "UseCase1.mdl";
+        final String dataFileName = "warfarin_conc.csv";
+        final String testDataDir = "/test-models/MDL/Product4/";
+        final String modelFileInSubDir = "warfarin" + File.separator + modelFileName;
+        final String dataFileInSubDir = "warfarin" + File.separator + dataFileName;
 
         final File scriptFile = new File(testWorkingDir, modelFileInSubDir);
         final File dataFile = new File(testWorkingDir, dataFileInSubDir);
@@ -148,11 +148,11 @@ public class PublishInputsScriptMdlIT {
     public void shouldPublishMDLInputsWhenModelFileWithinSubdirectory() throws IOException, ConverterToolboxServiceException, ArchiveException {
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptMdlIT.class.getResource(PUBLISH_MDL_INPUTS_SCRIPT)));
         // Prepare FIS Job working directory
-        final String modelFileName = "warfarin_PK_PRED.mdl";
-        final String dataFileName = "warfarin_conc_pca.csv";
-        final String testDataDir = "/test-models/mdl/warfarin_PK_PRED/";
-        final String modelFileInSubDir = "warfarin"+File.separator+modelFileName;
-        final String dataFileInSubDir = "warfarin"+File.separator+dataFileName;
+        final String modelFileName = "UseCase1.mdl";
+        final String dataFileName = "warfarin_conc.csv";
+        final String testDataDir = "/test-models/MDL/Product4/";
+        final String modelFileInSubDir = "warfarin" + File.separator + modelFileName;
+        final String dataFileInSubDir = "warfarin" + File.separator + dataFileName;
 
         final File scriptFile = new File(testWorkingDir, modelFileInSubDir);
         final File dataFile = new File(testWorkingDir, dataFileInSubDir);
