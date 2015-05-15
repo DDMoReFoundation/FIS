@@ -20,10 +20,12 @@ import org.junit.rules.TemporaryFolder;
  * Verifies that MDL to PharmML HTTP endpoint conforms to API.
  */
 public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
-	private static final String TEST_DATA_DIR = "/test-models/%s/6.0.7/Warfarin_ODE/";
-	private static final String MDL_FILE_NAME = "Warfarin-ODE-latest.mdl";
+	private static final String TEST_DATA_DIR = "/test-models/%s/6.0.8/";
+	private static final String MDL_FILE_NAME = "UseCase1.mdl";
+    private static final String DATA_FILE_NAME = "warfarin_conc.csv";
 
-	private static final URL MDL_FILE_URL = MdlToPharmMLConverterServiceAT.class.getResource(String.format(TEST_DATA_DIR, "mdl") + MDL_FILE_NAME);
+	private static final URL MDL_FILE_URL = MdlToPharmMLConverterServiceAT.class.getResource(String.format(TEST_DATA_DIR, "MDL") + MDL_FILE_NAME);
+	private static final URL DATA_FILE_URL = MdlToPharmMLConverterServiceAT.class.getResource(String.format(TEST_DATA_DIR, "MDL") + DATA_FILE_NAME);
 
 	private final FISHttpRestClient fisClient = new FISHttpRestClient(System.getProperty("fis.url"));
 	
@@ -35,7 +37,9 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 		final File workingDir = new File(temporaryFolder.getRoot(), "shouldCorrectlyConvertMdlFile");
 		workingDir.mkdir();
 		final File mdlFile = new File(workingDir, MDL_FILE_NAME);
+        final File dataFile = new File(workingDir, DATA_FILE_NAME);
 		FileUtils.copyURLToFile(MDL_FILE_URL, mdlFile);
+        FileUtils.copyURLToFile(DATA_FILE_URL, dataFile);
 		
 		String output = fisClient.convertMdlToPharmML(mdlFile.getAbsolutePath(), workingDir.getAbsolutePath());
 		
@@ -51,7 +55,9 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
         File outputsDir = new File(workingDir, "outputs");
         inputsDir.mkdir();
         final File mdlFile = new File(inputsDir, MDL_FILE_NAME);
+        final File dataFile = new File(inputsDir, DATA_FILE_NAME);
         FileUtils.copyURLToFile(MDL_FILE_URL, mdlFile);
+        FileUtils.copyURLToFile(DATA_FILE_URL, dataFile);
         
         String output = fisClient.convertMdlToPharmML(mdlFile.getAbsolutePath(), outputsDir.getAbsolutePath());
 

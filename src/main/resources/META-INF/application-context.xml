@@ -78,6 +78,9 @@
                 </entry>
                 <entry key="jsonLanguage" value-ref="jsonLanguage">
                 </entry>
+                <entry key="mdlUtils">
+                    <bean class="eu.ddmore.fis.controllers.utils.MdlUtilsLocal"/>
+                </entry>
             </map>
         </constructor-arg>
     </bean>

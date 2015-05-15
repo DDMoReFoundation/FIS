@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * Controller exposing HTTP endpoint for performing MDL to PharmML conversion
+ * Controller exposing HTTP endpoint for performing MDL to PharmML conversion.
  */
 @Controller
 public class MdlConversionController {

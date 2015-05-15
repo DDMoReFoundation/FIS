@@ -28,6 +28,7 @@ import eu.ddmore.fis.service.mif.Healthcheck;
  */
 @Controller
 @RequestMapping("/healthcheck")
+@Deprecated
 public class HealthcheckController {
     private static final Logger LOG = Logger.getLogger(HealthcheckController.class);
     private HealthEndpoint healthEndpoint;
@@ -41,7 +42,7 @@ public class HealthcheckController {
     private eu.ddmore.fis.service.cts.Healthcheck ctsHealthcheck;
 	
 	/**
-	 * Checks the health of mif and of FIS itself. 
+	 * Checks the health of MIF, CTS and of FIS itself. 
 	 * @return 'UP' if everything is ok, error message otherwise. 
 	 */
     @RequestMapping(method=RequestMethod.GET, produces={MediaType.TEXT_HTML_VALUE})

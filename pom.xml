@@ -15,6 +15,8 @@
         <powermock.version>1.5.2</powermock.version>
         <mockito.version>1.9.5</mockito.version>
         <commons-compress.version>1.9</commons-compress.version>
+        <xtend.repo.url>http://build.eclipse.org/common/xtend/maven/</xtend.repo.url>
+        <xtend.version>2.7.3</xtend.version>
     </properties>
 
     <dependencies>
@@ -37,10 +39,48 @@
         </dependency>
         <dependency>
             <groupId>eu.ddmore</groupId>
+            <artifactId>converter-toolbox-service-domain</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.ddmore</groupId>
             <artifactId>phex-archive</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <!-- end DDMoRe and Mango packages -->
+        
+        <!-- MDL grammar dependencies -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.xtend</groupId>
+            <artifactId>org.eclipse.xtend.lib</artifactId>
+            <version>${xtend.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.xtext</groupId>
+            <artifactId>org.eclipse.xtext</artifactId>
+            <version>${xtend.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.xtext</groupId>
+            <artifactId>org.eclipse.xtext.common.types</artifactId>
+            <version>${xtend.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.core</groupId>
+            <artifactId>org.eclipse.core.resources</artifactId>
+            <version>3.7.100</version>
+        </dependency>
+
+        <dependency>
+            <groupId>eu.ddmore</groupId>
+            <artifactId>org.ddmore.mdl</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+        </dependency>
+        
         <!-- Third-Party Dependencies -->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
@@ -474,6 +514,12 @@
             </plugins>
         </pluginManagement>
     </build>
+    <repositories>
+        <repository>
+            <id>xtend</id>
+            <url>${xtend.repo.url}</url>
+        </repository>
+    </repositories>
     <dependencyManagement>
         <dependencies>
             <dependency>

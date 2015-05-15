@@ -36,6 +36,7 @@ import eu.ddmore.convertertoolbox.domain.ConversionReport;
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode;
 import eu.ddmore.convertertoolbox.domain.LanguageVersion;
 import eu.ddmore.fis.controllers.MdlConversionProcessor;
+import eu.ddmore.fis.controllers.utils.MdlUtils;
 import eu.ddmore.fis.service.cts.ConverterToolboxService;
 import eu.ddmore.fis.service.cts.ConverterToolboxServiceException;
 import groovy.lang.Binding;
@@ -82,6 +83,10 @@ public class MdlConversionProcessorIT {
         this.binding.setVariable("fis.cts.output.conversionReport", "conversionReport.log");
         this.binding.setVariable("fis.cts.output.archive", "archive.phex");
         this.binding.setVariable("fis.metadata.dir", ".fis");
+        MdlUtils mdlUtils = mock(MdlUtils.class);
+        List<File> emptyResult = Lists.newArrayList();
+        when(mdlUtils.getDataFileFromMDL(any(File.class))).thenReturn(emptyResult);
+        this.binding.setVariable("mdlUtils", mdlUtils);
         
         this.conversionProcessor = new MdlConversionProcessor(this.binding);
         conversionProcessor.setScriptFile(FileUtils.toFile(MdlConversionProcessorIT.class.getResource(MDL_CONVERTER_SCRIPT)));
@@ -180,7 +185,7 @@ public class MdlConversionProcessorIT {
         conversionProcessor.process(mdlFile.getAbsolutePath(), outputDir.getAbsolutePath());
     }
     @Test(expected=RuntimeException.class)
-    public void shouldThrowIllegalStateExceptionIfConversionIsNotSupported() throws IOException, ConverterToolboxServiceException {
+    public void shouldThrowRuntimeExceptionIfConversionIsNotSupported() throws IOException, ConverterToolboxServiceException {
         //Given conversion in error
         File outputDir = this.testDirectory.newFolder();
         

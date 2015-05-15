@@ -26,11 +26,11 @@ public class ShutdownController {
     @Autowired
     private ShutdownEndpoint shutdownEndpoint;
     
-	private MIFHttpRestClient mifClient;
+    private MIFHttpRestClient mifClient;
 
     private CTSShutdown ctsShutdown;
     /**
-     * Kills MIF and FIS itself. It will not fail if it can't communicate with MIF - MIF not running should not prevent FIS from shutting down. 
+     * Kills MIF, CTS and FIS itself. This method will not fail if MIF or CTS communication fails. 
      * @return 'OK' if the request was processed correctly. 
      */
     @RequestMapping(method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
