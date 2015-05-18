@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -22,6 +23,7 @@ import org.junit.rules.TemporaryFolder;
 public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 	private static final String TEST_DATA_DIR = "/test-models/%s/6.0.8/";
 	private static final String MDL_FILE_NAME = "UseCase1.mdl";
+	private static final String PHARMML_FILE_NAME = "UseCase1.xml";
     private static final String DATA_FILE_NAME = "warfarin_conc.csv";
 
 	private static final URL MDL_FILE_URL = MdlToPharmMLConverterServiceAT.class.getResource(String.format(TEST_DATA_DIR, "MDL") + MDL_FILE_NAME);
@@ -33,8 +35,8 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 	
 	@Test
-	public void shouldCorrectlyConvertMdlFile() throws IOException {
-		final File workingDir = new File(temporaryFolder.getRoot(), "shouldCorrectlyConvertMdlFile");
+	public void shouldCorrectlyConvertMdlFileInPlace() throws IOException {
+		final File workingDir = new File(temporaryFolder.getRoot(), "shouldCorrectlyConvertMdlFileInPlace");
 		workingDir.mkdir();
 		final File mdlFile = new File(workingDir, MDL_FILE_NAME);
         final File dataFile = new File(workingDir, DATA_FILE_NAME);
@@ -43,9 +45,28 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 		
 		String output = fisClient.convertMdlToPharmML(mdlFile.getAbsolutePath(), workingDir.getAbsolutePath());
 		
-		assertFalse("Result MDL file path is not empty", output.isEmpty());
-		assertTrue("Result MDL file exists", new File(output).exists());
+        assertFalse("No result PharmML file path was returned", StringUtils.isEmpty(output));
+        assertEquals("Checking that it is the PharmML file that is returned", PHARMML_FILE_NAME, new File(output).getName());
+        assertTrue("Result PharmML file exists", new File(output).exists());
 	}
+	
+    @Test
+    public void shouldCorrectlyConvertMdlFileIntoOutputDirectory() throws IOException {
+        final File workingDir = new File(temporaryFolder.getRoot(), "shouldCorrectlyConvertMdlFileIntoOutputDirectory");
+        final File outputDir = new File(workingDir, "outputDir");
+        workingDir.mkdir();
+        outputDir.mkdir();
+        final File mdlFile = new File(workingDir, MDL_FILE_NAME);
+        final File dataFile = new File(workingDir, DATA_FILE_NAME);
+        FileUtils.copyURLToFile(MDL_FILE_URL, mdlFile);
+        FileUtils.copyURLToFile(DATA_FILE_URL, dataFile);
+        
+        String output = fisClient.convertMdlToPharmML(mdlFile.getAbsolutePath(), outputDir.getAbsolutePath());
+        
+        assertFalse("No result PharmML file path was returned", StringUtils.isEmpty(output));
+        assertEquals("Checking that it is the PharmML file that is returned", PHARMML_FILE_NAME, new File(output).getName());
+        assertTrue("Result PharmML file exists", new File(output).exists());
+    }
 	
 	@Test
 	public void shouldCreateOutputDirectoryIfItDoesntExist() throws IOException {
@@ -61,9 +82,10 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
         
         String output = fisClient.convertMdlToPharmML(mdlFile.getAbsolutePath(), outputsDir.getAbsolutePath());
 
-        assertFalse("Result MDL file path is not empty", output.isEmpty());
-        assertTrue("Result MDL file exists", new File(output).exists());
-        assertEquals("Result MDL file exists", outputsDir, new File(output).getParentFile());
+        assertFalse("No result PharmML file path was returned", StringUtils.isEmpty(output));
+        assertEquals("Checking that it is the PharmML file that is returned", PHARMML_FILE_NAME, new File(output).getName());
+        assertTrue("Result PharmML file exists", new File(output).exists());
+        assertEquals("Result PharmML file exists in the correct directory", outputsDir, new File(output).getParentFile());
 	}
 	
 }

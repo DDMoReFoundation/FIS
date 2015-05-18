@@ -23,11 +23,11 @@ import eu.ddmore.fis.domain.WriteMdlResponse;
  */
 public class ReadWriteAT extends SystemPropertiesAware {
     private static final Logger LOG = Logger.getLogger(ReadWriteAT.class);
-	private static final String TEST_DATA_DIR = "/test-models/%s/6.0.7/Warfarin_ODE/";
-	private static final String MDL_FILE_NAME = "Warfarin-ODE-latest.mdl";
-	private static final String JSON_FILE_NAME = "Warfarin-ODE-latest.output.json";
+	private static final String TEST_DATA_DIR = "/test-models/%s/6.0.8/";
+	private static final String MDL_FILE_NAME = "UseCase1.mdl";
+	private static final String JSON_FILE_NAME = "UseCase1.json";
 
-	private static final URL MDL_FILE_URL = ReadWriteAT.class.getResource(String.format(TEST_DATA_DIR, "mdl") + MDL_FILE_NAME);
+	private static final URL MDL_FILE_URL = ReadWriteAT.class.getResource(String.format(TEST_DATA_DIR, "MDL") + MDL_FILE_NAME);
 	private static final URL JSON_FILE_URL = ReadWriteAT.class.getResource(String.format(TEST_DATA_DIR, "json") + JSON_FILE_NAME);
 
 	// This is where the output from FIS and MIF can be found

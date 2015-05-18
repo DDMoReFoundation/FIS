@@ -151,10 +151,10 @@ public class ServiceAT extends SystemPropertiesAware {
 
         // Copy the files out of the testdata JAR file
 
-        final String SCRIPT_FILE_NAME = "Warfarin-ODE-latest.mdl";
+        final String SCRIPT_FILE_NAME = "UseCase1.mdl";
         final String DATA_FILE_NAME = "warfarin_conc.csv";
 
-        final String testDataDir = "/test-models/mdl/6.0.7/Warfarin_ODE/";
+        final String testDataDir = "/test-models/MDL/Product4/";
 
         final URL scriptFile = ServiceAT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
         FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
@@ -183,9 +183,9 @@ public class ServiceAT extends SystemPropertiesAware {
 
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
 
-        assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, "Warfarin-ODE-latest.ctl").exists());
-        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "Warfarin-ODE-latest.lst").exists());
-        assertTrue("Standard Output Object XML file should have been created in the working directory", new File(workingDir, "Warfarin-ODE-latest.SO.xml").exists());
+        assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, "UseCase1.ctl").exists());
+        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "UseCase1.lst").exists());
+        assertTrue("Standard Output Object XML file should have been created in the working directory", new File(workingDir, "UseCase1.SO.xml").exists());
 
         verifyThatFisMetadataFilesExist(workingDir);
 
