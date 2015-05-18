@@ -24,7 +24,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +53,10 @@ public class SubmitControllerIT extends SystemPropertiesAware {
 
     private static final Logger LOG = Logger.getLogger(SubmitControllerIT.class);
 
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
     // This is where the output from FIS and MIF can be found
-    private File workingDir = new File("target", "SubmitControllerIT_Test_Working_Dir");
+    private File workingDir;
 
     @Value("${execution.host.fileshare}")
     private String executionHostFileshare;
@@ -75,7 +79,8 @@ public class SubmitControllerIT extends SystemPropertiesAware {
 
     @Before
     public void setUp() throws IOException {
-        FileUtils.deleteDirectory(this.workingDir);
+
+        this.workingDir = new File(this.temporaryFolder.getRoot(), "SubmitControllerIT_Test_Working_Dir");
         this.workingDir.mkdir();
         
         final Map<String, ClientAvailableConnectorDetails> allClientAvailConnectorDetails = new HashMap<String, ClientAvailableConnectorDetails>();
