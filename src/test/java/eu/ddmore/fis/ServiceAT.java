@@ -17,7 +17,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import eu.ddmore.fis.domain.LocalJobStatus;
 import eu.ddmore.fis.domain.SubmissionRequest;
@@ -35,12 +37,11 @@ public class ServiceAT extends SystemPropertiesAware {
     private static String nonmemCommand;
 
     // This is where the output from FIS and MIF can be found
-    private static File parentWorkingDir = new File("target", "ServiceAT_Test_Working_Dir");
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @BeforeClass
     public static void globalSetUp() throws Exception {
-        FileUtils.deleteDirectory(parentWorkingDir);
-        parentWorkingDir.mkdir();
         nonmemCommand = System.getProperty("nonmem.command");
     }
 
@@ -51,7 +52,7 @@ public class ServiceAT extends SystemPropertiesAware {
 
     @Test
     public void shouldExecuteControlFile() throws IOException, InterruptedException {
-        final File workingDir = new File(parentWorkingDir, "ControlFileExecution");
+        final File workingDir = new File(this.temporaryFolder.getRoot(), "ControlFileExecution");
         workingDir.mkdir();
 
         // Copy the files out of the testdata JAR file
@@ -98,7 +99,7 @@ public class ServiceAT extends SystemPropertiesAware {
 
     @Test
     public void shouldExecutePharmMLFile() throws IOException, InterruptedException {
-        final File workingDir = new File(parentWorkingDir, "PharmMLFileExecution");
+        final File workingDir = new File(this.temporaryFolder.getRoot(), "PharmMLFileExecution");
         workingDir.mkdir();
 
         // Copy the files out of the testdata JAR file
@@ -146,7 +147,7 @@ public class ServiceAT extends SystemPropertiesAware {
 
     @Test
     public void shouldExecuteMDLFile() throws IOException, InterruptedException {
-        final File workingDir = new File(parentWorkingDir, "MDLFileExecution");
+        final File workingDir = new File(this.temporaryFolder.getRoot(), "MDLFileExecution");
         workingDir.mkdir();
 
         // Copy the files out of the testdata JAR file
