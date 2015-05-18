@@ -12,8 +12,9 @@ import java.net.URL;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import eu.ddmore.fis.domain.WriteMdlRequest;
 import eu.ddmore.fis.domain.WriteMdlResponse;
@@ -31,18 +32,14 @@ public class ReadWriteAT extends SystemPropertiesAware {
 	private static final URL JSON_FILE_URL = ReadWriteAT.class.getResource(String.format(TEST_DATA_DIR, "json") + JSON_FILE_NAME);
 
 	// This is where the output from FIS and MIF can be found
-	private static final File parentWorkingDir = new File("target", "ReadWriteAT_Test_Working_Dir");
 	private final FISHttpRestClient fisClient = new FISHttpRestClient(System.getProperty("fis.url"));
 
-	@BeforeClass
-	public static void globalSetUp() throws Exception {
-		FileUtils.deleteDirectory(parentWorkingDir);
-		parentWorkingDir.mkdir();
-	}
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Test
 	public void shouldCorrectlyReadMdlFile() throws IOException {
-		final File workingDir = new File(parentWorkingDir, "ReadMdlFile");
+		final File workingDir = new File(temporaryFolder.getRoot(), "ReadMdlFile");
 		workingDir.mkdir();
 
 		final File mdlFile = new File(workingDir, MDL_FILE_NAME);
@@ -68,7 +65,7 @@ public class ReadWriteAT extends SystemPropertiesAware {
 
 	@Test
 	public void shouldCorrectlyWriteMdlFile() throws IOException {
-		final File workingDir = new File(parentWorkingDir, "WriteMdlFile_TumourSize");
+		final File workingDir = new File(temporaryFolder.getRoot(), "WriteMdlFile");
 		workingDir.mkdir();
 
 		final File jsonFile = new File(workingDir, JSON_FILE_NAME);
