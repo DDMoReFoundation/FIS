@@ -188,7 +188,6 @@
     </bean>
 
     <bean id="mifHealth" class="eu.ddmore.fis.service.mif.Healthcheck">
-        <property name="mifClient" ref="mifRestClient" />
     </bean>
     
     <bean id="ctsHealth" class="eu.ddmore.fis.service.cts.Healthcheck">
