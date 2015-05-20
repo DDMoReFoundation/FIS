@@ -4,6 +4,7 @@
 package eu.ddmore.fis.service.cts;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,10 +25,10 @@ import eu.ddmore.fis.service.HealthDetail;
  */
 @Component("ctsHealth")
 public class Healthcheck implements HealthIndicator {
+    private static final Logger LOG = Logger.getLogger(Healthcheck.class);
     private final RestTemplate restTemplate;
     private final String ctsUrl;
     private final String healthcheckEndpoint;
-    
     
     @Autowired(required=true)
     public Healthcheck(@Qualifier("ctsRestTemplate") RestTemplate restTemplate, @Value("${fis.cts.management.url}") String ctsUrl, @Value("${fis.cts.management.healthcheck}") String healthcheckEndpoint) {
@@ -42,14 +43,23 @@ public class Healthcheck implements HealthIndicator {
     @Override
     public Health health() {
         ResponseEntity<SimpleHealth> ctsHealthResponse = null;
-        ctsHealthResponse = restTemplate.getForEntity(String.format("%s/%s",ctsUrl,healthcheckEndpoint), SimpleHealth.class);
-        if(!isUP(ctsHealthResponse)) {
-            return Health.down().withDetail(HealthDetail.ERROR, "CTS is not running").withDetail(HealthDetail.URL, ctsUrl).build();
-        } else {
-            return Health.up().build();
+        try {
+            ctsHealthResponse = restTemplate.getForEntity(String.format("%s/%s",ctsUrl,healthcheckEndpoint), SimpleHealth.class);
+            if(!isUP(ctsHealthResponse)) {
+                return buildDownHealth();
+            } else {
+                return Health.up().build();
+            }
+        } catch (Exception ex) {
+            LOG.error(String.format("Error when trying to check health of CTS at %s", ctsUrl));
+            return buildDownHealth();
         }
     }
     
+    private Health buildDownHealth() {
+        return Health.down().withDetail(HealthDetail.ERROR, "CTS is not running").withDetail(HealthDetail.URL, ctsUrl).build();
+    }
+
     private boolean isUP(ResponseEntity<SimpleHealth> ctsHealthResponse) {
         return ctsHealthResponse.getStatusCode().is2xxSuccessful() 
                 && ctsHealthResponse.hasBody()
