@@ -39,11 +39,14 @@ public class SubmitController implements ApplicationContextAware {
     	try {
     	    LocalJob dispatchedJob = jobDispatcher.dispatch(job);
             job = localJobService.save(dispatchedJob);
-		} catch (Exception e) {
-		    String errorMsg = String.format("Unable to execute task. Request was: %s", submissionRequest);
-			LOG.error(errorMsg, e);
+		} catch (RuntimeException e) {
+		    LOG.error("Unable to submit job", e);
 			// passing the exception to the client
-			throw new RuntimeException(errorMsg, e);
+			throw e;
+		} catch (Exception e) {
+		    LOG.error("Unable to submit job", e);
+		    // wrap the exception and pass to the client
+            throw new RuntimeException("Unable to submit job", e);
 		}
     	response.setRequestID(job.getId());
 	    return response;
