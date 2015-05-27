@@ -14,7 +14,7 @@ public class ServiceShutdownAT extends SystemPropertiesAware {
     
     @Test
     public void shouldShutDownService() {
-        FISHttpRestClient fisClient = new FISHttpRestClient(System.getProperty("fis.url"));
+        FISHttpRestClient fisClient = new FISHttpRestClient(System.getProperty("fis.url"),System.getProperty("fis.management.url"));
         assertEquals(fisClient.shutdown(),"OK");
     }
     

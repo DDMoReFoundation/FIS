@@ -29,7 +29,7 @@ public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
 	private static final URL MDL_FILE_URL = MdlToPharmMLConverterServiceAT.class.getResource(String.format(TEST_DATA_DIR, "MDL") + MDL_FILE_NAME);
 	private static final URL DATA_FILE_URL = MdlToPharmMLConverterServiceAT.class.getResource(String.format(TEST_DATA_DIR, "MDL") + DATA_FILE_NAME);
 
-	private final FISHttpRestClient fisClient = new FISHttpRestClient(System.getProperty("fis.url"));
+	private final FISHttpRestClient fisClient = new FISHttpRestClient(System.getProperty("fis.url"),System.getProperty("fis.management.url"));
 	
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();

@@ -47,7 +47,7 @@ public class ServiceAT extends SystemPropertiesAware {
 
     @Before
     public void setUp() throws Exception {
-        teisClient = new FISHttpRestClient(System.getProperty("fis.url"));
+        teisClient = new FISHttpRestClient(System.getProperty("fis.url"),System.getProperty("fis.management.url"));
     }
 
     @Test

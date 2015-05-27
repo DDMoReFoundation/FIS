@@ -31,13 +31,15 @@ public class FISHttpRestClient {
     private static final Logger log = Logger.getLogger(FISHttpRestClient.class);
     private String endPoint;
     private HttpClient client;
+    private String managementEndpoint;
     
     /**
      * 
      * @param endPoint - TES endpoint
      */
-    public FISHttpRestClient(String endPoint) {
+    public FISHttpRestClient(String endPoint, String managementEndpoint) {
         this.endPoint = endPoint;
+        this.managementEndpoint = managementEndpoint;
         client = new HttpClient();
     }
 
@@ -130,9 +132,9 @@ public class FISHttpRestClient {
     }
     
     public String healthcheck() {
-        String endpoint = buildEndpoint("healthcheck");
+        String endpoint = buildManagementEndpoint("health");
         GetMethod get = new GetMethod(endpoint);
-        get.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
+        get.addRequestHeader("accept", MediaType.APPLICATION_JSON);
         return executeMethod(endpoint,get);
     }
 
@@ -181,6 +183,13 @@ public class FISHttpRestClient {
         return builder.toString();
     }
 
+    private String buildManagementEndpoint(String...parts) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(managementEndpoint);
+        builder.append(Joiner.on("/").join(parts));
+        return builder.toString();
+    }
+    
 	public String convertMdlToPharmML(String mdlFileFullPath, String outputFileFullPath) {
     	String urlEncodedFilename,urlEncodedOutputName;
     	

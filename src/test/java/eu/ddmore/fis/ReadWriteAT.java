@@ -31,7 +31,7 @@ public class ReadWriteAT extends SystemPropertiesAware {
 	private static final URL MDL_FILE_URL = ReadWriteAT.class.getResource(String.format(TEST_DATA_DIR, "MDL") + MDL_FILE_NAME);
 	private static final URL JSON_FILE_URL = ReadWriteAT.class.getResource(String.format(TEST_DATA_DIR, "json") + JSON_FILE_NAME);
 
-	private final FISHttpRestClient fisClient = new FISHttpRestClient(System.getProperty("fis.url"));
+	private final FISHttpRestClient fisClient = new FISHttpRestClient(System.getProperty("fis.url"),System.getProperty("fis.management.url"));
 
 	// This is where the output from FIS and MIF can be found
     @Rule

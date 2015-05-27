@@ -183,10 +183,6 @@
         <property name="ctsShutdown" ref="ctsShutdown" />
     </bean>
 
-    <bean id="healthcheckController" class="eu.ddmore.fis.controllers.HealthcheckController">
-        <property name="healthEndpoint" ref="healthEndpoint" />
-    </bean>
-
     <bean id="mifHealth" class="eu.ddmore.fis.service.mif.Healthcheck">
     </bean>
     
