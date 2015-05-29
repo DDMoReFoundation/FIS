@@ -1,0 +1,1 @@
+org.springframework.boot.SpringApplicationRunListener=eu.ddmore.fis.internal.SuccessfulStartupTraceFileCreator
