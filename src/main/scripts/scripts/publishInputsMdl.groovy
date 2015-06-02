@@ -8,23 +8,25 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
 import org.apache.log4j.Logger
 
-import com.google.common.base.Preconditions
-
 import eu.ddmore.archive.Archive
 import eu.ddmore.archive.ArchiveFactory
 import eu.ddmore.archive.Entry
 import eu.ddmore.convertertoolbox.domain.ConversionReport
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode
 import eu.ddmore.convertertoolbox.domain.LanguageVersion
+import eu.ddmore.fis.controllers.utils.ArchiveUtilsLocal
+import eu.ddmore.fis.controllers.utils.MdlUtils
 import eu.ddmore.fis.domain.LocalJob
 import eu.ddmore.fis.domain.LocalJobStatus
 import eu.ddmore.fis.service.cts.ConverterToolboxService
 import eu.ddmore.fis.service.processors.internal.JobArchiveProvisioner
 import groovy.json.JsonOutput
 import groovy.transform.Field
+
 /**
- * This script is responsible for publishing inputs in MDL format to MIF
+ * This script is responsible for publishing inputs in MDL format, after conversion to PharmML, to MIF.
  */
+
 /**
  * Parameters
  */
@@ -49,44 +51,38 @@ final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
 final File mockDataDir = new File(scriptFile.getParentFile().getParentFile(),"mockData")
 final File fisJobWorkingDir = new File(job.getWorkingDirectory())
 final File mifJobWorkingDir = new File(executionHostFileshareLocal, job.getId());
+final MdlUtils mdlUtils = binding.getVariable("mdlUtils");
 
 /**
  * Script
  */
+
 LOG.debug("Job ${job.getId()}, fis working dir: ${fisJobWorkingDir}, mif working dir: ${mifJobWorkingDir}");
 
 // Ensure that the FIS metadata directory is created
 File fisMetadataDir = new File(fisJobWorkingDir,FIS_METADATA_DIR);
 fisMetadataDir.mkdir();
 
-File origControlFile = new File(job.getControlFile());
+File origControlFile = new File(FilenameUtils.normalize(job.getControlFile()));
+
+// TODO: Once TEL is changed to pass in model files as absolute paths, this 'if' statement becomes redundant
+if (!origControlFile.isAbsolute()) {
+    // Resolve the control file against the working directory
+    origControlFile = fisJobWorkingDir.toPath().resolve(origControlFile.toPath()).toFile();
+}
 
 String modelName = FilenameUtils.getBaseName(origControlFile.getName());
 String modelExt = FilenameUtils.getExtension(origControlFile.getName());
 
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
 
-if(archiveFile.exists()) {
-    LOG.warn("Archive file ${archiveFile} already exists, removed.");
-    FileUtils.deleteQuietly(archiveFile)
-}
+// Create and populate the Archive with the MDL file and any associated data file(s)
 
-Archive archive = archiveFactory.createArchive(archiveFile);
+final Archive archive = ArchiveUtilsLocal.buildMDLArchive(mdlUtils, archiveFactory, archiveFile, origControlFile)
 
-try {
-    archive.open();
-    fisJobWorkingDir.traverse type:FILES, excludeFilter:~/.*\.fis.*/, visit:{ String relativePath = it.getParentFile().getPath().replace(fisJobWorkingDir.getPath(),""); LOG.debug("Processing Job input file: ${it.getName()}, which will be added into Archive at location: ${relativePath}"); archive.addFile(it, relativePath) }
-    if(LOG.isDebugEnabled()) {
-        LOG.debug("Control File Path ${origControlFile.getPath()}")
-        archive.getEntries().each {LOG.debug("Archive Entry ${it.getFilePath()}") }
-    }
-    Entry controlFileEntry = archive.getEntry(origControlFile.getPath())
-    archive.addMainEntry(controlFileEntry);
-} finally {
-    archive.close();
-}
+// Perform the conversion from MDL to PharmML
 
-if(!converterToolboxService.isConversionSupported(from,to) ) {
+if (!converterToolboxService.isConversionSupported(from, to)) {
     throw new IllegalStateException("Requested conversion from ${from} to ${to} is not supported by Converter Toolbox Service.")
 }
 
@@ -106,7 +102,7 @@ try {
             return;
         }
     }
-} catch(Exception ex) {
+} catch (Exception ex) {
     LOG.error("Failed to perform conversion for a job ${job.getId()}", ex);
     job.setStatus(LocalJobStatus.FAILED)
     return;
@@ -121,6 +117,8 @@ try {
     conversionReportFile << conversionReportText;
 }
 
+// Provision the archive to MIF
+
 try {
     jobArchiveProvisioner.provision(job, archive, mifJobWorkingDir)
 } catch(Exception ex) {
@@ -128,7 +126,6 @@ try {
     job.setStatus(LocalJobStatus.FAILED)
     return
 }
-
 
 
 /**
@@ -169,3 +166,4 @@ void useMockPharmml(File mockDataDir, String modelName, String pharmmlFileExt, A
         archive.close();
     }
 }
+

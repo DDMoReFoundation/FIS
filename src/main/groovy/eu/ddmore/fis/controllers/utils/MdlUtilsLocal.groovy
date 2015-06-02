@@ -1,21 +1,14 @@
-package eu.ddmore.fis.controllers.utils
 /*******************************************************************************
  * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-import java.io.File;
-import java.util.Collection;
+package eu.ddmore.fis.controllers.utils
 
 import org.apache.log4j.Logger
-import eu.ddmore.converter.mdlprinting.MdlPrinter;
-import eu.ddmore.fis.controllers.utils.MdlUtils;
-
+import org.ddmore.mdl.MdlStandaloneSetup
 import org.ddmore.mdl.mdl.DataObjectBlock
 import org.ddmore.mdl.mdl.Mcl
 import org.ddmore.mdl.mdl.MclObject
 import org.ddmore.mdl.mdl.PropertyDeclaration
-import com.google.inject.Injector
-import org.ddmore.mdl.MdlStandaloneSetup
-import org.ddmore.mdl.mdl.Mcl
 import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.resource.Resource
@@ -23,7 +16,10 @@ import org.eclipse.emf.ecore.resource.Resource.Diagnostic
 import org.eclipse.xtext.parser.ParseException
 import org.eclipse.xtext.resource.XtextResource
 import org.eclipse.xtext.resource.XtextResourceSet
-import org.ddmore.mdl.mdl.Mcl;
+
+import com.google.inject.Injector
+
+import eu.ddmore.converter.mdlprinting.MdlPrinter
 
 
 /**
@@ -54,14 +50,14 @@ public class MdlUtilsLocal implements MdlUtils {
                 }
             }
         }
-        if(result.size()==0) {
+        if (result.size()==0) {
             LOG.info("${file} doesn't reference any data files.");
         }
         return result;
     }
     
     /**
-     * Parses given MDL file
+     * Parses given MDL file.
      * @param mdlFile the MDL file to parse
      * @return the parsed MDL object
      * @throws ParseException if there were errors when parsing the file

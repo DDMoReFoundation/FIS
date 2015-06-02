@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.fis.service.processors.interal;
+package eu.ddmore.fis.service.processors.internal;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
