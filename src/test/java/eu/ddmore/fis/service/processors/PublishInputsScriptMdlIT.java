@@ -3,6 +3,7 @@
  ******************************************************************************/
 package eu.ddmore.fis.service.processors;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -35,7 +36,6 @@ import com.google.common.collect.Lists;
 
 import eu.ddmore.archive.Archive;
 import eu.ddmore.archive.ArchiveFactory;
-import eu.ddmore.archive.Entry;
 import eu.ddmore.archive.exception.ArchiveException;
 import eu.ddmore.convertertoolbox.domain.ConversionReport;
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode;
@@ -93,6 +93,9 @@ public class PublishInputsScriptMdlIT {
 
     @Before
     public void setUp() {
+        assertFalse("Ensuring that the two test directories created for the test, are different",
+            this.testDirectory.getRoot().equals(this.otherTestDirectory.getRoot()));
+        
         this.testWorkingDir = this.testDirectory.getRoot();
         LOG.debug(String.format("Test working dir %s", this.testWorkingDir));
         this.testExecutionHostFileshareLocal = this.testWorkingDir;
@@ -144,7 +147,7 @@ public class PublishInputsScriptMdlIT {
         when(job.getControlFile()).thenReturn(modelFileInSubDir);
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
-        final Archive archive = mockConversionAndArchive(this.testWorkingDir, modelFileInSubDir);
+        final Archive archive = mockConversionAndArchive(this.testWorkingDir);
         
         // When
         jobProcessor.process(job);
@@ -183,7 +186,7 @@ public class PublishInputsScriptMdlIT {
         when(job.getControlFile()).thenReturn(modelFileInSubDir);
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
-        final Archive archive = mockConversionAndArchive(this.testWorkingDir, modelFileInSubDir);
+        final Archive archive = mockConversionAndArchive(this.testWorkingDir);
         
         // When
         jobProcessor.process(job);
@@ -222,7 +225,7 @@ public class PublishInputsScriptMdlIT {
         when(job.getControlFile()).thenReturn(modelFileInSubDir);
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
-        final Archive archive = mockConversionAndArchive(this.testWorkingDir, modelFileInSubDir);
+        final Archive archive = mockConversionAndArchive(this.testWorkingDir);
         
         // When
         jobProcessor.process(job);
@@ -263,7 +266,7 @@ public class PublishInputsScriptMdlIT {
         when(job.getControlFile()).thenReturn(modelFile.getAbsolutePath());
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
-        final Archive archive = mockConversionAndArchive(fisWorkingDir, MODEL_FILE_NAME);
+        final Archive archive = mockConversionAndArchive(fisWorkingDir);
         
         // When
         jobProcessor.process(job);
@@ -304,7 +307,7 @@ public class PublishInputsScriptMdlIT {
         when(job.getControlFile()).thenReturn(modelFile.getAbsolutePath());
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
-        final Archive archive = mockConversionAndArchive(fisWorkingDir, MODEL_FILE_NAME);
+        final Archive archive = mockConversionAndArchive(fisWorkingDir);
         
         // When
         jobProcessor.process(job);
@@ -331,7 +334,7 @@ public class PublishInputsScriptMdlIT {
         when(job.getControlFile()).thenReturn(modelFileName);
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
-        final Archive archive = mockConversionAndArchive(this.testWorkingDir, modelFileName);
+        final Archive archive = mockConversionAndArchive(this.testWorkingDir);
         
         // When
         jobProcessor.process(job);
@@ -346,16 +349,12 @@ public class PublishInputsScriptMdlIT {
         verify(jobArchiveProvisioner).provision(same(job), same(archive), eq(mifJobWorkingDir));
     }
     
-    private Archive mockConversionAndArchive(final File workingDir, final String modelFileRelativePath)
+    private Archive mockConversionAndArchive(final File workingDir)
             throws IOException, ArchiveException, ConverterToolboxServiceException {
         
         // Mock a successful conversion
         final Archive archive = mock(Archive.class);
-        Entry resultEntry = mock(Entry.class);
-        when(resultEntry.getFilePath()).thenReturn(modelFileRelativePath).thenReturn("file.xml");
-        List<Entry> mainEntries = Lists.newArrayList(resultEntry);
-        when(archive.getMainEntries()).thenReturn(mainEntries);
-        when(archiveFactory.createArchive(any(File.class))).then(new Answer<Archive>() {
+        when(this.archiveFactory.createArchive(any(File.class))).then(new Answer<Archive>() {
             @Override
             public Archive answer(InvocationOnMock invocation) throws Throwable {
                 File fisMetadataDir = new File(workingDir, ".fis");
