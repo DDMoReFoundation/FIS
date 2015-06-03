@@ -5,6 +5,7 @@ package eu.ddmore.fis.service.processors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.same;
@@ -27,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -36,6 +38,7 @@ import com.google.common.collect.Lists;
 
 import eu.ddmore.archive.Archive;
 import eu.ddmore.archive.ArchiveFactory;
+import eu.ddmore.archive.Entry;
 import eu.ddmore.archive.exception.ArchiveException;
 import eu.ddmore.convertertoolbox.domain.ConversionReport;
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode;
@@ -134,8 +137,8 @@ public class PublishInputsScriptMdlIT {
 
         final File modelFile = new File(this.testWorkingDir, modelFileInSubDir);
         final File dataFile = new File(this.testWorkingDir, dataFileInSubDir);
-        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + MODEL_FILE_NAME), modelFile);
-        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + DATA_FILE_NAME), dataFile);
+        FileUtils.copyURLToFile(PublishInputsScriptMdlIT.class.getResource(TEST_DATA_DIR + MODEL_FILE_NAME), modelFile);
+        FileUtils.copyURLToFile(PublishInputsScriptMdlIT.class.getResource(TEST_DATA_DIR + DATA_FILE_NAME), dataFile);
         
         // Simulate the data file being associated with the model file
         reset(this.mockMdlUtils);
@@ -147,7 +150,7 @@ public class PublishInputsScriptMdlIT {
         when(job.getControlFile()).thenReturn(modelFileInSubDir);
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
-        final Archive archive = mockConversionAndArchive(this.testWorkingDir);
+        final Archive archive = mockArchiveCreationAndConversion(this.testWorkingDir, modelFile, "/");
         
         // When
         jobProcessor.process(job);
@@ -173,8 +176,8 @@ public class PublishInputsScriptMdlIT {
         
         final File modelFile = new File(this.testWorkingDir, modelFileInSubDir);
         final File dataFile = new File(this.testWorkingDir, dataFileInSubDir);
-        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + MODEL_FILE_NAME), modelFile);
-        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + DATA_FILE_NAME), dataFile);
+        FileUtils.copyURLToFile(PublishInputsScriptMdlIT.class.getResource(TEST_DATA_DIR + MODEL_FILE_NAME), modelFile);
+        FileUtils.copyURLToFile(PublishInputsScriptMdlIT.class.getResource(TEST_DATA_DIR + DATA_FILE_NAME), dataFile);
         
         // Simulate the data file being associated with the model file
         reset(this.mockMdlUtils);
@@ -186,7 +189,7 @@ public class PublishInputsScriptMdlIT {
         when(job.getControlFile()).thenReturn(modelFileInSubDir);
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
-        final Archive archive = mockConversionAndArchive(this.testWorkingDir);
+        final Archive archive = mockArchiveCreationAndConversion(this.testWorkingDir, modelFile, "/");
         
         // When
         jobProcessor.process(job);
@@ -212,8 +215,8 @@ public class PublishInputsScriptMdlIT {
         
         final File modelFile = new File(this.testWorkingDir, modelFileInSubDir);
         final File dataFile = new File(this.testWorkingDir, dataFileInSubDir);
-        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + MODEL_FILE_NAME), modelFile);
-        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + DATA_FILE_NAME), dataFile);
+        FileUtils.copyURLToFile(PublishInputsScriptMdlIT.class.getResource(TEST_DATA_DIR + MODEL_FILE_NAME), modelFile);
+        FileUtils.copyURLToFile(PublishInputsScriptMdlIT.class.getResource(TEST_DATA_DIR + DATA_FILE_NAME), dataFile);
         
         // Simulate the data file being associated with the model file
         reset(this.mockMdlUtils);
@@ -225,7 +228,7 @@ public class PublishInputsScriptMdlIT {
         when(job.getControlFile()).thenReturn(modelFileInSubDir);
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
-        final Archive archive = mockConversionAndArchive(this.testWorkingDir);
+        final Archive archive = mockArchiveCreationAndConversion(this.testWorkingDir, modelFile, "/models");
         
         // When
         jobProcessor.process(job);
@@ -249,8 +252,8 @@ public class PublishInputsScriptMdlIT {
         // Prepare FIS Job working directory
         final File modelFile = new File(new File(this.testWorkingDir, "warfarin"), MODEL_FILE_NAME);
         final File dataFile = new File(new File(this.testWorkingDir, "warfarin"), DATA_FILE_NAME);
-        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + MODEL_FILE_NAME), modelFile);
-        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + DATA_FILE_NAME), dataFile);
+        FileUtils.copyURLToFile(PublishInputsScriptMdlIT.class.getResource(TEST_DATA_DIR + MODEL_FILE_NAME), modelFile);
+        FileUtils.copyURLToFile(PublishInputsScriptMdlIT.class.getResource(TEST_DATA_DIR + DATA_FILE_NAME), dataFile);
         
         // Model file with absolute path -> job working directory isn't used for
         // resolving the model file against so can point to some other directory
@@ -266,7 +269,7 @@ public class PublishInputsScriptMdlIT {
         when(job.getControlFile()).thenReturn(modelFile.getAbsolutePath());
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
-        final Archive archive = mockConversionAndArchive(fisWorkingDir);
+        final Archive archive = mockArchiveCreationAndConversion(fisWorkingDir, modelFile, "/");
         
         // When
         jobProcessor.process(job);
@@ -290,8 +293,8 @@ public class PublishInputsScriptMdlIT {
         // Prepare FIS Job working directory
         final File modelFile = new File(new File(this.testWorkingDir, "models"), MODEL_FILE_NAME);
         final File dataFile = new File(new File(this.testWorkingDir, "data"), DATA_FILE_NAME);
-        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + MODEL_FILE_NAME), modelFile);
-        FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + DATA_FILE_NAME), dataFile);
+        FileUtils.copyURLToFile(PublishInputsScriptMdlIT.class.getResource(TEST_DATA_DIR + MODEL_FILE_NAME), modelFile);
+        FileUtils.copyURLToFile(PublishInputsScriptMdlIT.class.getResource(TEST_DATA_DIR + DATA_FILE_NAME), dataFile);
         
         // Model file with absolute path -> job working directory isn't used for
         // resolving the model file against so can point to some other directory
@@ -307,7 +310,7 @@ public class PublishInputsScriptMdlIT {
         when(job.getControlFile()).thenReturn(modelFile.getAbsolutePath());
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
-        final Archive archive = mockConversionAndArchive(fisWorkingDir);
+        final Archive archive = mockArchiveCreationAndConversion(fisWorkingDir, modelFile, "/models");
         
         // When
         jobProcessor.process(job);
@@ -326,7 +329,8 @@ public class PublishInputsScriptMdlIT {
         final String modelFileName = "MockGeneratedPharmML.mdl";
         final String testDataDir = "/test-models/MDL_with_mock_PharmML/";
         final URL scriptFile = PublishInputsScriptMdlIT.class.getResource(testDataDir + modelFileName);
-        FileUtils.copyURLToFile(scriptFile, new File(this.testWorkingDir, modelFileName));
+        final File modelFile = new File(this.testWorkingDir, modelFileName);
+        FileUtils.copyURLToFile(scriptFile, modelFile);
 
         // Prepare FIS Job
         LocalJob job = mock(LocalJob.class);
@@ -334,7 +338,7 @@ public class PublishInputsScriptMdlIT {
         when(job.getControlFile()).thenReturn(modelFileName);
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
-        final Archive archive = mockConversionAndArchive(this.testWorkingDir);
+        final Archive archive = mockArchiveCreationAndConversion(this.testWorkingDir, modelFile, "/");
         
         // When
         jobProcessor.process(job);
@@ -349,11 +353,15 @@ public class PublishInputsScriptMdlIT {
         verify(jobArchiveProvisioner).provision(same(job), same(archive), eq(mifJobWorkingDir));
     }
     
-    private Archive mockConversionAndArchive(final File workingDir)
+    private Archive mockArchiveCreationAndConversion(final File workingDir, final File modelFile, final String modelFileDirPathInArchive)
             throws IOException, ArchiveException, ConverterToolboxServiceException {
         
-        // Mock a successful conversion
         final Archive archive = mock(Archive.class);
+        
+        // Mock the archive creation behaviour
+        final Entry mainEntry = mock(Entry.class);
+        when(mainEntry.getFilePath()).thenReturn(modelFileDirPathInArchive);
+        when(archive.addFile(modelFile, modelFileDirPathInArchive)).thenReturn(mainEntry);
         when(this.archiveFactory.createArchive(any(File.class))).then(new Answer<Archive>() {
             @Override
             public Archive answer(InvocationOnMock invocation) throws Throwable {
@@ -365,6 +373,7 @@ public class PublishInputsScriptMdlIT {
             }
         });
         
+        // Mock a successful conversion
         final ConversionReport conversionReport = new ConversionReport();
         conversionReport.setReturnCode(ConversionReportOutcomeCode.SUCCESS);
         when(this.converterToolboxService.isConversionSupported(same(mdlLanguage), same(pharmmlLanguage))).thenReturn(true);
@@ -373,13 +382,19 @@ public class PublishInputsScriptMdlIT {
     }
     
     private void verifyArchive(final File workingDir, final LocalJob job,
-            final File modelFile, final File dataFile, final String modelFileRelPathInArchive, final String dataFileRelPathInArchive,
+            final File modelFile, final File dataFile, final String modelFileDirPathInArchive, final String dataFileDirPathInArchive,
             final Archive archive) throws ConverterToolboxServiceException, ArchiveException, IOException {
         verify(this.converterToolboxService).convert(same(archive), same(mdlLanguage), same(pharmmlLanguage));
         assertTrue("Conversion Report file exists", new File(workingDir, ".fis/conversionReport.log").exists());
         assertTrue("Archive is created in FIS metadata directory.", new File(workingDir, ".fis/archive.phex").exists());
-        verify(archive).addFile(modelFile, modelFileRelPathInArchive);
-        verify(archive).addFile(dataFile, dataFileRelPathInArchive);
+        verify(archive).open();
+        final ArgumentCaptor<Entry> entryArgCaptor = ArgumentCaptor.forClass(Entry.class);
+        verify(archive).addMainEntry(entryArgCaptor.capture());
+        assertEquals("Checking that the mainEntry that was added to the Archive has the correct file path",
+            modelFileDirPathInArchive, entryArgCaptor.getValue().getFilePath());
+        verify(archive).addFile(modelFile, modelFileDirPathInArchive);
+        verify(archive).addFile(dataFile, dataFileDirPathInArchive);
+        verify(archive).close();
         verify(this.jobArchiveProvisioner).provision(same(job), same(archive), eq(mifJobWorkingDir));
     }
 

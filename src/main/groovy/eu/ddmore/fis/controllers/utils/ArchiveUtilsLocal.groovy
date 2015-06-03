@@ -3,10 +3,13 @@
  ******************************************************************************/
 package eu.ddmore.fis.controllers.utils
 
+import static groovy.io.FileType.*
+import static groovy.io.FileVisitResult.*
+
 import java.nio.file.Path
 
-import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.FileUtils
+import org.apache.commons.io.FilenameUtils
 import org.apache.log4j.Logger
 
 import eu.ddmore.archive.Archive
@@ -27,22 +30,25 @@ public class ArchiveUtilsLocal {
             FileUtils.deleteQuietly(archiveFile)
         }
         
-        final Archive archive = archiveFactory.createArchive(archiveFile)
+        final Collection<File> dataFiles = mdlUtils.getDataFileFromMDL(modelFile)
+        dataFiles = dataFiles.collect { new File(FilenameUtils.normalize(it.getAbsolutePath())) }
         
+        final Path commonBasePath = getCommonBasePath(dataFiles, modelFile.getParentFile())
+        LOG.debug("Input file ${modelFile.getPath()} references ${dataFiles}")
+        LOG.debug("Common base path for all inputs is ${commonBasePath}")
+        
+        final Archive archive = archiveFactory.createArchive(archiveFile)
         try {
             archive.open()
-            Collection<File> dataFiles = mdlUtils.getDataFileFromMDL(modelFile)
-            dataFiles = dataFiles.collect { new File(FilenameUtils.normalize(it.getAbsolutePath())) }
-            Path commonBasePath = getCommonBasePath(dataFiles, modelFile.getParentFile())
-            LOG.debug("Input file ${modelFile.getPath()} references ${dataFiles}")
-            LOG.debug("Common base path for all inputs is ${commonBasePath}")
-            Entry en = archive.addFile(modelFile, "/" + commonBasePath.relativize(modelFile.getParentFile().toPath()))
+            final String modelFileDirPathInArchive = "/" + commonBasePath.relativize(modelFile.getParentFile().toPath())
+            Entry en = archive.addFile(modelFile, modelFileDirPathInArchive)
+            LOG.debug("Adding ${modelFile} at ${en.getFilePath()}")
             archive.addMainEntry(en)
             dataFiles.each {
                 String location = "/" + commonBasePath.relativize(it.getParentFile().toPath())
                 LOG.debug("Adding ${it} at ${location}")
                 archive.addFile(it,location)
-                }
+            }
         } finally {
             archive.close()
         }
