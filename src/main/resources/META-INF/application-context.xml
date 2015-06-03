@@ -98,11 +98,11 @@
     <bean id="jobResourcePublisher" class="eu.ddmore.fis.service.processors.DelegatingJobProcessor">
         <constructor-arg>
             <map>
-                <entry key-ref="verbatimJobResourcePublisher">
+                <entry key-ref="ctlJobResourcePublisher">
                         <bean
                             class="eu.ddmore.fis.service.processors.InputFilenamePredicate">
                             <constructor-arg
-                                value="${fis.resourcePublisher.verbatim.filenamePattern}"></constructor-arg>
+                                value="${fis.resourcePublisher.ctl.filenamePattern}"></constructor-arg>
                         </bean>
                 </entry>
                 <entry key-ref="mdlJobResourcePublisher">
@@ -117,15 +117,15 @@
     </bean>
 
     <bean id="jobArchiveProvisioner" class="eu.ddmore.fis.service.processors.internal.JobArchiveProvisioner" />
-    <bean id="verbatimJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
+    
+    <bean id="ctlJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
             <bean parent="commonBinding">
             </bean>
         </constructor-arg>
         <property name="scriptFile"
-            value="${fis.resourcePublisher.verbatim.publishScript}"></property>
+            value="${fis.resourcePublisher.ctl.publishScript}"></property>
     </bean>
-
     <bean id="mdlJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
             <bean parent="commonBinding">

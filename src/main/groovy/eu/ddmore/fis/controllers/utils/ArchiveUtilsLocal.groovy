@@ -7,6 +7,8 @@ import static groovy.io.FileType.*
 import static groovy.io.FileVisitResult.*
 
 import java.nio.file.Path
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
@@ -22,6 +24,8 @@ import eu.ddmore.archive.Entry
  */
 public class ArchiveUtilsLocal {
     private static final Logger LOG = Logger.getLogger(ArchiveUtilsLocal.class)
+    
+    private static final String DATA_STATEMENT = '$DATA'
     
     public static Archive buildMDLArchive(final MdlUtils mdlUtils, final ArchiveFactory archiveFactory, final File archiveFile, final File modelFile) {
         
@@ -54,6 +58,43 @@ public class ArchiveUtilsLocal {
         }
         
         return archive
+    }
+    
+    public static Archive buildCTLArchive(final ArchiveFactory archiveFactory, final File archiveFile, final File controlFile, final workingDir) {
+        
+        if (archiveFile.exists()) {
+            LOG.warn("Archive file ${archiveFile} already exists, removed.")
+            FileUtils.deleteQuietly(archiveFile)
+        }
+        
+        List<File> dataFiles = []
+        
+        final Matcher dataStatementMatcher = ( FileUtils.readFileToString(controlFile) =~ /(?s)/ + Pattern.quote(DATA_STATEMENT) + /\s+(\S+)/ )
+        while (dataStatementMatcher.find()) {
+            dataFiles.add(new File(controlFile.getParentFile(), dataStatementMatcher.group(1)).getCanonicalFile())
+        }
+        
+        final Path commonBasePath = getCommonBasePath(dataFiles, controlFile.getParentFile())
+        LOG.debug("Input file ${controlFile.getPath()} references ${dataFiles}")
+        LOG.debug("Common base path for all inputs is ${commonBasePath}")
+        
+        final Archive archive = archiveFactory.createArchive(archiveFile)
+        try {
+            archive.open()
+            final String controlFileDirPathInArchive = "/" + commonBasePath.relativize(controlFile.getParentFile().toPath())
+            Entry en = archive.addFile(controlFile, controlFileDirPathInArchive)
+            LOG.debug("Adding ${controlFile} at ${en.getFilePath()}")
+            archive.addMainEntry(en)
+            dataFiles.each {
+                String location = "/" + commonBasePath.relativize(it.getParentFile().toPath())
+                LOG.debug("Adding ${it} at ${location}")
+                archive.addFile(it,location)
+            }
+        } finally {
+            archive.close()
+        }
+        
+        return archive        
     }
     
     /**
