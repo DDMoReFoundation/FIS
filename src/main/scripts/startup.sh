@@ -20,14 +20,7 @@ params=" -Dexecution.host.fileshare.local=\"$EXECUTION_HOST_FILESHARE_LOCAL\" \
  -Dexecution.host.fileshare=\"$EXECUTION_HOST_FILESHARE\" \
  -Dexecution.host.fileshare.remote=\"$EXECUTION_HOST_FILESHARE_REMOTE\" \
  -Dmif.userName= -Dmif.userPassword= \
- -DFIS_HOME=\"$SERVICE_HOME\" \
- -Dconverter.toolbox.executable=echo "; # dummy converter toolbox until this is implemented for Linux as well as Windows (it currently uses Windows batch file)
-#  - If FIS is executing in standalone mode, outside of SEE, then the location of the
-#    converter toolbox executable will need to be set / amended above.
-#  - If the MIF user credentials are set above then these will be used for MIF job execution,
-#    otherwise jobs will be executed as the MIF service account user.
-#  - If a remote MIF is to be used for job execution, then the mif.url property needs to be
-#    set/overridden in the parameters above (it defaults to localhost in config.properties).
+ -DFIS_HOME=\"$SERVICE_HOME\" "
 
 echo Starting up FIS with parameters: $params
 

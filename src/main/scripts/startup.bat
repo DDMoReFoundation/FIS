@@ -22,8 +22,7 @@ IF NOT EXIST "%EXECUTION_HOST_FILESHARE_LOCAL%" (
     mkdir "%EXECUTION_HOST_FILESHARE_LOCAL%"
 )
 
-SET params= -Dconverter.toolbox.executable="%SERVICE_HOME%\..\converter-toolbox-distribution\converter-toolbox\convert.bat" ^
- -Dexecution.host.fileshare.local="%EXECUTION_HOST_FILESHARE_LOCAL%" ^
+SET params= -Dexecution.host.fileshare.local="%EXECUTION_HOST_FILESHARE_LOCAL%" ^
  -Dexecution.host.fileshare="%EXECUTION_HOST_FILESHARE%" ^
  -Dexecution.host.fileshare.remote="%EXECUTION_HOST_FILESHARE_REMOTE%" ^
  -Dmif.userName= ^
@@ -35,17 +34,6 @@ REM    otherwise jobs will be executed as the MIF service account user.
 REM  - If a remote MIF is to be used for job execution, then the mif.url property needs to be
 REM    set/overridden in the parameters above (it defaults to localhost in config.properties).
 
-IF NOT DEFINED JAVA_CMD (
-    echo FIS is executing in standalone mode, outside of SEE, which would have set JAVA_CMD
-    IF EXIST "%JAVA_HOME%\bin\java.exe" (
-        echo Using Java from JAVA_HOME environment variable
-        SET JAVA_CMD="%JAVA_HOME%\bin\java"
-    ) ELSE (
-        echo Falling beck to using Java from system path; this will fail if Java is not installed
-        SET JAVA_CMD=java
-    )
-)
-
-%JAVA_CMD% %params% -DFIS_HOME="%SERVICE_HOME%" -jar "%SERVICE_HOME%"\%SERVICE_BINARY%
+java.exe %params% -DFIS_HOME="%SERVICE_HOME%" -jar "%SERVICE_HOME%"\%SERVICE_BINARY%
 
 EXIT
