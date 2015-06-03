@@ -158,11 +158,11 @@ public class PublishInputsScriptMdlIT {
     }
 
     /**
-     * Passing in a control file with a relative path, the Job Working Directory is used both
-     * to resolve the control file against, and as the location in which to create the Archive.
+     * Passing in a model file with a relative path, the Job Working Directory is used both
+     * to resolve the model file against, and as the location in which to create the Archive.
      */
     @Test
-    public void shouldPublishMDLInputs_WorkingDirectoryAbsPathAndControlFileRelPath()
+    public void shouldPublishMDLInputs_WorkingDirectoryAbsPathAndModelFileRelPath()
             throws IOException, ConverterToolboxServiceException, ArchiveException {
     
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptMdlIT.class.getResource(PUBLISH_MDL_INPUTS_SCRIPT)));
@@ -197,11 +197,11 @@ public class PublishInputsScriptMdlIT {
     }
     
     /**
-     * Passing in a control file with a relative path, the Job Working Directory is used both
-     * to resolve the control file against, and as the location in which to create the Archive.
+     * Passing in a model file with a relative path, the Job Working Directory is used both
+     * to resolve the model file against, and as the location in which to create the Archive.
      */
     @Test
-    public void shouldPublishMDLInputs_WorkingDirectoryAbsPathAndControlFileRelPath_DataFileNotInSameDirAsControlFile()
+    public void shouldPublishMDLInputs_WorkingDirectoryAbsPathAndModelFileRelPath_DataFileNotInSameDirAsModelFile()
             throws IOException, ConverterToolboxServiceException, ArchiveException {
             
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptMdlIT.class.getResource(PUBLISH_MDL_INPUTS_SCRIPT)));
@@ -236,12 +236,12 @@ public class PublishInputsScriptMdlIT {
     }
     
     /**
-     * Passing in a control file with an absolute path, the Job Working Directory becomes 'divorced'
-     * from the control file and can thus point to any location. In this case, the working directory
+     * Passing in a model file with an absolute path, the Job Working Directory becomes 'divorced'
+     * from the model file and can thus point to any location. In this case, the working directory
      * is just used as the location in which to create the Archive.
      */
     @Test
-    public void shouldPublishMDLInputs_ControlFileAbsPath()
+    public void shouldPublishMDLInputs_ModelFileAbsPath()
             throws IOException, ConverterToolboxServiceException, ArchiveException {
     
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptMdlIT.class.getResource(PUBLISH_MDL_INPUTS_SCRIPT)));
@@ -252,8 +252,8 @@ public class PublishInputsScriptMdlIT {
         FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + MODEL_FILE_NAME), modelFile);
         FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + DATA_FILE_NAME), dataFile);
         
-        // Control file with absolute path -> job working directory isn't used for
-        // resolving the control file against so can point to some other directory
+        // Model file with absolute path -> job working directory isn't used for
+        // resolving the model file against so can point to some other directory
         final File fisWorkingDir = this.otherTestDirectory.getRoot();
         
         // Simulate the data file being associated with the model file
@@ -277,12 +277,12 @@ public class PublishInputsScriptMdlIT {
     }
     
     /**
-     * Passing in a control file with an absolute path, the Job Working Directory becomes 'divorced'
-     * from the control file and can thus point to any location. In this case, the working directory
+     * Passing in a model file with an absolute path, the Job Working Directory becomes 'divorced'
+     * from the model file and can thus point to any location. In this case, the working directory
      * is just used as the location in which to create the Archive.
      */
     @Test
-    public void shouldPublishMDLInputs_ControlFileAbsPath_DataFileNotInSameDirAsControlFile()
+    public void shouldPublishMDLInputs_ModelFileAbsPath_DataFileNotInSameDirAsModelFile()
             throws IOException, ConverterToolboxServiceException, ArchiveException {
             
         this.jobProcessor.setScriptFile(FileUtils.toFile(PublishInputsScriptMdlIT.class.getResource(PUBLISH_MDL_INPUTS_SCRIPT)));
@@ -293,8 +293,8 @@ public class PublishInputsScriptMdlIT {
         FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + MODEL_FILE_NAME), modelFile);
         FileUtils.copyURLToFile(PublishInputsScriptVerbatimIT.class.getResource(TEST_DATA_DIR + DATA_FILE_NAME), dataFile);
         
-        // Control file with absolute path -> job working directory isn't used for
-        // resolving the control file against so can point to some other directory
+        // Model file with absolute path -> job working directory isn't used for
+        // resolving the model file against so can point to some other directory
         final File fisWorkingDir = this.otherTestDirectory.getRoot();
         
         // Simulate the data file being associated with the model file
