@@ -105,6 +105,13 @@
                                 value="${fis.resourcePublisher.ctl.filenamePattern}"></constructor-arg>
                         </bean>
                 </entry>
+                <entry key-ref="pharmmlJobResourcePublisher">
+                        <bean
+                            class="eu.ddmore.fis.service.processors.InputFilenamePredicate">
+                            <constructor-arg
+                                value="${fis.resourcePublisher.pharmml.filenamePattern}"></constructor-arg>
+                        </bean>
+                </entry>
                 <entry key-ref="mdlJobResourcePublisher">
                         <bean
                             class="eu.ddmore.fis.service.processors.InputFilenamePredicate">
@@ -125,6 +132,14 @@
         </constructor-arg>
         <property name="scriptFile"
             value="${fis.resourcePublisher.ctl.publishScript}"></property>
+    </bean>
+    <bean id="pharmmlJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
+        <constructor-arg>
+            <bean parent="commonBinding">
+            </bean>
+        </constructor-arg>
+        <property name="scriptFile"
+            value="${fis.resourcePublisher.pharmml.publishScript}"></property>
     </bean>
     <bean id="mdlJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
