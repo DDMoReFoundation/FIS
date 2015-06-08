@@ -8,13 +8,11 @@ import org.apache.log4j.Logger
 import com.google.common.base.Preconditions
 
 import eu.ddmore.archive.Archive
-import eu.ddmore.archive.ArchiveFactory
 import eu.ddmore.archive.Entry
 import eu.ddmore.convertertoolbox.domain.ConversionReport
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode
 import eu.ddmore.convertertoolbox.domain.LanguageVersion
-import eu.ddmore.fis.controllers.utils.ArchiveUtilsLocal
-import eu.ddmore.fis.controllers.utils.MdlUtils
+import eu.ddmore.fis.controllers.utils.ArchiveCreator
 import eu.ddmore.fis.service.cts.ConverterToolboxService
 import groovy.json.JsonOutput
 
@@ -36,14 +34,13 @@ final String outputDir = binding.getVariable("outputDir");
  */
 final Logger LOG = Logger.getLogger(getClass())
 final File scriptFile = binding.getVariable("scriptFile");
-final ArchiveFactory archiveFactory = binding.getVariable("archiveFactory");
 final ConverterToolboxService converterToolboxService = binding.getVariable("converterToolboxService");
 final LanguageVersion from = binding.getVariable("mdlLanguage");
 final LanguageVersion to = binding.getVariable("pharmmlLanguage");
 final String outputArchiveName = binding.getVariable("fis.cts.output.archive");
 final String outputConversionReport = binding.getVariable("fis.cts.output.conversionReport");
 final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
-final MdlUtils mdlUtils = binding.getVariable("mdlUtils");
+final ArchiveCreator mdlArchiveCreator = binding.getVariable("archiveCreator");
 
 /**
  * Script
@@ -60,7 +57,7 @@ File archiveFile = new File(fisMetadataDir, outputArchiveName);
 
 // Create and populate the Archive with the MDL file and any associated data file(s)
 
-final Archive archive = ArchiveUtilsLocal.buildMDLArchive(mdlUtils, archiveFactory, archiveFile, inputFile)
+final Archive archive = mdlArchiveCreator.buildArchive(archiveFile, inputFile)
 
 // Perform the conversion from MDL to PharmML
 

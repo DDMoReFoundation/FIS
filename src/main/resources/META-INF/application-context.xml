@@ -125,9 +125,21 @@
 
     <bean id="jobArchiveProvisioner" class="eu.ddmore.fis.service.processors.internal.JobArchiveProvisioner" />
     
+    <!-- Used in pharmmlJobResourcePublisher's PharmML Archive Creator below -->
+    <bean id="pharmmlFactory" class="eu.ddmore.libpharmml.PharmMlFactory" factory-method="getInstance" />
+    
     <bean id="ctlJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
             <bean parent="commonBinding">
+                <constructor-arg index="0">
+                    <map merge="true">
+                        <entry key="archiveCreator">
+                            <bean class="eu.ddmore.fis.controllers.utils.CtlArchiveCreator">
+                                <constructor-arg index="0" ref="archiveFactory" />
+                            </bean>
+                        </entry>
+                    </map>
+                </constructor-arg>
             </bean>
         </constructor-arg>
         <property name="scriptFile"
@@ -136,6 +148,18 @@
     <bean id="pharmmlJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
             <bean parent="commonBinding">
+                <constructor-arg index="0">
+                    <map merge="true">
+                        <entry key="archiveCreator">
+                            <bean class="eu.ddmore.fis.controllers.utils.PharmmlArchiveCreator" >
+                                <constructor-arg index="0" ref="archiveFactory" />
+                                <constructor-arg index="1">
+                                    <bean factory-bean="pharmmlFactory" factory-method="createLibPharmML" />
+                                </constructor-arg>
+                            </bean>
+                        </entry>
+                    </map>
+                </constructor-arg>
             </bean>
         </constructor-arg>
         <property name="scriptFile"
@@ -144,6 +168,18 @@
     <bean id="mdlJobResourcePublisher" class="eu.ddmore.fis.service.processors.JobProcessor">
         <constructor-arg>
             <bean parent="commonBinding">
+                <constructor-arg index="0">
+                    <map merge="true">
+                        <entry key="archiveCreator">
+                            <bean class="eu.ddmore.fis.controllers.utils.MdlArchiveCreator">
+                                <constructor-arg index="0" ref="archiveFactory" />
+                                <constructor-arg index="1">
+                                    <bean class="eu.ddmore.fis.controllers.utils.MdlUtilsLocal" />
+                                </constructor-arg>
+                            </bean>
+                        </entry>
+                    </map>
+                </constructor-arg>
             </bean>
         </constructor-arg>
         <property name="scriptFile"
@@ -153,6 +189,18 @@
     <bean id="mdlConversionProcessor" class="eu.ddmore.fis.controllers.MdlConversionProcessor">
         <constructor-arg>
             <bean parent="commonBinding">
+                <constructor-arg index="0">
+                    <map merge="true">
+                        <entry key="archiveCreator">
+                            <bean class="eu.ddmore.fis.controllers.utils.MdlArchiveCreator">
+                                <constructor-arg index="0" ref="archiveFactory" />
+                                <constructor-arg index="1">
+                                    <bean class="eu.ddmore.fis.controllers.utils.MdlUtilsLocal" />
+                                </constructor-arg>
+                            </bean>
+                        </entry>
+                    </map>
+                </constructor-arg>
             </bean>
         </constructor-arg>
         <property name="scriptFile" value="${fis.mdlConverter}"></property>

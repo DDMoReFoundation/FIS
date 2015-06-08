@@ -9,13 +9,11 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.log4j.Logger
 
 import eu.ddmore.archive.Archive
-import eu.ddmore.archive.ArchiveFactory
 import eu.ddmore.archive.Entry
 import eu.ddmore.convertertoolbox.domain.ConversionReport
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode
 import eu.ddmore.convertertoolbox.domain.LanguageVersion
-import eu.ddmore.fis.controllers.utils.ArchiveUtilsLocal
-import eu.ddmore.fis.controllers.utils.MdlUtils
+import eu.ddmore.fis.controllers.utils.ArchiveCreator
 import eu.ddmore.fis.domain.LocalJob
 import eu.ddmore.fis.domain.LocalJobStatus
 import eu.ddmore.fis.service.cts.ConverterToolboxService
@@ -37,7 +35,6 @@ final LocalJob job = binding.getVariable("job");
  */
 @Field final Logger LOG = Logger.getLogger(getClass())
 final File scriptFile = binding.getVariable("scriptFile");
-final ArchiveFactory archiveFactory = binding.getVariable("archiveFactory");
 final ConverterToolboxService converterToolboxService = binding.getVariable("converterToolboxService");
 final LanguageVersion from = binding.getVariable("mdlLanguage");
 final LanguageVersion to = binding.getVariable("pharmmlLanguage");
@@ -51,7 +48,7 @@ final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
 final File mockDataDir = new File(scriptFile.getParentFile().getParentFile(),"mockData")
 final File fisJobWorkingDir = new File(job.getWorkingDirectory())
 final File mifJobWorkingDir = new File(executionHostFileshareLocal, job.getId());
-final MdlUtils mdlUtils = binding.getVariable("mdlUtils");
+final ArchiveCreator mdlArchiveCreator = binding.getVariable("archiveCreator");
 
 /**
  * Script
@@ -78,7 +75,7 @@ File archiveFile = new File(fisMetadataDir, outputArchiveName);
 
 // Create and populate the Archive with the MDL file and any associated data file(s)
 
-final Archive archive = ArchiveUtilsLocal.buildMDLArchive(mdlUtils, archiveFactory, archiveFile, origControlFile)
+final Archive archive = mdlArchiveCreator.buildArchive(archiveFile, origControlFile)
 
 // Perform the conversion from MDL to PharmML
 
@@ -152,11 +149,10 @@ void useMockPharmml(File mockDataDir, String modelName, String pharmmlFileExt, A
     try {
         archive.open();
         File xmlVersionInMockDataDir = new File(mockDataDir, modelName + "." + pharmmlFileExt)
-        String newModelFileName = modelName + "." + pharmmlFileExt
-        Entry modelEntry = archive.addFile( xmlVersionInMockDataDir, newModelFileName)
-        File data = new File(mockDataDir, modelName + ".csv")
+        Entry modelEntry = archive.addFile( xmlVersionInMockDataDir, "/")
+        File data = new File(mockDataDir, modelName + "_data.csv")
         if (data.exists()) {
-            archive.addFile( data, modelName + "_data.csv" )
+            archive.addFile(data, "/")
         } else {
             LOG.debug("Mock data file: ${data} doesn't exist.");
         }
