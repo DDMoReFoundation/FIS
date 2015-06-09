@@ -32,9 +32,6 @@ public final class CtlArchiveCreator extends BaseArchiveCreator {
         super(archiveFactory);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Collection<File> gatherDataFilesFromReferencesInModelFile(final File controlFile) {
         final Collection<File> dataFiles = new ArrayList<File>();

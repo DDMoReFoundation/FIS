@@ -30,9 +30,6 @@ public final class MdlArchiveCreator extends BaseArchiveCreator {
         this.mdlUtils = mdlUtils;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Collection<File> gatherDataFilesFromReferencesInModelFile(final File mdlFile) {
         final Collection<File> dataFiles = new ArrayList<File>();

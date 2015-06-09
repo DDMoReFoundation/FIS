@@ -37,9 +37,6 @@ public final class PharmmlArchiveCreator extends BaseArchiveCreator {
         this.libPharmML = libPharmML;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected Collection<File> gatherDataFilesFromReferencesInModelFile(final File pharmmlFile) {
         final Collection<File> dataFiles = new ArrayList<File>();
