@@ -18,10 +18,15 @@ import eu.ddmore.archive.ArchiveFactory;
 
 /**
  * Contains NMTRAN-specific utility methods relating to the Archive functionality within FIS.
+ * <p>
+ * <a href="https://nonmem.iconplc.com/nonmem720/guides/iv.pdf">https://nonmem.iconplc.com/nonmem720/guides/iv.pdf</a>
+ * pg 18 is the reference for the permitted filename syntax on the $DATA statement, that
+ * needs to be catered for by {@link #gatherDataFilesFromReferencesInModelFile(File)}.
  */
 public final class CtlArchiveCreator extends BaseArchiveCreator {
 
     private static final String DATA_STATEMENT = "$DATA";
+    private static final String INFILE_STATEMENT = "$INFILE";
 
     /**
      * Constructor injecting the required {@link ArchiveFactory} dependency.
@@ -44,10 +49,24 @@ public final class CtlArchiveCreator extends BaseArchiveCreator {
         } catch (final IOException ioe) {
             throw new RuntimeException("Unable to read control file " + controlFile, ioe);
         }
-        final Pattern dataStatementRegex = Pattern.compile("(?m)^\\s*" + Pattern.quote(DATA_STATEMENT) + "\\s+(\\S+)"); // (?m) turns on multi-line mode
+
+        final Pattern dataStatementRegex = Pattern.compile("(?m)^\\s*(?:" + Pattern.quote(DATA_STATEMENT) + "|" + Pattern.quote(INFILE_STATEMENT) + ")\\s+([^\n]+)"); // (?m) turns on multi-line mode
         final Matcher dataStatementMatcher = dataStatementRegex.matcher(controlFileContents);
         while (dataStatementMatcher.find()) {
-            final File dataFile = new File(controlFile.getParentFile(), dataStatementMatcher.group(1));
+        
+            // Parse the $DATA statement to extract the filename, without quotes but preserving embedded spaces and special characters
+            final String dataStatementContent = dataStatementMatcher.group(1);
+            String dataFilename;
+            if (dataStatementContent.startsWith("\"")) {
+                dataFilename = dataStatementContent.split("\"")[1];
+            } else if (dataStatementContent.startsWith("'")) {
+                dataFilename = dataStatementContent.split("'")[1];
+            } else {
+                dataFilename = dataStatementContent.split(" ")[0];
+            }
+            
+            // Derive the physical file location by resolving the data filename against the directory in which the model file lives
+            final File dataFile = new File(controlFile.getParentFile(), dataFilename);
             dataFiles.add(new File(FilenameUtils.normalize(dataFile.getAbsolutePath())));
         }
 
