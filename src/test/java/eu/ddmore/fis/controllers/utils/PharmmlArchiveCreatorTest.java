@@ -48,9 +48,7 @@ public class PharmmlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     @Mock
     private ILibPharmML mockLibPharmML;
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     protected ArchiveCreator createArchiveCreator(final ArchiveFactory mockArchiveFactory) {
         return new PharmmlArchiveCreator(mockArchiveFactory, this.mockLibPharmML);
     }

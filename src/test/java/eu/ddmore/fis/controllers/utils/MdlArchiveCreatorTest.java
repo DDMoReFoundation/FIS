@@ -29,9 +29,7 @@ public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     @Mock
     private MdlUtils mockMdlUtils;
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     protected ArchiveCreator createArchiveCreator(final ArchiveFactory mockArchiveFactory) {
         return new MdlArchiveCreator(mockArchiveFactory, this.mockMdlUtils);
     }

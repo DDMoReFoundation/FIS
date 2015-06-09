@@ -24,9 +24,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     private final static String CTL_FILE_NAME = "model.ctl";
     private final static String DATA_FILE_NAME = "model_data.csv";
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     protected ArchiveCreator createArchiveCreator(final ArchiveFactory mockArchiveFactory) {
         return new CtlArchiveCreator(mockArchiveFactory);
     }
