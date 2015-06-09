@@ -81,7 +81,80 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         verifyArchiveCreation(controlFile, dataFile, "/models", "/data", archive);
     }
     
-
+    /**
+     * Test method for {@link eu.ddmore.fis.controllers.utils.BaseArchiveCreator#buildArchive(java.io.File, java.io.File)}.
+     * <p>
+     * @throws IOException 
+     * @throws ArchiveException 
+     */
+    @Test
+    public void testBuildArchiveWhereDataStatementIndented() throws IOException, ArchiveException {
+    
+        // Prepare model file and data file - note that the model file does have to exist
+        // since it is going to be read in and parsed, but the data file doesn't need to exist
+        final File controlFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), CTL_FILE_NAME);
+        final File dataFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), DATA_FILE_NAME);
+        
+        // Simulate the data file being associated with the model file
+        writeDummyCtlFileContentWithSpecifiedDataStatement(controlFile, "\t" + DATA_FILE_NAME);
+        
+        final Archive archive = mockArchiveCreation(controlFile, "/");
+        
+        // Call the method under test
+        invokeBuildArchive(controlFile);
+        
+        verifyArchiveCreation(controlFile, dataFile, "/", "/", archive);
+    }
+    
+    /**
+     * Test method for {@link eu.ddmore.fis.controllers.utils.BaseArchiveCreator#buildArchive(java.io.File, java.io.File)}.
+     * <p>
+     * @throws IOException 
+     * @throws ArchiveException 
+     */
+    @Test
+    public void testBuildArchiveWhereDataStatementSplitOverTwoLines() throws IOException, ArchiveException {
+    
+        // Prepare model file and data file - note that the model file does have to exist
+        // since it is going to be read in and parsed, but the data file doesn't need to exist
+        final File controlFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), CTL_FILE_NAME);
+        final File dataFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), DATA_FILE_NAME);
+        
+        // Simulate the data file being associated with the model file
+        writeDummyCtlFileContentWithSpecifiedDataStatement(controlFile, System.getProperty("line.separator") + DATA_FILE_NAME);
+        
+        final Archive archive = mockArchiveCreation(controlFile, "/");
+        
+        // Call the method under test
+        invokeBuildArchive(controlFile);
+        
+        verifyArchiveCreation(controlFile, dataFile, "/", "/", archive);
+    }
+    
+    /**
+     * Test method for {@link eu.ddmore.fis.controllers.utils.BaseArchiveCreator#buildArchive(java.io.File, java.io.File)}.
+     * <p>
+     * @throws IOException 
+     * @throws ArchiveException 
+     */
+    @Test
+    public void testBuildArchiveWhereDataStatementCommentedOut() throws IOException, ArchiveException {
+    
+        // Prepare model file and data file - note that the model file does have to exist
+        // since it is going to be read in and parsed, but the data file doesn't need to exist
+        final File controlFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), CTL_FILE_NAME);
+        final File dataFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), "ThisShouldGetPickedUp.csv");
+        
+        // Simulate the data file being associated with the model file
+        FileUtils.write(controlFile, "$PROBLEM The problem statement\n;$DATA ThisShouldNotGetPickedUp.csv IGNORE=@\n$INPUT ID TIME WT AMT\n$EST\n$DATA ThisShouldGetPickedUp.csv IGNORE=#\n");
+        
+        final Archive archive = mockArchiveCreation(controlFile, "/");
+        
+        // Call the method under test
+        invokeBuildArchive(controlFile);
+        
+        verifyArchiveCreation(controlFile, dataFile, "/", "/", archive);
+    }
     
     /**
      * Test method for {@link eu.ddmore.fis.controllers.utils.BaseArchiveCreator#buildArchive(java.io.File, java.io.File)}.

@@ -44,7 +44,7 @@ public final class CtlArchiveCreator extends BaseArchiveCreator {
         } catch (final IOException ioe) {
             throw new RuntimeException("Unable to read control file " + controlFile, ioe);
         }
-        final Pattern dataStatementRegex = Pattern.compile("(?s)" + Pattern.quote(DATA_STATEMENT) + "\\s+(\\S+)");
+        final Pattern dataStatementRegex = Pattern.compile("(?m)^\\s*" + Pattern.quote(DATA_STATEMENT) + "\\s+(\\S+)"); // (?m) turns on multi-line mode
         final Matcher dataStatementMatcher = dataStatementRegex.matcher(controlFileContents);
         while (dataStatementMatcher.find()) {
             final File dataFile = new File(controlFile.getParentFile(), dataStatementMatcher.group(1));
