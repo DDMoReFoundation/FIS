@@ -21,6 +21,6 @@ public interface ArchiveCreator {
      * @return the created {@link Archive}
      * @throws ArchiveException - if something fatal occurred during the addition of files to the archive 
      */
-    Archive buildArchive(final File archiveFile, final File modelFile) throws ArchiveException;
+    Archive buildArchive(File archiveFile, File modelFile) throws ArchiveException;
 
 }
