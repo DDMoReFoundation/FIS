@@ -21,6 +21,11 @@ params=" -Dexecution.host.fileshare.local=\"$EXECUTION_HOST_FILESHARE_LOCAL\" \
  -Dexecution.host.fileshare.remote=\"$EXECUTION_HOST_FILESHARE_REMOTE\" \
  -Dmif.userName= -Dmif.userPassword= \
  -DFIS_HOME=\"$SERVICE_HOME\" "
+REM  - If the MIF user credentials are set above then these will be used for MIF job execution,
+REM    otherwise jobs will be executed as the MIF service account user.
+REM  - If a remote MIF is to be used for job execution, then the mif.url property needs to be
+REM    set/overridden in the parameters above (it defaults to localhost in config.properties).
+REM  - The logging level can be overridden via appropriate system property: -Dlogging.level.eu.ddmore=DEBUG
 
 echo Starting up FIS with parameters: $params
 
