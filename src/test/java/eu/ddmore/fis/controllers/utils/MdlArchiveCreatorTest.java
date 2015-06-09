@@ -23,8 +23,8 @@ import eu.ddmore.archive.exception.ArchiveException;
 @RunWith(MockitoJUnitRunner.class)
 public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     
-    private final static String MDL_FILE_NAME = "UseCase1.mdl";
-    private final static String DATA_FILE_NAME = "warfarin_conc.csv";
+    private final static String MDL_FILE_NAME = "model.mdl";
+    private final static String DATA_FILE_NAME = "model_data.csv";
     
     @Mock
     private MdlUtils mockMdlUtils;
@@ -46,8 +46,8 @@ public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     public void testBuildArchiveWhereDataFileInSameDirectoryAsModelFile() throws IOException, ArchiveException {
     
         // Prepare model file and data file - note that they don't actually need to exist
-        final File modelFile = Paths.get(FileUtils.getTempDirectoryPath(), "warfarin", MDL_FILE_NAME).toFile();
-        final File dataFile = Paths.get(FileUtils.getTempDirectoryPath(), "warfarin", DATA_FILE_NAME).toFile();
+        final File modelFile = Paths.get(FileUtils.getTempDirectoryPath(), "mydir", MDL_FILE_NAME).toFile();
+        final File dataFile = Paths.get(FileUtils.getTempDirectoryPath(), "mydir", DATA_FILE_NAME).toFile();
         
         // Simulate the data file being associated with the model file
         when(this.mockMdlUtils.getDataFileFromMDL(modelFile)).thenReturn(Arrays.asList(dataFile));
@@ -103,8 +103,8 @@ public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     public void testBuildArchiveWhereDataFileIsReferencedButNotExists() throws IOException, ArchiveException {
     
         // Prepare model file and data file - note that they don't actually need to exist
-        final File modelFile = Paths.get(FileUtils.getTempDirectoryPath(), "warfarin", MDL_FILE_NAME).toFile();
-        final File dataFile = Paths.get(FileUtils.getTempDirectoryPath(), "warfarin", DATA_FILE_NAME).toFile();
+        final File modelFile = Paths.get(FileUtils.getTempDirectoryPath(), "mydir", MDL_FILE_NAME).toFile();
+        final File dataFile = Paths.get(FileUtils.getTempDirectoryPath(), "mydir", DATA_FILE_NAME).toFile();
     
         // Simulate the data file being associated with the model file
         when(this.mockMdlUtils.getDataFileFromMDL(modelFile)).thenReturn(Arrays.asList(dataFile));

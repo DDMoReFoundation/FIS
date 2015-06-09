@@ -43,7 +43,7 @@ public class PublishInputsScriptVerbatimIT {
     
     private static final String PUBLISH_VERBATIM_INPUTS_SCRIPT = "/scripts/publishInputsVerbatim.groovy";
     
-    private final static String MODEL_FILE_NAME = "Warfarin-ODE-latest"; // Don't provide a file extension to indicate that this is model/control-file agnostic
+    private final static String MODEL_FILE_NAME = "model"; // Don't provide a file extension to indicate that this is model/control-file agnostic
     
     private static final String PHEX_ARCHIVE = "archive.phex";
     
@@ -96,7 +96,7 @@ public class PublishInputsScriptVerbatimIT {
     public void shouldPublishInputs_WorkingDirectoryAbsPathAndModelFileRelPath()
             throws IOException, ConverterToolboxServiceException, ArchiveException {
         
-        final String modelFileInSubDir = "warfarin" + File.separator + MODEL_FILE_NAME;
+        final String modelFileInSubDir = "mydir" + File.separator + MODEL_FILE_NAME;
         // Don't actually need to physically create the model & data files for these tests
         final File modelFile = new File(this.testWorkingDir, modelFileInSubDir);
         
@@ -125,7 +125,7 @@ public class PublishInputsScriptVerbatimIT {
             throws IOException, ConverterToolboxServiceException, ArchiveException {
         
         // Don't actually need to physically create the model & data files for these tests
-        final File modelFile = new File(new File(this.testWorkingDir, "warfarin"), MODEL_FILE_NAME);
+        final File modelFile = new File(new File(this.testWorkingDir, "mydir"), MODEL_FILE_NAME);
         
         // Model file with absolute path -> job working directory isn't used for
         // resolving the model file against so can point to some other directory

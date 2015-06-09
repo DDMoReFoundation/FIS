@@ -21,8 +21,8 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
     
-    private final static String CTL_FILE_NAME = "UseCase1.ctl";
-    private final static String DATA_FILE_NAME = "warfarin_conc.csv";
+    private final static String CTL_FILE_NAME = "model.ctl";
+    private final static String DATA_FILE_NAME = "model_data.csv";
 
     /**
      * {@inheritDoc}
@@ -42,8 +42,8 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     
         // Prepare model file and data file - note that the model file does have to exist
         // since it is going to be read in and parsed, but the data file doesn't need to exist
-        final File controlFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), CTL_FILE_NAME);
-        final File dataFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), DATA_FILE_NAME);
+        final File controlFile = new File(new File(this.tempFolder.getRoot(), "mydir"), CTL_FILE_NAME);
+        final File dataFile = new File(new File(this.tempFolder.getRoot(), "mydir"), DATA_FILE_NAME);
         
         // Simulate the data file being associated with the model file
         writeDummyCtlFileContentWithSpecifiedDataStatement(controlFile, DATA_FILE_NAME);
@@ -92,8 +92,8 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     
         // Prepare model file and data file - note that the model file does have to exist
         // since it is going to be read in and parsed, but the data file doesn't need to exist
-        final File controlFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), CTL_FILE_NAME);
-        final File dataFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), DATA_FILE_NAME);
+        final File controlFile = new File(new File(this.tempFolder.getRoot(), "mydir"), CTL_FILE_NAME);
+        final File dataFile = new File(new File(this.tempFolder.getRoot(), "mydir"), DATA_FILE_NAME);
         
         // Simulate the data file being associated with the model file
         writeDummyCtlFileContentWithSpecifiedDataStatement(controlFile, "\t" + DATA_FILE_NAME);
@@ -117,8 +117,8 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     
         // Prepare model file and data file - note that the model file does have to exist
         // since it is going to be read in and parsed, but the data file doesn't need to exist
-        final File controlFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), CTL_FILE_NAME);
-        final File dataFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), DATA_FILE_NAME);
+        final File controlFile = new File(new File(this.tempFolder.getRoot(), "mydir"), CTL_FILE_NAME);
+        final File dataFile = new File(new File(this.tempFolder.getRoot(), "mydir"), DATA_FILE_NAME);
         
         // Simulate the data file being associated with the model file
         writeDummyCtlFileContentWithSpecifiedDataStatement(controlFile, System.getProperty("line.separator") + DATA_FILE_NAME);
@@ -142,8 +142,8 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     
         // Prepare model file and data file - note that the model file does have to exist
         // since it is going to be read in and parsed, but the data file doesn't need to exist
-        final File controlFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), CTL_FILE_NAME);
-        final File dataFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), "ThisShouldGetPickedUp.csv");
+        final File controlFile = new File(new File(this.tempFolder.getRoot(), "mydir"), CTL_FILE_NAME);
+        final File dataFile = new File(new File(this.tempFolder.getRoot(), "mydir"), "ThisShouldGetPickedUp.csv");
         
         // Simulate the data file being associated with the model file
         FileUtils.write(controlFile, "$PROBLEM The problem statement\n;$DATA ThisShouldNotGetPickedUp.csv IGNORE=@\n$INPUT ID TIME WT AMT\n$EST\n$DATA ThisShouldGetPickedUp.csv IGNORE=#\n");
@@ -172,8 +172,8 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     
         // Prepare model file and data file - note that the model file does have to exist
         // since it is going to be read in and parsed, but the data file doesn't need to exist
-        final File controlFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), CTL_FILE_NAME);
-        final File dataFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), DATA_FILE_NAME);
+        final File controlFile = new File(new File(this.tempFolder.getRoot(), "mydir"), CTL_FILE_NAME);
+        final File dataFile = new File(new File(this.tempFolder.getRoot(), "mydir"), DATA_FILE_NAME);
     
         // Simulate the data file being associated with the model file
         writeDummyCtlFileContentWithSpecifiedDataStatement(controlFile, DATA_FILE_NAME);

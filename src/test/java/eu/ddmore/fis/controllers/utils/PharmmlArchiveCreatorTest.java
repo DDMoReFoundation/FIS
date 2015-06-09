@@ -40,8 +40,8 @@ public class PharmmlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
     
-    private final static String PHARMML_FILE_NAME = "UseCase1.xml";
-    private final static String DATA_FILE_NAME = "warfarin_conc.csv";
+    private final static String PHARMML_FILE_NAME = "model.xml";
+    private final static String DATA_FILE_NAME = "model_data.csv";
     
     private final static String DUMMY_PHARMML_FILE_CONTENT = "<DummyPharmMLContent />";
     
@@ -65,8 +65,8 @@ public class PharmmlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     public void testBuildArchiveWhereDataFileInSameDirectoryAsModelFile() throws IOException, ArchiveException {
     
         // Prepare model file and data file - note that data file doesn't need to exist but PharmML file does (but can have dummy data)
-        final File pharmmlFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), PHARMML_FILE_NAME);
-        final File dataFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), DATA_FILE_NAME);
+        final File pharmmlFile = new File(new File(this.tempFolder.getRoot(), "mydir"), PHARMML_FILE_NAME);
+        final File dataFile = new File(new File(this.tempFolder.getRoot(), "mydir"), DATA_FILE_NAME);
         FileUtils.write(pharmmlFile, DUMMY_PHARMML_FILE_CONTENT);
         
         // Simulate the data file being associated with the model file
@@ -130,8 +130,8 @@ public class PharmmlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     public void testBuildArchiveWhereDataFileIsReferencedButNotExists() throws IOException, ArchiveException {
     
         // Prepare model file and data file - note that data file doesn't need to exist but PharmML file does (but can have dummy data)
-        final File pharmmlFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), PHARMML_FILE_NAME);
-        final File dataFile = new File(new File(this.tempFolder.getRoot(), "warfarin"), DATA_FILE_NAME);
+        final File pharmmlFile = new File(new File(this.tempFolder.getRoot(), "mydir"), PHARMML_FILE_NAME);
+        final File dataFile = new File(new File(this.tempFolder.getRoot(), "mydir"), DATA_FILE_NAME);
         FileUtils.write(pharmmlFile, DUMMY_PHARMML_FILE_CONTENT);
         
         // Simulate the data file being associated with the model file
