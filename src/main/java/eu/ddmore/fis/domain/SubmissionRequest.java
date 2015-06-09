@@ -6,9 +6,10 @@ package eu.ddmore.fis.domain;
 public class SubmissionRequest {
 
 	private String workingDirectory;
-	private String command;
+	private String command; // TODO: To be renamed to executionType to be consistent throughout the workflow; needs changing in TEL.R too though
 	private String executionFile;
 	private String commandParameters;
+	private String extraInputFilesRegex;
 	
 	public String getWorkingDirectory() {
 		return workingDirectory;
@@ -42,10 +43,19 @@ public class SubmissionRequest {
         return commandParameters;
     }
     
-	@Override
-	public String toString() {
-		return "SubmissionRequest [workingDirectory=" + workingDirectory
-				+ ", command=" + command + ", executionFile=" + executionFile
-				+ ", commandParameters=" + commandParameters + "]";
-	}
+    public String getExtraInputFilesRegex() {
+        return extraInputFilesRegex;
+    }
+
+    public void setExtraInputFilesRegex(String extraInputFilesRegex) {
+        this.extraInputFilesRegex = extraInputFilesRegex;
+    }
+    
+    @Override
+    public String toString() {
+        return "SubmissionRequest [workingDirectory=" + workingDirectory
+                + ", command=" + command + ", executionFile=" + executionFile
+                + ", commandParameters=" + commandParameters
+                + ", extraInputFilesRegex=" + extraInputFilesRegex + "]";
+    }
 }
