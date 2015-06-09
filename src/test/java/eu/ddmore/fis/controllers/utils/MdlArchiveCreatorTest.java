@@ -88,8 +88,6 @@ public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         verifyNoMoreInteractions(this.mockMdlUtils);
     }
     
-
-    
     /**
      * Test method for {@link eu.ddmore.fis.controllers.utils.BaseArchiveCreator#buildArchive(java.io.File, java.io.File)}.
      * <p>
