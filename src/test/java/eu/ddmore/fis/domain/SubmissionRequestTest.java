@@ -2,15 +2,21 @@ package eu.ddmore.fis.domain;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 public class SubmissionRequestTest {
+
+    private static final Logger LOG = Logger.getLogger(SubmissionRequestTest.class);
 
 	private static final String COMMAND = "test-command";
 	private static final String COMMAND_PARAMETERS = "test-command-parameters";
 	private static final String EXECUTION_FILE = "test-execution-file";
 	private static final String WORKING_DIRECTORY = "test-working-directory";
-	private static final String EXTRA_INPUT_FILES_REGEX = "mymodel\\..+";
+	private static final List<String> EXTRA_INPUT_FILES = Arrays.asList("mymodel.lst", "catab", "patab");
 
 	private static final String EXPECTED_TO_STRING =
 		"SubmissionRequest [" +
@@ -18,7 +24,7 @@ public class SubmissionRequestTest {
 			"command=" + COMMAND + ", " +
 			"executionFile=" + EXECUTION_FILE + ", " +
 			"commandParameters=" + COMMAND_PARAMETERS + ", " +
-			"extraInputFilesRegex=" + EXTRA_INPUT_FILES_REGEX + "]";
+			"extraInputFiles=" + EXTRA_INPUT_FILES.toString() + "]";
 
     @Test
     public void shouldProduceCorrectToString() {
@@ -27,8 +33,9 @@ public class SubmissionRequestTest {
         sr.setCommandParameters(COMMAND_PARAMETERS);
         sr.setExecutionFile(EXECUTION_FILE);
         sr.setWorkingDirectory(WORKING_DIRECTORY);
-        sr.setExtraInputFilesRegex(EXTRA_INPUT_FILES_REGEX);
+        sr.setExtraInputFiles(EXTRA_INPUT_FILES);
 
+        LOG.debug(sr.toString());
         assertEquals("toString should be correct.", EXPECTED_TO_STRING, sr.toString());
     }
 }
