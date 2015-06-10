@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2014-2015 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis;
 
@@ -25,17 +25,19 @@ import eu.ddmore.fis.domain.WriteMdlRequest;
 import eu.ddmore.fis.domain.WriteMdlResponse;
 
 /**
- * TEISHttpRestClient for interacting with TES IS REST services.
+ * Http Rest Client for interacting with FIS REST services.
  */
 public class FISHttpRestClient {
-    private static final Logger log = Logger.getLogger(FISHttpRestClient.class);
+
+    private static final Logger LOG = Logger.getLogger(FISHttpRestClient.class);
+    
     private String endPoint;
     private HttpClient client;
     private String managementEndpoint;
     
     /**
      * 
-     * @param endPoint - TES endpoint
+     * @param endPoint - FIS endpoint
      */
     public FISHttpRestClient(String endPoint, String managementEndpoint) {
         this.endPoint = endPoint;
@@ -44,7 +46,7 @@ public class FISHttpRestClient {
     }
 
     /**
-     * Submit an execution request to TES IS 
+     * Submit an execution request to FIS.
      * 
      * @return submission response 
      */
@@ -63,7 +65,7 @@ public class FISHttpRestClient {
         }
         post.setParameter("submissionRequest", json);
         
-        log.info(String.format("Sending execution request: %s",json));
+        LOG.info(String.format("Sending execution request: %s",json));
         
         String response = executeMethod(endpoint, post);
         try {
@@ -84,7 +86,7 @@ public class FISHttpRestClient {
         }
         
         if(status!=200||result==null) {
-            throw new IllegalStateException(String.format("Unexpected response from TES IS Service: %s", result));
+            throw new IllegalStateException(String.format("Unexpected response from FIS Service: %s", result));
         }
         return result;
     }
@@ -108,7 +110,7 @@ public class FISHttpRestClient {
     }
 
     /**
-     * Retrieve a job from the TES IS service
+     * Retrieve a job from the FIS service.
      * @param job id
      */
     public LocalJob getJob(String jobId) {
@@ -165,7 +167,7 @@ public class FISHttpRestClient {
         }
         req.setParameter("writeRequest", json);
         
-        log.info(String.format("Sending execution request: %s",json));
+        LOG.info(String.format("Sending execution request: %s",json));
         
         String response = executeMethod(endpoint, req);
 

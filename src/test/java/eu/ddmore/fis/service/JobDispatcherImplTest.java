@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.Before;
@@ -144,6 +145,7 @@ public class JobDispatcherImplTest {
         localJob.setControlFile("CONTROL_FILE");
         localJob.setWorkingDirectory("WORKING_DIR");
         localJob.setCommandParameters("COMMAND_PARAMETERS");
+        localJob.setExtraInputFiles(Arrays.asList("EXTRA_INPUT_FILE_1", "EXTRA_INPUT_FILE_2"));
         localJob.setStatus(LocalJobStatus.NEW);
 
         final ClientAvailableConnectorDetails connectorDetails = new ClientAvailableConnectorDetails();

@@ -5,10 +5,7 @@ package eu.ddmore.fis.controllers;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,10 +21,10 @@ import eu.ddmore.fis.service.LocalJobService;
 
 @Controller
 @RequestMapping("/submit")
-public class SubmitController implements ApplicationContextAware {
+public class SubmitController {
     private static final Logger LOG = Logger.getLogger(SubmitController.class.getName());
+    
 	private LocalJobService localJobService;
-	private ApplicationContext applicationContext;
 	
 	private JobDispatcher jobDispatcher;
 	
@@ -52,31 +49,21 @@ public class SubmitController implements ApplicationContextAware {
 	    return response;
     }
 
-    private LocalJob createJobForSubmissionRequest(SubmissionRequest submissionRequest) {
+    private LocalJob createJobForSubmissionRequest(final SubmissionRequest submissionRequest) {
         LocalJob job = localJobService.newJob();
         job.setExecutionType(submissionRequest.getCommand());
         job.setWorkingDirectory(submissionRequest.getWorkingDirectory());
         job.setControlFile(submissionRequest.getExecutionFile());
         job.setCommandParameters(submissionRequest.getCommandParameters());
+        job.setExtraInputFiles(submissionRequest.getExtraInputFiles());
         job.setSubmitTime(new DateTime().toString());
         return job;
-    }
-
-    @Required
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
-		this.applicationContext = applicationContext;
-	}
-    
-    public ApplicationContext getApplicationContext() {
-        return applicationContext;
     }
 
     @Required
     public void setLocalJobService(LocalJobService localJobService) {
         this.localJobService = localJobService;
     }
-
     
     public LocalJobService getLocalJobService() {
         return localJobService;

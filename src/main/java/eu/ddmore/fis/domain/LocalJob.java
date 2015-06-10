@@ -1,11 +1,13 @@
 /*******************************************************************************
- * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2014-2015 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Version;
@@ -20,7 +22,7 @@ public class LocalJob implements Serializable {
 	@Column(nullable = false)
 	private String executionType;
 
-	@Column
+	@Column(nullable = true)
 	private String commandParameters;
 
 	@Column(nullable = false)
@@ -28,6 +30,10 @@ public class LocalJob implements Serializable {
 
 	@Column(nullable = false)
 	private String controlFile;
+	
+	@Column(nullable = true)
+	@ElementCollection
+	private List<String> extraInputFiles;
 
 	@Column(nullable = false)
 	private String submitTime;
@@ -49,6 +55,14 @@ public class LocalJob implements Serializable {
 	public void setExecutionType(final String executionType) {
 		this.executionType = executionType;
 	}
+	
+    public void setCommandParameters(String commandParameters) {
+        this.commandParameters = commandParameters;
+    }
+
+    public String getCommandParameters() {
+        return commandParameters;
+    }
 
 	public String getWorkingDirectory() {
 		return workingDirectory;
@@ -65,6 +79,14 @@ public class LocalJob implements Serializable {
 	public void setControlFile(String controlFile) {
 		this.controlFile = controlFile;
 	}
+	
+    public List<String> getExtraInputFiles() {
+        return extraInputFiles;
+    }
+
+    public void setExtraInputFiles(List<String> extraInputFiles) {
+        this.extraInputFiles = extraInputFiles;
+    }
 
 	public String getSubmitTime() {
 		return submitTime;
@@ -89,14 +111,6 @@ public class LocalJob implements Serializable {
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	public void setCommandParameters(String commandParameters) {
-		this.commandParameters = commandParameters;
-	}
-
-	public String getCommandParameters() {
-		return commandParameters;
-	}
 	
 	public void setOutputFilenamesRegex(final String outputFilenamesRegex) {
 		this.outputFilenamesRegex = outputFilenamesRegex;
@@ -113,4 +127,5 @@ public class LocalJob implements Serializable {
 	public long getVersion() {
 		return version;
 	}
+
 }
