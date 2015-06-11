@@ -6,12 +6,14 @@ package eu.ddmore.fis;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 
 import eu.ddmore.fis.configuration.Languages;
+import eu.ddmore.fis.controllers.GlobalLoggingRestExceptionHandler;
 import eu.ddmore.fis.service.cts.internal.CTSRestClientConfiguration;
 
 @Configuration
@@ -21,5 +23,10 @@ import eu.ddmore.fis.service.cts.internal.CTSRestClientConfiguration;
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+    }
+    
+    @Bean
+    public GlobalLoggingRestExceptionHandler globalLoggingRestExceptionHandler() {
+        return new GlobalLoggingRestExceptionHandler();
     }
 } 

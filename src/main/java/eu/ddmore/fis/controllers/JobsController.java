@@ -44,9 +44,9 @@ public class JobsController {
     public @ResponseBody LocalJob getJob(@PathVariable("jobId") String jobId) {
         return localJobService.getJob(jobId);
     }
+    
 	public void setLocalJobService(LocalJobService localJobService) {
 		this.localJobService = localJobService;
 	}
-
 
 }

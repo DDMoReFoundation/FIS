@@ -115,14 +115,6 @@ public class LocalJob implements Serializable {
 		this.id = id;
 	}
 	
-	public void setOutputFilenamesRegex(final String outputFilenamesRegex) {
-		this.outputFilenamesRegex = outputFilenamesRegex;
-	}
-	
-	public String getOutputFilenamesRegex() {
-		return this.outputFilenamesRegex;
-	}
-
 	public void setVersion(long version) {
 		this.version = version;
 	}
