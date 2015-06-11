@@ -9,6 +9,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
@@ -63,11 +65,9 @@ public abstract class AbstractArchiveCreatorTestBase {
     
     /**
      * Call the method under test, implementation of {@link ArchiveCreator#buildArchive(File, File)}.
-     * <p>
-     * @throws ArchiveException
      */
-    protected final void invokeBuildArchive(final File modelFile) throws ArchiveException {
-        this.archiveCreator.buildArchive(this.archiveFile, modelFile);
+    protected final void invokeBuildArchive(final File modelFile, final File ... extraInputFiles) throws ArchiveException {
+        this.archiveCreator.buildArchive(this.archiveFile, modelFile, Arrays.asList(extraInputFiles));
     }
     
     protected final Archive mockArchiveCreation(final File modelFile, final String modelFileDirPathInArchive)
@@ -92,7 +92,8 @@ public abstract class AbstractArchiveCreatorTestBase {
     }
     
     protected final void verifyArchiveCreation(
-            final File modelFile, final File dataFile, final String modelFileDirPathInArchive, final String dataFileDirPathInArchive,
+            final File modelFile, final String modelFileDirPathInArchive,
+            final List<File> dataFilePlusExtraInputFiles, final List<String> dirPathsInArchiveForDataFilePlusExtraInputFiles,
             final Archive archive) throws IOException, ArchiveException {
             
         assertTrue("Archive is created in dummy FIS metadata directory", this.archiveFile.exists());
@@ -103,7 +104,9 @@ public abstract class AbstractArchiveCreatorTestBase {
         assertEquals("Checking that the mainEntry that was added to the Archive has the correct file path",
             modelFileDirPathInArchive, entryArgCaptor.getValue().getFilePath());
         verify(archive).addFile(modelFile, modelFileDirPathInArchive);
-        verify(archive).addFile(dataFile, dataFileDirPathInArchive);
+        for (int i = 0; i < dataFilePlusExtraInputFiles.size(); i++) {
+            verify(archive).addFile(dataFilePlusExtraInputFiles.get(i), dirPathsInArchiveForDataFilePlusExtraInputFiles.get(i));
+        }
         verify(archive).close();
         verifyNoMoreInteractions(archive);
         
