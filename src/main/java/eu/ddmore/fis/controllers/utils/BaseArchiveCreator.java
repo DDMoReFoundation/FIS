@@ -5,8 +5,11 @@ package eu.ddmore.fis.controllers.utils;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
@@ -35,17 +38,7 @@ abstract class BaseArchiveCreator implements ArchiveCreator {
     }
     
     /**
-     * Build the Archive based on the provided model/control file.
-     * <ol>
-     * <li>Check if archive file already exists and if so, delete it
-     * <li>Parse the model/control file to find references to data files and resolve those
-     *     data file relative paths against the directory of the model file; subclasses
-     *     responsible for this, see {@link #gatherDataFilesFromReferencesInModelFile(File)}
-     * <li>Determine the common base path among the model file and its data files
-     * <li>Create the Archive and populate it with the model file and its data files,
-     *     with a directory structure rooted at the common base path determined in the
-     *     previous step 
-     * </ol>
+     * Delegate to {@link #buildArchive(File, File, Collection)} passing in an empty list of extraInputFiles.
      * <p>
      * @param archiveFile - {@link File} specifying the archive file to be created
      * @param modelFile - {@link File} that specifies the model/control file
@@ -53,29 +46,68 @@ abstract class BaseArchiveCreator implements ArchiveCreator {
      * @throws ArchiveException - if something fatal occurred during the addition of files to the archive 
      */
     public final Archive buildArchive(final File archiveFile, final File modelFile) throws ArchiveException {
+        return buildArchive(archiveFile, modelFile, new ArrayList<File>());
+    }
+    
+    /**
+     * Build the Archive based on the provided model/control {@link File} and an optional
+     * set of extra input {@link File}s to be included.
+     * <ol>
+     * <li>Check if archive file already exists and if so, delete it.
+     * <li>Parse the model/control file - which is expected to have an absolute path -
+     *     to find references to data files and resolve those data file relative paths
+     *     against the directory of the model file; subclasses responsible for this,
+     *     see {@link #gatherDataFilesFromReferencesInModelFile(File)}.
+     * <li>Resolve any of the extra input files having relative paths, against the
+     *     directory of the model file.
+     * <li>Determine the common base path among the model file, its data file(s), and
+     *     any extra input files.
+     * <li>Create the Archive and populate it with the model file and its data files,
+     *     with a directory structure rooted at the common base path determined in the
+     *     previous step. 
+     * </ol>
+     * <p>
+     * @param archiveFile - {@link File} specifying the archive file to be created
+     * @param modelFile - {@link File} that specifies the model/control file
+     * @param extraInputFiles - {@link List} of additional {@link File}s to be included in the Archive
+     * @return the created {@link Archive}
+     * @throws ArchiveException - if something fatal occurred during the addition of files to the archive 
+     */
+    public final Archive buildArchive(final File archiveFile, final File modelFile, final Collection<File> extraInputFiles) throws ArchiveException {
     
         if (archiveFile.exists()) {
             LOG.warn(String.format("Archive file %1$s already exists, removed", archiveFile));
             FileUtils.deleteQuietly(archiveFile);
         }
         
-        final Collection<File> dataFiles = gatherDataFilesFromReferencesInModelFile(modelFile);
+        final Collection<File> allInputFiles = gatherDataFilesFromReferencesInModelFile(modelFile);
+        // Process the extra input files to make paths absolute and add the resulting Files
+        // to the list of data files to produce the list of all input files
+        if (CollectionUtils.isNotEmpty(extraInputFiles)) {
+            for (final File extraInputFile : extraInputFiles) {
+                if (extraInputFile.isAbsolute()) {
+                    allInputFiles.add(extraInputFile);
+                } else {
+                    allInputFiles.add(resolveRelativePathAgainstDirectoryOfModelFile(modelFile, extraInputFile.getPath()));
+                }
+            }
+        }
         
-        final Path commonBasePath = getCommonBasePath(dataFiles, modelFile.getParentFile());
-        LOG.debug(String.format("Input file %1$s references %2$s", modelFile.getPath(), dataFiles));
+        final Path commonBasePath = getCommonBasePath(allInputFiles, modelFile.getParentFile());
+        LOG.debug(String.format("Input file %1$s references %2$s", modelFile.getPath(), allInputFiles));
         LOG.debug(String.format("Common base path for all inputs is %1$s", commonBasePath));
         
-        final Archive archive = archiveFactory.createArchive(archiveFile);
+        final Archive archive = this.archiveFactory.createArchive(archiveFile);
         try {
             archive.open();
             final String modelFileDirPathInArchive = "/" + commonBasePath.relativize(modelFile.getParentFile().toPath());
             final Entry en = archive.addFile(modelFile, modelFileDirPathInArchive);
             LOG.debug(String.format("Adding %1$s at %2$s", modelFile, en.getFilePath()));
             archive.addMainEntry(en);
-            for (final File dataFile : dataFiles) {
-                String location = "/" + commonBasePath.relativize(dataFile.getParentFile().toPath());
-                LOG.debug(String.format("Adding %1$s at %2$s", dataFile, location));
-                archive.addFile(dataFile, location);
+            for (final File inputFile : allInputFiles) {
+                String location = "/" + commonBasePath.relativize(inputFile.getParentFile().toPath());
+                LOG.debug(String.format("Adding %1$s at %2$s", inputFile, location));
+                archive.addFile(inputFile, location);
             }
         } finally {
             archive.close();

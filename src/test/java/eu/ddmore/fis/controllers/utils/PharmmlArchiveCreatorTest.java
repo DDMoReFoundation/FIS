@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
@@ -77,7 +78,7 @@ public class PharmmlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Call the method under test
         invokeBuildArchive(pharmmlFile);
         
-        verifyArchiveCreation(pharmmlFile, dataFile, "/", "/", archive);
+        verifyArchiveCreation(pharmmlFile, "/", Arrays.asList(dataFile), Arrays.asList("/"), archive);
         verifyCorrectPharmmlFileReadIn();
         verify(mockPharmmlResource).getDom();
         verifyNoMoreInteractions(mockPharmmlResource);
@@ -107,7 +108,40 @@ public class PharmmlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Call the method under test
         invokeBuildArchive(pharmmlFile);
         
-        verifyArchiveCreation(pharmmlFile, dataFile, "/models", "/data", archive);
+        verifyArchiveCreation(pharmmlFile, "/models", Arrays.asList(dataFile), Arrays.asList("/data"), archive);
+        verifyCorrectPharmmlFileReadIn();
+        verify(mockPharmmlResource).getDom();
+        verifyNoMoreInteractions(mockPharmmlResource);
+    }
+    
+    /**
+     * Test method for {@link eu.ddmore.fis.controllers.utils.BaseArchiveCreator#buildArchive(java.io.File, java.io.File)}.
+     * <p>
+     * @throws IOException 
+     * @throws ArchiveException 
+     */
+    @Test
+    public void testBuildArchiveWhereDataFileInDifferentDirectoryToModelFileAndExtraInputFilesBothRelativeAndAbsoluteAreProvided() throws IOException, ArchiveException {
+    
+        // Prepare model file, data file and extra input files - note that data file and extra input files
+        // don't need to exist but PharmML file does (but can have dummy data)
+        final File pharmmlFile = new File(new File(this.tempFolder.getRoot(), "models"), PHARMML_FILE_NAME);
+        final File dataFile = new File(new File(this.tempFolder.getRoot(), "data"), DATA_FILE_NAME);
+        final File extraInputFile1 = new File(new File(this.tempFolder.getRoot(), "models"), "model.lst");
+        final File extraInputFile2 = new File(this.tempFolder.getRoot(), "model.txt");
+        FileUtils.write(pharmmlFile, DUMMY_PHARMML_FILE_CONTENT);
+        
+        // Simulate the data file being associated with the model file
+        final IPharmMLResource mockPharmmlResource = mock(IPharmMLResource.class);
+        simulatePharmMLResourceReferencingDataFiles(mockPharmmlResource, "../data/" + DATA_FILE_NAME);
+        when(this.mockLibPharmML.createDomFromResource(any(FileInputStream.class))).thenReturn(mockPharmmlResource);
+        
+        final Archive archive = mockArchiveCreation(pharmmlFile, "/models");
+        
+        // Call the method under test
+        invokeBuildArchive(pharmmlFile, extraInputFile1, new File("../" + extraInputFile2.getName())); // First extraInputFile has absolute path, second extraInputFile has relative path
+        
+        verifyArchiveCreation(pharmmlFile, "/models", Arrays.asList(dataFile, extraInputFile1, extraInputFile2), Arrays.asList("/data", "/models", "/"), archive);
         verifyCorrectPharmmlFileReadIn();
         verify(mockPharmmlResource).getDom();
         verifyNoMoreInteractions(mockPharmmlResource);

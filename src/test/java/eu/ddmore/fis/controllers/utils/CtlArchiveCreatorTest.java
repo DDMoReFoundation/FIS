@@ -2,6 +2,7 @@ package eu.ddmore.fis.controllers.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
@@ -51,7 +52,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Call the method under test
         invokeBuildArchive(controlFile);
         
-        verifyArchiveCreation(controlFile, dataFile, "/", "/", archive);
+        verifyArchiveCreation(controlFile, "/", Arrays.asList(dataFile), Arrays.asList("/"), archive);
     }
     
     /**
@@ -76,7 +77,35 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Call the method under test
         invokeBuildArchive(controlFile);
         
-        verifyArchiveCreation(controlFile, dataFile, "/models", "/data", archive);
+        verifyArchiveCreation(controlFile, "/models", Arrays.asList(dataFile), Arrays.asList("/data"), archive);
+    }
+    
+    /**
+     * Test method for {@link eu.ddmore.fis.controllers.utils.BaseArchiveCreator#buildArchive(java.io.File, java.io.File)}.
+     * <p>
+     * @throws IOException 
+     * @throws ArchiveException 
+     */
+    @Test
+    public void testBuildArchiveWhereDataFileInDifferentDirectoryToModelFileAndExtraInputFilesBothRelativeAndAbsoluteAreProvided() throws IOException, ArchiveException {
+    
+        // Prepare model file, data file and extra input files - note that the model file does
+        // have to exist since it is going to be read in and parsed, but the data file and
+        // extra input files don't need to exist
+        final File controlFile = new File(new File(this.tempFolder.getRoot(), "models"), CTL_FILE_NAME);
+        final File dataFile = new File(new File(this.tempFolder.getRoot(), "data"), DATA_FILE_NAME);
+        final File extraInputFile1 = new File(new File(this.tempFolder.getRoot(), "models"), "model.lst");
+        final File extraInputFile2 = new File(this.tempFolder.getRoot(), "model.txt");
+        
+        // Simulate the data file being associated with the model file
+        writeDummyCtlFileContentWithSpecifiedDataStatement(controlFile, "../data/" + DATA_FILE_NAME);
+        
+        final Archive archive = mockArchiveCreation(controlFile, "/models");
+        
+        // Call the method under test
+        invokeBuildArchive(controlFile, extraInputFile1, new File("../" + extraInputFile2.getName())); // First extraInputFile has absolute path, second extraInputFile has relative path
+        
+        verifyArchiveCreation(controlFile, "/models", Arrays.asList(dataFile, extraInputFile1, extraInputFile2), Arrays.asList("/data", "/models", "/"), archive);
     }
     
     /**
@@ -103,7 +132,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Call the method under test
         invokeBuildArchive(controlFile);
         
-        verifyArchiveCreation(controlFile, dataFile, "/", "/", archive);
+        verifyArchiveCreation(controlFile, "/", Arrays.asList(dataFile), Arrays.asList("/"), archive);
     }
     
     /**
@@ -130,7 +159,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Call the method under test
         invokeBuildArchive(controlFile);
         
-        verifyArchiveCreation(controlFile, dataFile, "/", "/", archive);
+        verifyArchiveCreation(controlFile, "/", Arrays.asList(dataFile), Arrays.asList("/"), archive);
     }
     
     /**
@@ -155,7 +184,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Call the method under test
         invokeBuildArchive(controlFile);
         
-        verifyArchiveCreation(controlFile, dataFile, "/", "/", archive);
+        verifyArchiveCreation(controlFile, "/", Arrays.asList(dataFile), Arrays.asList("/"), archive);
     }
     
     /**
@@ -180,7 +209,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Call the method under test
         invokeBuildArchive(controlFile);
         
-        verifyArchiveCreation(controlFile, dataFile, "/", "/", archive);
+        verifyArchiveCreation(controlFile, "/", Arrays.asList(dataFile), Arrays.asList("/"), archive);
     }
     
     /**
@@ -205,7 +234,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Call the method under test
         invokeBuildArchive(controlFile);
         
-        verifyArchiveCreation(controlFile, dataFile, "/", "/", archive);
+        verifyArchiveCreation(controlFile, "/", Arrays.asList(dataFile), Arrays.asList("/"), archive);
     }
     
     /**
@@ -230,7 +259,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Call the method under test
         invokeBuildArchive(controlFile);
         
-        verifyArchiveCreation(controlFile, dataFile, "/", "/", archive);
+        verifyArchiveCreation(controlFile, "/", Arrays.asList(dataFile), Arrays.asList("/"), archive);
     }
     
     /**

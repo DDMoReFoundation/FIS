@@ -55,7 +55,7 @@ public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Call the method under test
         invokeBuildArchive(modelFile);
         
-        verifyArchiveCreation(modelFile, dataFile, "/", "/", archive);
+        verifyArchiveCreation(modelFile, "/", Arrays.asList(dataFile), Arrays.asList("/"), archive);
         verify(this.mockMdlUtils).getDataFileFromMDL(modelFile);
         verifyNoMoreInteractions(this.mockMdlUtils);
     }
@@ -81,7 +81,35 @@ public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Call the method under test
         invokeBuildArchive(modelFile);
         
-        verifyArchiveCreation(modelFile, dataFile, "/models", "/data", archive);
+        verifyArchiveCreation(modelFile, "/models", Arrays.asList(dataFile), Arrays.asList("/data"), archive);
+        verify(this.mockMdlUtils).getDataFileFromMDL(modelFile);
+        verifyNoMoreInteractions(this.mockMdlUtils);
+    }
+    
+    /**
+     * Test method for {@link eu.ddmore.fis.controllers.utils.BaseArchiveCreator#buildArchive(java.io.File, java.io.File)}.
+     * <p>
+     * @throws IOException 
+     * @throws ArchiveException 
+     */
+    @Test
+    public void testBuildArchiveWhereDataFileInDifferentDirectoryToModelFileAndExtraInputFilesBothRelativeAndAbsoluteAreProvided() throws IOException, ArchiveException {
+    
+        // Prepare model file, data file and extra input files - note that they don't actually need to exist
+        final File modelFile = Paths.get(FileUtils.getTempDirectoryPath(), "models", MDL_FILE_NAME).toFile();
+        final File dataFile = Paths.get(FileUtils.getTempDirectoryPath(), "data", DATA_FILE_NAME).toFile();
+        final File extraInputFile1 = new File(new File(FileUtils.getTempDirectoryPath(), "models"), "model.lst");
+        final File extraInputFile2 = new File(FileUtils.getTempDirectoryPath(), "model.txt");
+        
+        // Simulate the data file being associated with the model file
+        when(this.mockMdlUtils.getDataFileFromMDL(modelFile)).thenReturn(Arrays.asList(dataFile));
+        
+        final Archive archive = mockArchiveCreation(modelFile, "/models");
+        
+        // Call the method under test
+        invokeBuildArchive(modelFile, extraInputFile1, new File("../" + extraInputFile2.getName())); // First extraInputFile has absolute path, second extraInputFile has relative path
+        
+        verifyArchiveCreation(modelFile, "/models", Arrays.asList(dataFile, extraInputFile1, extraInputFile2), Arrays.asList("/data", "/models", "/"), archive);
         verify(this.mockMdlUtils).getDataFileFromMDL(modelFile);
         verifyNoMoreInteractions(this.mockMdlUtils);
     }
