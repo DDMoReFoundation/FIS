@@ -32,16 +32,15 @@ public class JobDispatcherImpl implements JobDispatcher {
 	private String executionHostFileshareRemote;
 
 	public LocalJob dispatch(LocalJob job) {
-
+	    Preconditions.checkNotNull(job, "Job can't be null.");
+        final ClientAvailableConnectorDetails clientAvailableConnectorDetails =
+                this.commandRegistry.resolveClientAvailableConnectorDetailsFor(job.getExecutionType());
+        
+        Preconditions.checkNotNull(clientAvailableConnectorDetails, String.format("Could not retrieve connector details for execution type %s.", job.getExecutionType()));
 		// Invoke the publishInputs Groovy script
 		final LocalJob publishedJob = this.jobResourcePublisher.process(job);
 
 		if (publishedJob.getStatus() != LocalJobStatus.FAILED) {
-			// Only continue if the pre-processing was successful
-
-			final ClientAvailableConnectorDetails clientAvailableConnectorDetails =
-					this.commandRegistry.resolveClientAvailableConnectorDetailsFor(publishedJob.getExecutionType());
-					
 			final ExecutionRequest executionRequest = buildExecutionRequest(publishedJob);
 
 			// The retrieveOutputs Groovy script needs to know the (MIF-connector-specific) file patterns it needs to copy back
@@ -50,7 +49,8 @@ public class JobDispatcherImpl implements JobDispatcher {
 			// to the Groovy script itself (as a bound variable).
 			// Also, this would allow TEL-R (or another FIS client) to access the output filenames regex if it needed to for
 			// whatever reason, such as copying files back from the FIS working directory to a user source directory.
-			publishedJob.setOutputFilenamesRegex(clientAvailableConnectorDetails.getOutputFilenamesRegex());
+			publishedJob.setResultsIncludeRegex(clientAvailableConnectorDetails.getResultsIncludeRegex());
+			publishedJob.setResultsExcludeRegex(clientAvailableConnectorDetails.getResultsExcludeRegex());
 
 	        LOGGER.info(
 	            String.format("About to submit job execution request:\n  Type = %1$s\n  Execution File = %2$s\n  Execution Parameters = %3$s\n  Submit As User Mode = %4$s\n  User Name = %5$s\n  User Password (Encrypted) = %6$s\n  Request ID = %7$s",

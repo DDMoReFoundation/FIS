@@ -149,7 +149,8 @@ public class JobDispatcherImplTest {
         localJob.setStatus(LocalJobStatus.NEW);
 
         final ClientAvailableConnectorDetails connectorDetails = new ClientAvailableConnectorDetails();
-        connectorDetails.setOutputFilenamesRegex(".*\\.(csv|ctl|xml|lst|pharmml|fit)$");
+        connectorDetails.setResultsIncludeRegex(".*\\.(csv|ctl|xml|lst|pharmml|fit)$");
+        connectorDetails.setResultsExcludeRegex(".*\\.(exe)$");
 
         when(this.jobResourcePublisher.process(localJob)).thenReturn(localJob);
         when(this.commandRegistry.resolveClientAvailableConnectorDetailsFor("CMDLINE")).thenReturn(connectorDetails);
@@ -159,7 +160,9 @@ public class JobDispatcherImplTest {
 
         // Check updates to the published Local Job
         assertEquals("Output filenames regex should be populated on the LocalJob",
-            ".*\\.(csv|ctl|xml|lst|pharmml|fit)$", publishedLocalJob.getOutputFilenamesRegex());
+            ".*\\.(csv|ctl|xml|lst|pharmml|fit)$", publishedLocalJob.getResultsIncludeRegex());
+        assertEquals("Output filenames regex should be populated on the LocalJob",
+            ".*\\.(exe)$", publishedLocalJob.getResultsExcludeRegex());
 
         // Check calls to dependencies
         verify(this.jobResourcePublisher).process(localJob);

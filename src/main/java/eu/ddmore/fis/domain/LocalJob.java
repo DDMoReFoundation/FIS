@@ -41,9 +41,12 @@ public class LocalJob implements Serializable {
 	@Column(nullable = false)
 	private LocalJobStatus status;
 
-	@Column(nullable = true) // Won't necessarily be set e.g. if a Job fails before the JobDispatcher reads the outputFilenamesRegex
-	private String outputFilenamesRegex;
+    @Column(nullable = true)
+    private String resultsIncludeRegex;
 
+    @Column(nullable = true)
+    private String resultsExcludeRegex;
+	
 	@Version
 	@Column
 	private long version;
@@ -128,4 +131,25 @@ public class LocalJob implements Serializable {
 		return version;
 	}
 
+    public void setResultsExcludeRegex(String resultsExcludeRegex) {
+        this.resultsExcludeRegex = resultsExcludeRegex;
+    }
+    
+    public void setResultsIncludeRegex(String resultsIncludeRegex) {
+        this.resultsIncludeRegex = resultsIncludeRegex;
+    }
+    
+    /**
+     * @return the resultsExcludeRegex the regular expression matching the files that should NOT be copied to FIS client's workspace.
+     */
+    public String getResultsExcludeRegex() {
+        return resultsExcludeRegex;
+    }
+    
+    /**
+     * @return the resultsIncludeRegex the regular expression matching the files that should be copied to FIS client's workspace.
+     */
+    public String getResultsIncludeRegex() {
+        return resultsIncludeRegex;
+    }
 }

@@ -1,10 +1,12 @@
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils
+import org.apache.log4j.Logger
 
 import eu.ddmore.fis.domain.LocalJob
 
 
+final Logger LOG = Logger.getLogger(getClass())
 LocalJob job = binding.getVariable("job");
 String executionHostFileshareLocal = binding.getVariable("execution.host.fileshare.local");
 
@@ -33,14 +35,16 @@ if(mifStdErr.exists()) {
 
 
 // Copy output files
-if (job.getOutputFilenamesRegex() != null) {
-	
-	final Pattern outputFilenamesRegex = Pattern.compile(job.getOutputFilenamesRegex())
+if (job.getResultsIncludeRegex() != null) {
+	final Pattern includePattern = Pattern.compile(job.getResultsIncludeRegex())
+    final Pattern excludePattern = Pattern.compile((job.getResultsExcludeRegex()==null)?"":job.getResultsExcludeRegex())
 
 	// Copy back any files that match the filename regular expression and which aren't "hidden" e.g. .MIF directory
 	FileUtils.copyDirectory(mifWorkingDir, workingDir, new FileFilter() {
 		boolean accept(File file) {
-			return (file.getName().matches(outputFilenamesRegex) && !file.getName().startsWith("."));
+			boolean accepted = (file.getName().matches(includePattern) && !file.getName().startsWith(".") && !file.getName().matches(excludePattern));
+            LOG.debug("The file ${file.getName()} passes inclusion/exclusion filtering ${accepted}");
+            return accepted
 		}
 	});
 } else {

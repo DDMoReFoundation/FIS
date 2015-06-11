@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.mango</groupId>
             <artifactId>mif-examples</artifactId>
-            <version>3.0.16-ddmore</version>
+            <version>3.0.17-ddmore-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.ddmore</groupId>

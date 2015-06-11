@@ -38,7 +38,8 @@ public class LocalJobServiceIT extends SystemPropertiesAware {
         job.setCommandParameters("-myparam1 -myparam2");
         job.setExtraInputFiles(Arrays.asList("Test Extra File 1", "Test Extra File 2"));
     	job.setSubmitTime(new DateTime().toString());
-    	job.setOutputFilenamesRegex(".*");
+    	job.setResultsIncludeRegex("include-pattern");
+        job.setResultsExcludeRegex("exclude-pattern");
 
     	String jobId = job.getId();
     	localJobService.save(job);
@@ -50,7 +51,8 @@ public class LocalJobServiceIT extends SystemPropertiesAware {
     	assertEquals("Checking command parameters is set on the returned LocalJob", stored.getCommandParameters(), job.getCommandParameters());
     	assertEquals("Checking extra input files is set on the returned LocalJob", stored.getExtraInputFiles(), job.getExtraInputFiles());
     	assertEquals("Checking submit time is set on the returned LocalJob", stored.getSubmitTime(), job.getSubmitTime());
-    	assertEquals("Checking output filenames regex is set on the returned LocalJob", stored.getOutputFilenamesRegex(), job.getOutputFilenamesRegex());
+    	assertEquals("Checking output filenames include regex is set on the returned LocalJob", stored.getResultsIncludeRegex(), job.getResultsIncludeRegex());
+        assertEquals("Checking output filenames exclude regex is set on the returned LocalJob", stored.getResultsExcludeRegex(), job.getResultsExcludeRegex());
     	
 	}
 	

@@ -30,9 +30,11 @@ public class CommandRegistryImplTest {
 		this.mockMifClient = mock(MIFHttpRestClient.class);
 		
 		final ClientAvailableConnectorDetails mifConnectorDetails1 = new ClientAvailableConnectorDetails();
-		mifConnectorDetails1.setOutputFilenamesRegex(".*\\.out");
+		mifConnectorDetails1.setResultsIncludeRegex(".*\\.out");
+		mifConnectorDetails1.setResultsExcludeRegex(".*\\.bat");
 		final ClientAvailableConnectorDetails mifConnectorDetails2 = new ClientAvailableConnectorDetails();
-		mifConnectorDetails2.setOutputFilenamesRegex(".*\\.lst");
+		mifConnectorDetails2.setResultsIncludeRegex(".*\\.lst");
+        mifConnectorDetails2.setResultsExcludeRegex(".*\\.exe");
 		
 		final Map<String, ClientAvailableConnectorDetails> allMifConnectorDetails = new HashMap<String, ClientAvailableConnectorDetails>();
 		allMifConnectorDetails.put("MYEXECTYPE1", mifConnectorDetails1);
@@ -48,7 +50,9 @@ public class CommandRegistryImplTest {
 		final ClientAvailableConnectorDetails clientAvailableConnectorDetails
 			= commandRegistry.resolveClientAvailableConnectorDetailsFor("MYEXECTYPE2");
 		assertEquals("Checking the correct ClientAvailableConnectorDetails was returned",
-			".*\\.lst", clientAvailableConnectorDetails.getOutputFilenamesRegex());
+			".*\\.lst", clientAvailableConnectorDetails.getResultsIncludeRegex());
+        assertEquals("Checking the correct ClientAvailableConnectorDetails was returned",
+            ".*\\.exe", clientAvailableConnectorDetails.getResultsExcludeRegex());
 	}
 	
 	@Test(expected=NoSuchElementException.class)

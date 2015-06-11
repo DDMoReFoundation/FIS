@@ -62,7 +62,8 @@ public class RetrieveOutputsScriptIT {
         when(job.getWorkingDirectory()).thenReturn(testWorkingDir.getAbsolutePath());
         when(job.getControlFile()).thenReturn("model.mdl");
         when(job.getId()).thenReturn("MIF_JOB_ID");
-        when(job.getOutputFilenamesRegex()).thenReturn(".*\\.(csv|ctl|xml|lst|pharmml|fit)$");
+        when(job.getResultsIncludeRegex()).thenReturn(".*");
+        when(job.getResultsExcludeRegex()).thenReturn(FILE_THAT_SHOULD_NOT_BE_COPIED_BACK);
 
         // Invoke the retrieveOutputs script being tested
         jobProcessor.process(job);
@@ -78,5 +79,4 @@ public class RetrieveOutputsScriptIT {
         assertTrue(String.format("%s file should be created", stdOut), stdOut.exists());
         assertTrue(String.format("%s file should be created", stdErr), stdErr.exists());
     }
-
 }
