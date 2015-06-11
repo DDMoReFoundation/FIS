@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
 import eu.ddmore.archive.Archive;
@@ -95,6 +96,19 @@ abstract class BaseArchiveCreator implements ArchiveCreator {
      *         specified model file
      */
     protected abstract Collection<File> gatherDataFilesFromReferencesInModelFile(final File modelFile);
+    
+    /**
+     * Derive the physical file location of a data file by resolving the filename or relative path
+     * of that data file against the directory in which the model file lives.
+     * <p> 
+     * @param modelFile - model {@link File}, having an absolute path
+     * @param relativePath - filename or relative path of a data file
+     * @return data {@link File} having an absolute path
+     */
+    protected static File resolveRelativePathAgainstDirectoryOfModelFile(final File modelFile, final String relativePath) {
+        final File inputFile = new File(modelFile.getParentFile(), relativePath);
+        return new File(FilenameUtils.normalize(inputFile.getAbsolutePath()));
+    }
     
     /**
      * Finds a common base path for a list of files starting from the given candidate path.

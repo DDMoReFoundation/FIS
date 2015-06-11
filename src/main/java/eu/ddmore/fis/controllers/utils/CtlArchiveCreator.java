@@ -11,7 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import eu.ddmore.archive.ArchiveFactory;
 
@@ -65,9 +64,7 @@ public final class CtlArchiveCreator extends BaseArchiveCreator {
                 dataFilename = dataStatementContent.split(" ")[0];
             }
             
-            // Derive the physical file location by resolving the data filename against the directory in which the model file lives
-            final File dataFile = new File(controlFile.getParentFile(), dataFilename);
-            dataFiles.add(new File(FilenameUtils.normalize(dataFile.getAbsolutePath())));
+            dataFiles.add(resolveRelativePathAgainstDirectoryOfModelFile(controlFile, dataFilename));
         }
 
         return dataFiles;

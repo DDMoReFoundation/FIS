@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 
 import eu.ddmore.archive.ArchiveFactory;
 import eu.ddmore.libpharmml.ILibPharmML;
@@ -51,8 +50,7 @@ public final class PharmmlArchiveCreator extends BaseArchiveCreator {
         if (CollectionUtils.isNotEmpty(extDataSets)) {
             for (final ExternalDataSet extDataSet : extDataSets) {
                 final String dataFilePath = extDataSet.getDataSet().getExternalFile().getPath();
-                final File dataFile = new File(pharmmlFile.getParentFile(), dataFilePath);
-                dataFiles.add(new File(FilenameUtils.normalize(dataFile.getAbsolutePath())));
+                dataFiles.add(resolveRelativePathAgainstDirectoryOfModelFile(pharmmlFile, dataFilePath));
             }
         }
 
