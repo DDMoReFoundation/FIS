@@ -4,7 +4,7 @@
 package eu.ddmore.fis.domain;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Collection;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -33,7 +33,7 @@ public class LocalJob implements Serializable {
 	
 	@Column(nullable = true)
 	@ElementCollection
-	private List<String> extraInputFiles;
+	private Collection<String> extraInputFiles;
 
 	@Column(nullable = false)
 	private String submitTime;
@@ -80,11 +80,11 @@ public class LocalJob implements Serializable {
 		this.controlFile = controlFile;
 	}
 	
-    public List<String> getExtraInputFiles() {
+    public Collection<String> getExtraInputFiles() {
         return extraInputFiles;
     }
 
-    public void setExtraInputFiles(List<String> extraInputFiles) {
+    public void setExtraInputFiles(Collection<String> extraInputFiles) {
         this.extraInputFiles = extraInputFiles;
     }
 
