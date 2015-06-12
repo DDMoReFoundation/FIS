@@ -36,7 +36,7 @@ public class LocalJobServiceIT extends SystemPropertiesAware {
     	job.setControlFile("The test control file");
         job.setWorkingDirectory("The test working directory");
         job.setCommandParameters("-myparam1 -myparam2");
-        job.setExtraInputFiles(Arrays.asList("Test Extra File 1", "Test Extra File 2"));
+        job.setExtraInputFiles(Arrays.asList("models/testExtraInputFile1.lst", "../testExtraInputFile2.txt"));
     	job.setSubmitTime(new DateTime().toString());
     	job.setResultsIncludeRegex("include-pattern");
         job.setResultsExcludeRegex("exclude-pattern");

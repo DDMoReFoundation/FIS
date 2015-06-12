@@ -56,9 +56,10 @@ if (!origControlFile.isAbsolute()) {
 
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
 
-// Create and populate the Archive with the model file and any associated data file(s)
+// Create and populate the Archive with the model file and any associated data file(s) and any extra input files
 
-final Archive archive = archiveCreator.buildArchive(archiveFile, origControlFile)
+final Archive archive = archiveCreator.buildArchive(archiveFile, origControlFile,
+    job.getExtraInputFiles() == null ? null : job.getExtraInputFiles().collect { new File(it) }) // Have to convert file paths into File objects for the extraInputFiles
 
 try {
     jobArchiveProvisioner.provision(job, archive, mifJobWorkingDir)

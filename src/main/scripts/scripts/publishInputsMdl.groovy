@@ -73,9 +73,10 @@ String modelExt = FilenameUtils.getExtension(origControlFile.getName());
 
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
 
-// Create and populate the Archive with the MDL file and any associated data file(s)
+// Create and populate the Archive with the MDL file and any associated data file(s) and any extra input files
 
-final Archive archive = mdlArchiveCreator.buildArchive(archiveFile, origControlFile)
+final Archive archive = mdlArchiveCreator.buildArchive(archiveFile, origControlFile,
+    job.getExtraInputFiles() == null ? null : job.getExtraInputFiles().collect { new File(it) }) // Have to convert file paths into File objects for the extraInputFiles
 
 // Perform the conversion from MDL to PharmML
 

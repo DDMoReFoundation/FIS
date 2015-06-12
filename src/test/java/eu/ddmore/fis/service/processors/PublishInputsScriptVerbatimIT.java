@@ -14,7 +14,10 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Transformer;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.Before;
@@ -145,15 +148,47 @@ public class PublishInputsScriptVerbatimIT {
         // Then
         verifyArchiveCreationAndProvisioningToMIF(fisWorkingDir, modelFile, job, archive);
     }
+    
+    /**
+     * If a list of extraInputFiles paths is provided on the job then these are to be included in the created Archive.
+     * The paths can either be absolute, or relative in which case they will be resolved against the model file,
+     * but this takes place in the Archive Creator and thus isn't relevant to this unit test.
+     */
+    @Test
+    public void shouldPublishMDLInputs_ExtraInputFilesProvidedHavingBothRelativeAndAbsolutePaths()
+            throws IOException, ConverterToolboxServiceException, ArchiveException {
+        
+        // Don't actually need to physically create the model & data files for these tests
+        final File modelFile = new File(new File(this.testWorkingDir, "mydir"), MODEL_FILE_NAME);
+        
+        // Model file with absolute path -> job working directory isn't used for
+        // resolving the model file against so can point to some other directory
+        final File fisWorkingDir = this.otherTestDirectory.getRoot();
+        
+        // Prepare FIS Job
+        LocalJob job = mock(LocalJob.class);
+        when(job.getWorkingDirectory()).thenReturn(fisWorkingDir.getPath());
+        when(job.getControlFile()).thenReturn(modelFile.getAbsolutePath());
+        when(job.getExtraInputFiles()).thenReturn(Arrays.asList("/path/to/other/file/1", "../other/file/2"));
+        when(job.getId()).thenReturn("MIF_JOB_ID");
+        
+        final Archive archive = mockArchiveCreation(fisWorkingDir, modelFile, new File("/path/to/other/file/1"), new File("../other/file/2"));
+        
+        // When
+        jobProcessor.process(job);
 
-    private Archive mockArchiveCreation(final File fisWorkingDir, final File modelFile) throws IOException, ArchiveException {
+        // Then
+        verifyArchiveCreationAndProvisioningToMIF(fisWorkingDir, modelFile, job, archive);
+    }
+
+    private Archive mockArchiveCreation(final File fisWorkingDir, final File modelFile, final File ... extraInputFiles) throws IOException, ArchiveException {
     
         final Archive archive = mock(Archive.class);
         
         final File phexFile = new File(new File(fisWorkingDir, ".fis"), PHEX_ARCHIVE);
         FileUtils.writeStringToFile(phexFile, "This is mock Phex file contents");
         
-        when(this.mockArchiveCreator.buildArchive(phexFile, modelFile)).thenReturn(archive);
+        when(this.mockArchiveCreator.buildArchive(phexFile, modelFile, Arrays.asList(extraInputFiles))).thenReturn(archive);
 
         return archive;
     }
@@ -165,7 +200,14 @@ public class PublishInputsScriptVerbatimIT {
                     
         assertTrue("Archive is created in FIS metadata directory.", phexFile.exists());
         
-        verify(this.mockArchiveCreator).buildArchive(phexFile, modelFile);
+        verify(this.mockArchiveCreator).buildArchive(phexFile, modelFile, job.getExtraInputFiles() == null ? null :
+            CollectionUtils.collect(job.getExtraInputFiles(), new Transformer<String, File>() {
+
+                @Override
+                public File transform(final String filePath) {
+                    return new File(filePath);
+                }
+            }));
         verifyNoMoreInteractions(this.mockArchiveCreator);
         
         verify(this.jobArchiveProvisioner).provision(same(job), same(archive), eq(this.mifJobWorkingDir));
