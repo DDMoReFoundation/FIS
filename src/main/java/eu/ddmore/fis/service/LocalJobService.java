@@ -85,12 +85,14 @@ public class LocalJobService {
     @Transactional(readOnly=false)
     public void setJobStatus(String jobId, LocalJobStatus status) {
         Preconditions.checkNotNull(localJobRepository, "Local Job Repository must be set");
-        Preconditions.checkArgument(localJobRepository!=null, "Job id can't be null");
+        Preconditions.checkArgument(localJobRepository!=null, "Job ID can't be null");
         Preconditions.checkArgument(status!=null, "Job status can't be null");
-        LOG.debug(String.format("Setting job %s status to %s", jobId, status));
-
+        
+        LOG.debug(String.format("Fetching job %s and setting its status to %s", jobId, status));
         logTxStatus();
+        
         LocalJob localJob = getLocalJobRepository().findOne(jobId);
+        Preconditions.checkArgument(localJob != null, String.format("No job found with ID %s", jobId));
         localJob.setStatus(status);
         getLocalJobRepository().save(localJob);
     }
