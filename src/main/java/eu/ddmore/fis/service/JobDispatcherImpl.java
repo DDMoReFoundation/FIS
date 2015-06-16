@@ -37,7 +37,11 @@ public class JobDispatcherImpl implements JobDispatcher {
                 this.commandRegistry.resolveClientAvailableConnectorDetailsFor(job.getExecutionType());
         
         Preconditions.checkNotNull(clientAvailableConnectorDetails, String.format("Could not retrieve connector details for execution type %s.", job.getExecutionType()));
+        
 		// Invoke the publishInputs Groovy script
+		LOGGER.info(String.format("About to publish inputs for job:\n  Execution File = %1$s\n  Working Directory = %2$s\n  Extra Input Files = %3$s",
+		    job.getControlFile(), job.getWorkingDirectory(), job.getExtraInputFiles()
+		));
 		final LocalJob publishedJob = this.jobResourcePublisher.process(job);
 
 		if (publishedJob.getStatus() != LocalJobStatus.FAILED) {
