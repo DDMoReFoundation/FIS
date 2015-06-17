@@ -12,6 +12,11 @@ import eu.ddmore.archive.exception.ArchiveException;
 
 /**
  * Contains utility methods relating to the Archive functionality within FIS.
+ * <p>
+ * TODO: Consider introducing Builder design pattern here, especially if
+ *       another optional parameter is introduced. ArchiveCreator would return
+ *       a Builder instance based on supplied execution type, and the Builder
+ *       would build the archive with contents specific to that execution type.
  */
 public interface ArchiveCreator {
 
