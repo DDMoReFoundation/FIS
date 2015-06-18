@@ -18,6 +18,8 @@ import groovy.transform.Field
  * This script is responsible for publishing inputs to MIF without performing conversion.
  */
 
+@Field final Logger LOG = Logger.getLogger("eu.ddmore.fis.scripts.PublishInputsVerbatim") // getClass() doesn't return what you might expect, for a Groovy script
+
 /**
  * Parameters
  */
@@ -26,7 +28,6 @@ final LocalJob job = binding.getVariable("job");
 /**
  * Variables
  */
-@Field final Logger LOG = Logger.getLogger(getClass())
 final File scriptFile = binding.getVariable("scriptFile");
 final JobArchiveProvisioner jobArchiveProvisioner = binding.getVariable("jobArchiveProvisioner");
 final String outputArchiveName = binding.getVariable("fis.cts.output.archive");

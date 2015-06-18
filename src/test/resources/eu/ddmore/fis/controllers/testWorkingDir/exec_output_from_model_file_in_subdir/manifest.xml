@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<omexManifest xmlns="http://identifiers.org/combine.specifications/omex-manifest">
+  <content location="." format="http://identifiers.org/combine.specifications/omex" />
+  <content location="./manifest.xml" format="http://identifiers.org/combine.specifications/omex-manifest" />
+  <content location="./models/UseCase1.xml" format="http://www.ddmore.eu/pharmml" master="true" />
+  <content location="./data/warfarin_conc.csv" format="http://purl.org/NET/mediatypes/text/csv" />
+  <content location="./models/UseCase1.mdl" format="http://www.ddmore.eu/mdl" />
+  <content location=".\metadata.rdf" format="http://identifiers.org/combine.specifications/omex-metadata" />
+</omexManifest>

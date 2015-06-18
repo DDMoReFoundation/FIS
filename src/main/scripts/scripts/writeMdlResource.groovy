@@ -18,12 +18,17 @@ import eu.ddmore.convertertoolbox.domain.LanguageVersion
 import eu.ddmore.fis.domain.WriteMdlResponse
 import eu.ddmore.fis.service.cts.ConverterToolboxService
 import groovy.json.JsonOutput
+
+import groovy.transform.Field
+
 /**
  * This script invokes converter toolbox service to convert JSON to MDL.
  * It returns WriteMdlResponse with outcome of the processing.
  *
  * Conversion Report is dumped to json in the output directory
  */
+
+@Field final Logger LOG = Logger.getLogger("eu.ddmore.fis.scripts.WriteMdlResource") // getClass() doesn't return what you might expect, for a Groovy script
 
 /**
  * Parameters
@@ -34,7 +39,6 @@ final String fileContent = binding.getVariable("fileContent")
 /**
  * Variables
  */
-final Logger LOG = Logger.getLogger(getClass())
 final File scriptFile = binding.getVariable("scriptFile");
 final ArchiveFactory archiveFactory = binding.getVariable("archiveFactory");
 final ConverterToolboxService converterToolboxService = binding.getVariable("converterToolboxService");

@@ -1,0 +1,3 @@
+The pathlist C:\Users\mrogalski\git\PORTABLE.NONMEM\\gfortran\bin\ obtained from file C:\SEE\\nm_7.3.0_g\nmloc.bat is placed at the head of PATH 
+The gfortran compiler at one of those locations will be used if it exists. 
+If this is not what you want, then modify the file C:\SEE\\nm_7.3.0_g\nmloc.bat accordingly. 

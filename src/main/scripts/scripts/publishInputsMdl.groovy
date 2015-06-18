@@ -25,6 +25,8 @@ import groovy.transform.Field
  * This script is responsible for publishing inputs in MDL format, after conversion to PharmML, to MIF.
  */
 
+@Field final Logger LOG = Logger.getLogger("eu.ddmore.fis.scripts.PublishInputsMdl") // getClass() doesn't return what you might expect, for a Groovy script
+
 /**
  * Parameters
  */
@@ -33,7 +35,6 @@ final LocalJob job = binding.getVariable("job");
 /**
  * Variables
  */
-@Field final Logger LOG = Logger.getLogger(getClass())
 final File scriptFile = binding.getVariable("scriptFile");
 final ConverterToolboxService converterToolboxService = binding.getVariable("converterToolboxService");
 final LanguageVersion from = binding.getVariable("mdlLanguage");

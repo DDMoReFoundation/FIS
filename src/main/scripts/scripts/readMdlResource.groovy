@@ -16,12 +16,16 @@ import org.apache.log4j.Logger
 
 import com.google.common.base.Preconditions
 
+import groovy.transform.Field
+
 /**
  * This script invokes converter toolbox service to convert MDL to JSON.
  * It will return result file path on success or empty string.
  * Any Exception is wrapped by Groovy interpreter in Runtime Exception and should be handled by the clients.
  * Conversion Report is dumped to json in the output directory 
  */
+
+@Field final Logger LOG = Logger.getLogger("eu.ddmore.fis.scripts.ReadMdlResource") // getClass() doesn't return what you might expect, for a Groovy script
 
 /**
  * Parameters
@@ -31,7 +35,6 @@ final String inputFilePath = binding.getVariable("filePath");
 /**
  * Variables
  */
-final Logger LOG = Logger.getLogger(getClass())
 final File scriptFile = binding.getVariable("scriptFile");
 final ArchiveFactory archiveFactory = binding.getVariable("archiveFactory");
 final ConverterToolboxService converterToolboxService = binding.getVariable("converterToolboxService");

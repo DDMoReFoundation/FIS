@@ -1,0 +1,9 @@
+TABLE NO.     1: Stochastic Approximation Expectation-Maximization (No Prior): Problem=1 Subproblem=0 Superproblem1=0 Iteration1=0 Superproblem2=0 Iteration2=0
+TYPE          SUBPOP       ETA(1)       ETA(2)       ETA(3)       ETA(4)
+            1            1  7.98321E-06  7.92927E-06 -7.30486E-05  2.18675E-05
+            2            1  4.39495E-02  2.02111E-02  6.31388E-02  2.82299E-02
+            3            1  9.99855E-01  9.99687E-01  9.99077E-01  9.99382E-01
+            4            1  2.14505E+00  1.38044E+01  4.32047E+01  5.12073E+01
+            5            1  7.62192E+00  0.00000E+00  0.00000E+00  0.00000E+00
+            6            1  2.14732E+00  1.37926E+01  4.32152E+01  5.12189E+01
+            7            1  3.20000E+01  3.20000E+01  3.20000E+01  3.20000E+01

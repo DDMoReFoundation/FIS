@@ -4,6 +4,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import eu.ddmore.fis.domain.LocalJob;
+import groovy.lang.Binding;
 
 import java.io.File;
 
@@ -16,67 +18,130 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import eu.ddmore.fis.domain.LocalJob;
-import eu.ddmore.fis.service.processors.JobProcessor;
-import groovy.lang.Binding;
-
 @RunWith(MockitoJUnitRunner.class)
 public class RetrieveOutputsScriptIT {
 
 	private static final Logger LOG = Logger.getLogger(RetrieveOutputsScriptIT.class);
 
     @Rule
-    public TemporaryFolder testDirectory = new TemporaryFolder();
+    public TemporaryFolder testFisTemporaryFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder testMifTemporaryFolder = new TemporaryFolder();
     
-    private File testWorkingDir;
-    private File testExecutionHostFileshareLocal;
-    private File mifWorkingDir;
+    private File fisWorkingDir;
+    private File executionHostFileshareLocal;
+    
+    private JobProcessor jobProcessor;
 
     @Before
     public void setUp() throws Exception {
-        File testDataDir = FileUtils.toFile(RetrieveOutputsScriptIT.class.getResource("/eu/ddmore/fis/controllers/testWorkingDir"));
+
+        // Prepare the MIF execution host fileshare
+        this.executionHostFileshareLocal = this.testMifTemporaryFolder.getRoot();
+        final File testDataDir = FileUtils.toFile(RetrieveOutputsScriptIT.class.getResource("/eu/ddmore/fis/controllers/testWorkingDir"));
+        FileUtils.copyDirectory(testDataDir, this.executionHostFileshareLocal);
+        LOG.debug(String.format("Test MIF execution host fileshare %s", this.executionHostFileshareLocal));
         
-        this.testWorkingDir = this.testDirectory.getRoot();
-        LOG.debug(String.format("Test working dir %s", this.testWorkingDir));
-        this.testExecutionHostFileshareLocal = this.testWorkingDir;
-        this.mifWorkingDir = new File(this.testExecutionHostFileshareLocal, "MIF_JOB_ID");
+        // Set up the FIS working directory that will receive the retrieved output files from the MIF working directory
+        this.fisWorkingDir = this.testFisTemporaryFolder.getRoot();
+        LOG.debug(String.format("Test FIS working dir %s", this.fisWorkingDir));
         
-        FileUtils.copyDirectory(testDataDir, this.testDirectory.getRoot());
+        final Binding binding = new Binding();
+        binding.setVariable("execution.host.fileshare.local", this.executionHostFileshareLocal);
+        
+        this.jobProcessor = new JobProcessor(binding);
+        this.jobProcessor.setScriptFile(FileUtils.toFile(RetrieveOutputsScriptIT.class.getResource("/scripts/retrieveOutputs.groovy")));
+        
     }
 
     @Test
     public void shouldRetrieveResultFilesFromMIFWorkingDirectory() {
     
-        Binding binding = new Binding();
-        binding.setVariable("execution.host.fileshare.local", this.testExecutionHostFileshareLocal);
-        
-        JobProcessor jobProcessor = new JobProcessor(binding);
-        jobProcessor.setScriptFile(FileUtils.toFile(RetrieveOutputsScriptIT.class.getResource("/scripts/retrieveOutputs.groovy")));
-        File testWorkingDir = testDirectory.getRoot();
+        final File mifWorkingDir = new File(this.executionHostFileshareLocal, "MIF_JOB_ID");
 
-        final String FILE_THAT_SHOULD_NOT_BE_COPIED_BACK = "should_not_be_copied_back.blah";
-        assertTrue("Double-checking that the file that shouldn't be copied back does actually exist in the MIF working dir", new File(
-                this.mifWorkingDir, FILE_THAT_SHOULD_NOT_BE_COPIED_BACK).exists());
+        final String INCLUDE_REGEX = ".*\\..*";
+        final String EXCLUDE_REGEX = ".*\\.blah";
+        final String FILE_THAT_SHOULD_NOT_BE_COPIED_BACK_1 = "should_not_be_copied_back.blah";
+        final String FILE_THAT_SHOULD_NOT_BE_COPIED_BACK_2 = "dummyfile";
+        
+        assertTrue("Double-checking that the file that should be excluded from the retrieval does initially exist in the MIF working dir", new File(
+                mifWorkingDir, FILE_THAT_SHOULD_NOT_BE_COPIED_BACK_1).exists());
 
         LocalJob job = mock(LocalJob.class);
-        when(job.getWorkingDirectory()).thenReturn(testWorkingDir.getAbsolutePath());
+        when(job.getWorkingDirectory()).thenReturn(this.fisWorkingDir.getAbsolutePath());
         when(job.getControlFile()).thenReturn("model.mdl");
         when(job.getId()).thenReturn("MIF_JOB_ID");
-        when(job.getResultsIncludeRegex()).thenReturn(".*");
-        when(job.getResultsExcludeRegex()).thenReturn(FILE_THAT_SHOULD_NOT_BE_COPIED_BACK);
+        when(job.getResultsIncludeRegex()).thenReturn(INCLUDE_REGEX);
+        when(job.getResultsExcludeRegex()).thenReturn(EXCLUDE_REGEX);
 
         // Invoke the retrieveOutputs script being tested
         jobProcessor.process(job);
 
-        assertTrue("Output LST resource should be copied back", new File(testWorkingDir, "model.lst").exists());
-        assertTrue("PharmML resource should be copied back", new File(testWorkingDir, "model.xml").exists());
-        assertFalse("File that doesn't match the list of extensions should not be copied back", new File(testWorkingDir,
-                FILE_THAT_SHOULD_NOT_BE_COPIED_BACK).exists());
-        File fisHiddenDir = new File(testWorkingDir, ".fis");
-        assertTrue(String.format("%s directory should be created", fisHiddenDir), new File(testWorkingDir, ".fis").exists());
+        assertTrue("Output LST resource should be copied back", new File(this.fisWorkingDir, "model.lst").exists());
+        assertTrue("PharmML resource should be copied back", new File(this.fisWorkingDir, "model.xml").exists());
+        assertFalse("File that matches the regex exclusion pattern should not be copied back",
+                new File(this.fisWorkingDir, FILE_THAT_SHOULD_NOT_BE_COPIED_BACK_1).exists());
+        assertFalse("File that doesn't match the regex inclusion pattern should not be copied back",
+                new File(this.fisWorkingDir, FILE_THAT_SHOULD_NOT_BE_COPIED_BACK_2).exists());
+        assertFalse(".MIF hidden directory should not be copied back", new File(this.fisWorkingDir, ".MIF").exists());
+                
+        File fisHiddenDir = new File(this.fisWorkingDir, ".fis");
+        assertTrue(String.format("%s directory should be created", fisHiddenDir), new File(this.fisWorkingDir, ".fis").exists());
         File stdOut = new File(fisHiddenDir, "stdout");
         File stdErr = new File(fisHiddenDir, "stderr");
         assertTrue(String.format("%s file should be created", stdOut), stdOut.exists());
         assertTrue(String.format("%s file should be created", stdErr), stdErr.exists());
     }
+    
+    /**
+     * Model execution takes place within the directory containing the model file. 
+     * Therefore where a project has the structure models/mymodel.mdl and data/mydata.csv, the execution
+     * directory is the subdirectory "models" of the MIF working directory.
+     * This test checks that filtering is applied within the execution directory, and files/directories
+     * outside of that (which should only be the data file and any extra input files) are *not* subject
+     * to the filtering.
+     */
+    @Test
+    public void shouldRetrieveResultFilesFromMIFWorkingDirectoryWithDirectoryStructure() {
+    
+        final File mifWorkingDir = new File(this.executionHostFileshareLocal, "exec_output_from_model_file_in_subdir");
+        
+        final String INCLUDE_REGEX = ".*\\..*"; // Originally: (.*\\.(csv|ctl|lst|ext|grd|phi|shk|fit|SO\\.xml)$)|(^[a-z][a-z]tab[0-9]*)")
+        final String EXCLUDE_REGEX = "(nonmem.exe|temp_dir)";
+
+        assertTrue("Double-checking that the file that shouldn't be copied back does initially exist in the MIF working dir", new File(
+                mifWorkingDir, "models/nonmem.exe").exists());
+        assertTrue("Double-checking that the directory that shouldn't be copied back does initially exist in the MIF working dir", new File(
+                mifWorkingDir, "models/temp_dir").exists());
+
+        LocalJob job = mock(LocalJob.class);
+        when(job.getWorkingDirectory()).thenReturn(this.fisWorkingDir.getAbsolutePath());
+        when(job.getControlFile()).thenReturn("models/UseCase1.ctl");
+        when(job.getId()).thenReturn("exec_output_from_model_file_in_subdir");
+        when(job.getResultsIncludeRegex()).thenReturn(INCLUDE_REGEX);
+        when(job.getResultsExcludeRegex()).thenReturn(EXCLUDE_REGEX);
+
+        // Invoke the retrieveOutputs script being tested
+        jobProcessor.process(job);
+
+        assertTrue("Output LST resource should be copied back", new File(this.fisWorkingDir, "models/UseCase1.lst").exists());
+        assertTrue("CTL resource should be copied back", new File(this.fisWorkingDir, "models/UseCase1.ctl").exists());
+        assertTrue("PharmML resource should be copied back", new File(this.fisWorkingDir, "models/UseCase1.xml").exists());
+        assertTrue("CSV resource should be copied back", new File(this.fisWorkingDir, "data/warfarin_conc.csv").exists());
+        assertFalse("File that matches the regex exclusion pattern should not be copied back",
+                new File(this.fisWorkingDir, "models/nonmem.exe").exists());
+        assertFalse("Directory that matches the regex exclusion pattern should not be copied back",
+                new File(this.fisWorkingDir, "models/temp_dir").exists());
+        assertFalse("File that doesn't match the regex inclusion pattern should not be copied back",
+                new File(this.fisWorkingDir, "models/FSUBS").exists());
+        assertFalse(".MIF hidden directory should not be copied back", new File(this.fisWorkingDir, ".MIF").exists());
+
+        File fisHiddenDir = new File(this.fisWorkingDir, ".fis");
+        assertTrue(String.format("%s directory should be created", fisHiddenDir), new File(this.fisWorkingDir, ".fis").exists());
+        File stdOut = new File(fisHiddenDir, "stdout");
+        File stdErr = new File(fisHiddenDir, "stderr");
+        assertTrue(String.format("%s file should be created", stdOut), stdOut.exists());
+        assertTrue(String.format("%s file should be created", stdErr), stdErr.exists());
+    }
+
 }

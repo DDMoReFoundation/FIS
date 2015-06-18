@@ -1,0 +1,10 @@
+Warning:
+ Found STANDARD/CORRELATION/CHOLESKY in $OMEGA.
+This is not yet supported by PsN. Errors will be introduced when
+updating initial estimates to final estimates from previous run
+and sumo output will be wrong.
+Warning:
+ Found STANDARD/CORRELATION/CHOLESKY in $OMEGA.
+This is not yet supported by PsN. Errors will be introduced when
+updating initial estimates to final estimates from previous run
+and sumo output will be wrong.

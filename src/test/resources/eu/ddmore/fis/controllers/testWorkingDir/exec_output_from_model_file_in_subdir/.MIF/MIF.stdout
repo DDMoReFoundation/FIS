@@ -1,0 +1,75 @@
+Using Java from SEE
+2015-06-16 13:45:33,788 0    [main] INFO  eu.ddmore.convertertoolbox.conversion.ConverterManagerImpl  - Found Provider: eu.ddmore.converter.mdl2pharmml.MDLToPharmMLConverter from:[MDL 6.0.8] to:[PharmML 0.6.0]
+2015-06-16 13:45:34,207 419  [main] INFO  eu.ddmore.convertertoolbox.conversion.ConverterManagerImpl  - Found Provider: eu.ddmore.converter.mdl2json.MDLToJSONConverter from:[MDL 6.0.8] to:[JSON 6.0.8]
+2015-06-16 13:45:34,212 424  [main] INFO  eu.ddmore.convertertoolbox.conversion.ConverterManagerImpl  - Found Provider: eu.ddmore.converter.mdl2json.JSONToMDLConverter from:[JSON 6.0.8] to:[MDL 6.0.8]
+2015-06-16 13:45:34,247 459  [main] INFO  eu.ddmore.convertertoolbox.conversion.ConverterManagerImpl  - Found Provider: eu.ddmore.converters.nonmem.ConverterProvider from:[PharmML 0.6.0] to:[NMTRAN 7.3.0]
+2015-06-16 13:45:34,264 476  [main] INFO  eu.ddmore.convertertoolbox.conversion.ConverterManagerImpl  - Valid converter found: ConverterImpl [provider=eu.ddmore.converters.nonmem.ConverterProvider@67b9caf4]
+2015-06-16 13:45:35,971 2183 [main] INFO  eu.ddmore.convertertoolbox.cli.Main  - ConversionReportImpl [returnCode=SUCCESS, details=[crx.converter.engine.ConversionDetail_@37dcf2dd]]
+ConversionReportImpl [returnCode=SUCCESS, details=[crx.converter.engine.ConversionDetail_@37dcf2dd]]
+Starting NMTRAN
+  
+ WARNINGS AND ERRORS (IF ANY) FOR PROBLEM    1
+             
+ (WARNING  2) NM-TRAN INFERS THAT THE DATA ARE POPULATION.
+
+ (MU_WARNING 26) DATA ITEM(S) USED IN DEFINITION OF MU_(S) SHOULD BE CONSTANT FOR INDIV. REC.:
+  LOGTWT
+        1 file(s) copied.
+Pathlist information for compiler and MPI systems are located in nmpathlist.txt
+
+Recompiling certain components.
+starting wait
+ending wait
+Exiting lpreddo
+Compiling FSUBS
+Building NONMEM Executable
+Starting nonmem execution ...
+License Registered to: Mango Business Solutions Ltd
+Expiration Date:    14 OCT 2015
+Current Date:       16 JUN 2015
+Days until program expires : 118
+
+
+ Stochastic Approximation Expectation-Maximization (No Prior)
+ MONITORING OF SEARCH:
+
+ Stochastic/Burn-in Mode
+ iteration        -4000  SAEMOBJ=   1777.7454711088942
+ iteration        -3950  SAEMOBJ=   6.4697597953412416
+ iteration        -3900  SAEMOBJ=   159.10948308332320
+ iteration        -3850  SAEMOBJ=  -171.56942278586999
+ iteration        -3800  SAEMOBJ=   112.24931878536241
+ iteration        -3750  SAEMOBJ=  -162.84066329728972
+ iteration        -3700  SAEMOBJ=   128.36026497950979
+ iteration        -3650  SAEMOBJ=   131.22820273668054
+ iteration        -3600  SAEMOBJ=  -103.87896910280229
+ iteration        -3550  SAEMOBJ=  -113.26327631740826
+ iteration        -3500  SAEMOBJ=   236.46294766686631
+ iteration        -3450  SAEMOBJ=  -423.45730559349721
+ Convergence achieved: ending mode
+ Reduced Stochastic/Accumulation Mode
+ iteration            0  SAEMOBJ=  -426.03438566276958
+ iteration           50  SAEMOBJ=  -466.79769025632100
+ iteration          100  SAEMOBJ=  -459.48640532044436
+ iteration          150  SAEMOBJ=  -453.93335940961504
+ iteration          200  SAEMOBJ=  -449.83131198936888
+ iteration          250  SAEMOBJ=  -446.57841489370594
+ iteration          300  SAEMOBJ=  -444.40338584762048
+ iteration          350  SAEMOBJ=  -443.02663601856551
+ iteration          400  SAEMOBJ=  -441.77363725333549
+ iteration          450  SAEMOBJ=  -440.67843489772872
+ iteration          500  SAEMOBJ=  -439.95355426351404
+ iteration          550  SAEMOBJ=  -439.33882403293404
+ iteration          600  SAEMOBJ=  -438.81810998144999
+ iteration          650  SAEMOBJ=  -438.18245106148015
+ iteration          700  SAEMOBJ=  -437.55291941455914
+ iteration          750  SAEMOBJ=  -437.09208805487123
+ iteration          800  SAEMOBJ=  -436.79829497030528
+ iteration          850  SAEMOBJ=  -436.30266774189408
+ iteration          900  SAEMOBJ=  -435.88890742496761
+ iteration          950  SAEMOBJ=  -435.54379280323008
+ iteration         1000  SAEMOBJ=  -435.22589420062820
+ Elapsed estimation time in seconds:   428.92
+ STOCHASTIC PORTION WAS COMPLETED
+ REDUCED STOCHASTIC PORTION WAS COMPLETED
+

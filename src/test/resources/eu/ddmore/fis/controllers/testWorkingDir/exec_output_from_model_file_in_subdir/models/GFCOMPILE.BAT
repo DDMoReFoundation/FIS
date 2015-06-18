@@ -1,0 +1,1 @@
+%1 -static -o %8 fsubs.%3 %2\NM\pnm_mpid.%3 -I%4 -I%2\resource %6\PRED.%3 %6\PREDI.%3 %6\CHECK.%3 %6\SADVAN.%3 %6\ADVAN13.%3 %6\SSS0.%3 %6\TRANS1.%3 %6\INFN.%3 %6\ZSPOW2.%3 %6\LEQT22.%3 %6\LSODA.%3 %6\RES.%3 %6\ADDA.%3 %6\JAC.%3 %6\FCN5.%3 %5\prglobalp.%3 %6\mumodel.%3 %7\parallel.%3 %6\prpnm.%3  %2\nm\nonmem.%3 %2\nm\nonmem.a %2\RESOURCE\resource.a
