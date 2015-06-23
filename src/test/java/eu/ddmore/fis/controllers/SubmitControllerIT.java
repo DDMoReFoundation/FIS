@@ -4,6 +4,7 @@
 package eu.ddmore.fis.controllers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -112,6 +113,10 @@ public class SubmitControllerIT extends SystemPropertiesAware {
         FileUtils.copyURLToFile(scriptFile, new File(workingDir, MODEL_FILE_NAME));
         final URL dataFile = SubmitControllerIT.class.getResource(testDataDir + DATA_FILE_NAME);
         FileUtils.copyURLToFile(dataFile, new File(workingDir, DATA_FILE_NAME));
+        
+        // Put an extraInputFile into a subdirectory
+        final String EXTRA_INPUT_FILE_RELPATH = "subdir/FileInSubdir.txt";
+        FileUtils.write(new File(workingDir, EXTRA_INPUT_FILE_RELPATH), "blah blah blah\n");
 
         when(this.mockMifClient.executeJob(isA(ExecutionRequest.class))).thenReturn("Submitted");
         
@@ -121,6 +126,7 @@ public class SubmitControllerIT extends SystemPropertiesAware {
         submissionRequest.setCommand(this.command);
         submissionRequest.setCommandParameters("echo Hello from mock NONMEM via command-line connector of MIF! >dummyoutput.lst\necho.");
         submissionRequest.setExecutionFile(MODEL_FILE_NAME);
+        submissionRequest.setExtraInputFiles(Arrays.asList(EXTRA_INPUT_FILE_RELPATH));
         submissionRequest.setWorkingDirectory(this.workingDir.getAbsolutePath());
         
         final SubmissionResponse response = this.submitController.submit(submissionRequest);
@@ -169,8 +175,14 @@ public class SubmitControllerIT extends SystemPropertiesAware {
         	new File(mifWorkingDir, MODEL_FILE_NAME).exists());
         assertTrue("Data file should have been copied into the MIF working directory",
         	new File(mifWorkingDir, DATA_FILE_NAME).exists());
+        assertTrue("Extra input file, in a subdirectory, should have been copied into the MIF working directory",
+            new File(mifWorkingDir, EXTRA_INPUT_FILE_RELPATH).exists());
         final File fisMetadataDir = new File(this.workingDir,".fis");
         assertTrue("FIS metadata directory should have been created", fisMetadataDir.exists());
+        assertFalse("Archive's manifest.xml should NOT have been copied into the MIF working directory",
+            new File(mifWorkingDir, "manifest.xml").exists());
+        assertFalse("Archive's metadata.rdf should NOT have been copied into the MIF working directory",
+            new File(mifWorkingDir, "metadata.rdf").exists());
         
     }
 
