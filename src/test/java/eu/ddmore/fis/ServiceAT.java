@@ -9,11 +9,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -47,135 +47,109 @@ public class ServiceAT extends SystemPropertiesAware {
 
     @Before
     public void setUp() throws Exception {
-        teisClient = new FISHttpRestClient(System.getProperty("fis.url"),System.getProperty("fis.management.url"));
+        teisClient = new FISHttpRestClient(System.getProperty("fis.url"), System.getProperty("fis.management.url"));
     }
 
     @Test
     public void shouldExecuteControlFile() throws IOException, InterruptedException {
-        final File workingDir = new File(this.temporaryFolder.getRoot(), "ControlFileExecution");
-        workingDir.mkdir();
+        final File userProjectDir = new File(this.temporaryFolder.getRoot(), "ControlFileExecution-UserProjectDir");
+        userProjectDir.mkdir();
 
         // Copy the files out of the testdata JAR file
 
-        final String SCRIPT_FILE_NAME = "Warfarin-ODE-latest.ctl";
+        final String MODEL_FILE_NAME = "Warfarin-ODE-latest.ctl";
         final String DATA_FILE_NAME = "warfarin_conc.csv";
 
         final String testDataDir = "/test-models/NM-TRAN/7.2.0/Warfarin_ODE/";
 
-        final URL scriptFile = ServiceAT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
-        FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
-        final URL dataFile = ServiceAT.class.getResource(testDataDir + DATA_FILE_NAME);
-        FileUtils.copyURLToFile(dataFile, new File(workingDir, DATA_FILE_NAME));
+        FileUtils.copyURLToFile( ServiceAT.class.getResource(testDataDir + MODEL_FILE_NAME), new File(userProjectDir, MODEL_FILE_NAME) );
+        FileUtils.copyURLToFile( ServiceAT.class.getResource(testDataDir + DATA_FILE_NAME), new File(userProjectDir, DATA_FILE_NAME) );
 
         // Proceed with the test...
+        submitJobAndWaitForCompletionThenVerifyOutput(userProjectDir, MODEL_FILE_NAME);
 
-        SubmissionRequest submissionRequest = new SubmissionRequest();
-        submissionRequest.setCommand(nonmemCommand);
-        submissionRequest.setExecutionFile(SCRIPT_FILE_NAME);
-        submissionRequest.setWorkingDirectory(workingDir.getAbsolutePath());
-        SubmissionResponse response = teisClient.submitRequest(submissionRequest);
-
-        assertNotNull(response);
-        assertNotNull(response.getRequestID());
-
-        String jobId = response.getRequestID();
-
-        LOG.debug(String.format("Request ID %s", response.getRequestID()));
-
-        while (isNotCompleted(teisClient.checkStatus(jobId))) {
-            LOG.debug(String.format("Waiting for %s job to complete. Working directory: %s", response.getRequestID(), workingDir));
-            Thread.sleep(TimeUnit.SECONDS.toMillis(2));
-        }
-        
-        LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
-        
-        assertEquals("Job should complete with status COMPLETED", LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
-
-        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "Warfarin-ODE-latest.lst").exists());
-        assertTrue("Standard Output Object XML file should have been created in the working directory", new File(workingDir, "Warfarin-ODE-latest.SO.xml").exists());
-
-        verifyThatFisMetadataFilesExist(workingDir);
-
-        assertEquals(LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
     }
 
     @Test
     public void shouldExecutePharmMLFile() throws IOException, InterruptedException {
-        final File workingDir = new File(this.temporaryFolder.getRoot(), "PharmMLFileExecution");
-        workingDir.mkdir();
+        final File userProjectDir = new File(this.temporaryFolder.getRoot(), "PharmMLFileExecution-UserProjectDir");
+        userProjectDir.mkdir();
 
         // Copy the files out of the testdata JAR file
 
-        final String SCRIPT_FILE_NAME = "UseCase1.xml";
+        final String MODEL_FILE_NAME = "UseCase1.xml";
         final String DATA_FILE_NAME = "warfarin_conc.csv";
         
         final String testDataDir = "/test-models/PharmML/0.6.0/";
 
-        final URL scriptFile = ServiceAT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
-        FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
-        final URL dataFile = ServiceAT.class.getResource(testDataDir + DATA_FILE_NAME);
-        FileUtils.copyURLToFile(dataFile, new File(workingDir, DATA_FILE_NAME));
+        FileUtils.copyURLToFile( ServiceAT.class.getResource(testDataDir + MODEL_FILE_NAME), new File(userProjectDir, MODEL_FILE_NAME) );
+        FileUtils.copyURLToFile( ServiceAT.class.getResource(testDataDir + DATA_FILE_NAME), new File(userProjectDir, DATA_FILE_NAME) );
 
         // Proceed with the test...
+        submitJobAndWaitForCompletionThenVerifyOutput(userProjectDir, MODEL_FILE_NAME);
 
-        SubmissionRequest submissionRequest = new SubmissionRequest();
-        submissionRequest.setCommand(nonmemCommand);
-        submissionRequest.setExecutionFile(SCRIPT_FILE_NAME);
-        submissionRequest.setWorkingDirectory(workingDir.getAbsolutePath());
-        SubmissionResponse response = teisClient.submitRequest(submissionRequest);
-
-        assertNotNull(response);
-        assertNotNull(response.getRequestID());
-
-        String jobId = response.getRequestID();
-
-        LOG.debug(String.format("Request ID %s", response.getRequestID()));
-
-        while (isNotCompleted(teisClient.checkStatus(jobId))) {
-            LOG.debug(String.format("Waiting for %s job to complete. Working directory: %s", response.getRequestID(), workingDir));
-            Thread.sleep(TimeUnit.SECONDS.toMillis(2));
-        }
-        
-        LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
-        
-        assertEquals("Job should complete with status COMPLETED", LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
-
-        assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, "UseCase1.ctl").exists());
-        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "UseCase1.lst").exists());
-        assertTrue("Standard Output Object XML file should have been created in the working directory", new File(workingDir, "UseCase1.SO.xml").exists());
-
-        verifyThatFisMetadataFilesExist(workingDir);
-
-        assertEquals(LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
     }
 
     @Test
     public void shouldExecuteMDLFile() throws IOException, InterruptedException {
-        final File workingDir = new File(this.temporaryFolder.getRoot(), "MDLFileExecution");
-        workingDir.mkdir();
+        final File userProjectDir = new File(this.temporaryFolder.getRoot(), "MDLFileExecution-UserProjectDir");
+        userProjectDir.mkdir();
 
         // Copy the files out of the testdata JAR file
 
-        final String SCRIPT_FILE_NAME = "UseCase1.mdl";
+        final String MODEL_FILE_NAME = "UseCase1.mdl";
         final String DATA_FILE_NAME = "warfarin_conc.csv";
 
         final String testDataDir = "/test-models/MDL/Product4/";
 
-        final URL scriptFile = ServiceAT.class.getResource(testDataDir + SCRIPT_FILE_NAME);
-        FileUtils.copyURLToFile(scriptFile, new File(workingDir, SCRIPT_FILE_NAME));
-        final URL dataFile = ServiceAT.class.getResource(testDataDir + DATA_FILE_NAME);
-        FileUtils.copyURLToFile(dataFile, new File(workingDir, DATA_FILE_NAME));
+        FileUtils.copyURLToFile( ServiceAT.class.getResource(testDataDir + MODEL_FILE_NAME), new File(userProjectDir, MODEL_FILE_NAME) );
+        FileUtils.copyURLToFile( ServiceAT.class.getResource(testDataDir + DATA_FILE_NAME), new File(userProjectDir, DATA_FILE_NAME) );
 
         // Proceed with the test...
+        submitJobAndWaitForCompletionThenVerifyOutput(userProjectDir, MODEL_FILE_NAME);
+        
+    }
+    
+    @Test
+    public void shouldExecuteMDLFileHavingRelativePathToDataFile() throws IOException, InterruptedException {
+        final File userProjectDir = new File(this.temporaryFolder.getRoot(), "MDLFileExecutionDataFileRelPath-UserProjectDir");
+        userProjectDir.mkdir();
+
+        // Copy the files out of the testdata JAR file
+
+        final String MODEL_FILE = "models/UseCase1.mdl";
+        final String DATA_FILE = "data/warfarin_conc.csv";
+
+        final String testDataDir = "/test-models/MDL/Product4/";
+
+        final File modelFile = new File(userProjectDir, MODEL_FILE);
+        final File dataFile = new File(userProjectDir, DATA_FILE);
+        
+        final String modelFileContent = IOUtils.toString(ServiceAT.class.getResource(testDataDir + MODEL_FILE.split("/")[1]));
+        FileUtils.write(modelFile, modelFileContent.replace(DATA_FILE.split("/")[1], "../" + DATA_FILE));
+        FileUtils.copyURLToFile(ServiceAT.class.getResource(testDataDir + DATA_FILE.split("/")[1]), dataFile);
+
+        // Proceed with the test...
+        submitJobAndWaitForCompletionThenVerifyOutput(userProjectDir, MODEL_FILE);
+    }
+    
+    /**
+     * @param userProjectDir - the directory within which the model file and data files live
+     * @param modelFile - the model file, possibly with a relative path prefix if appropriate for the calling test
+     * @throws InterruptedException could be thrown from Thread.sleep()
+     */
+    private void submitJobAndWaitForCompletionThenVerifyOutput(final File userProjectDir, final String modelFile) throws InterruptedException {
+        final File workingDir = new File(userProjectDir.toString().replace("-UserProjectDir", "-WorkingDir"));
+        workingDir.mkdir();
 
         SubmissionRequest submissionRequest = new SubmissionRequest();
         submissionRequest.setCommand(nonmemCommand);
-        submissionRequest.setExecutionFile(SCRIPT_FILE_NAME);
+        submissionRequest.setExecutionFile(new File(userProjectDir, modelFile).getAbsolutePath());
         submissionRequest.setWorkingDirectory(workingDir.getAbsolutePath());
         SubmissionResponse response = teisClient.submitRequest(submissionRequest);
 
-        assertNotNull(response);
-        assertNotNull(response.getRequestID());
+        assertNotNull("SubmissionResponse should not be null", response);
+        assertNotNull("Request ID should be set on the SubmissionResponse", response.getRequestID());
 
         String jobId = response.getRequestID();
 
@@ -190,18 +164,21 @@ public class ServiceAT extends SystemPropertiesAware {
         
         assertEquals("Job should complete with status COMPLETED", LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
 
-        assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, "UseCase1.ctl").exists());
-        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, "UseCase1.lst").exists());
-        assertTrue("Standard Output Object XML file should have been created in the working directory", new File(workingDir, "UseCase1.SO.xml").exists());
+        assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, modelFile.replaceFirst("\\..*", ".ctl")).exists());
+        assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, modelFile.replaceFirst("\\..*", ".lst")).exists());
+        assertTrue("Standard Output Object XML file should have been created in the working directory", new File(workingDir, modelFile.toString().replaceFirst("\\..*", ".SO.xml")).exists());
 
         verifyThatFisMetadataFilesExist(workingDir);
 
-        assertEquals(LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
+        assertEquals("Status of the Job should be COMPLETED", LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
     }
 
-    private void verifyThatFisMetadataFilesExist(final File root) {
-        File fisHiddenDir = new File(root, ".fis");
-        assertTrue(String.format("%s directory should be created", fisHiddenDir), new File(root, ".fis").exists());
+    /**
+     * @param workingDir - the FIS working directory, in which the .fis metadata directory will have been created
+     */
+    private void verifyThatFisMetadataFilesExist(final File workingDir) {
+        File fisHiddenDir = new File(workingDir, ".fis");
+        assertTrue(String.format("%s directory should be created", fisHiddenDir), new File(workingDir, ".fis").exists());
         File stdOut = new File(fisHiddenDir, "stdout");
         File stdErr = new File(fisHiddenDir, "stderr");
         assertTrue(String.format("%s file should be created", stdOut), stdOut.exists());
