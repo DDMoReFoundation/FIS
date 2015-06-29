@@ -122,7 +122,7 @@ public class SubmissionRequestConversionIT {
         final SubmissionRequest sr = new StringToSubmissionRequestConverter().convert(json);
         
         assertEquals("Checking the command property is set correctly", "NONMEM", sr.getCommand());
-        assertNull("Checking the commandParameters property is set correctly", sr.getCommandParameters());
+        assertNull("Checking the commandParameters property is not set", sr.getCommandParameters());
         assertEquals("Checking the executionFile parameter is set correctly", "C:/path/to/my/model.mdl", sr.getExecutionFile());
         assertEquals("Checking the workingDirectory parameter is set correctly", "C:/Temp/fisworkingdir", sr.getWorkingDirectory());
         assertNull("Checking the extraInputFiles parameter is set correctly", sr.getExtraInputFiles());
