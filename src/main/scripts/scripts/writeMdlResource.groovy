@@ -23,9 +23,8 @@ import groovy.transform.Field
 
 /**
  * This script invokes converter toolbox service to convert JSON to MDL.
- * It returns WriteMdlResponse with outcome of the processing.
- *
- * Conversion Report is dumped to json in the output directory
+ * It returns {@link WriteMdlResponse} with outcome of the processing.
+ * Conversion Report is dumped to json in the output directory.
  */
 
 @Field final Logger LOG = Logger.getLogger("eu.ddmore.fis.scripts.WriteMdlResource") // getClass() doesn't return what you might expect, for a Groovy script
@@ -51,6 +50,7 @@ final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
 /**
  * Script
  */
+
 File outputFile = new File(outputFilePath)
 File workingDir = outputFile.parentFile
 // Ensure that the FIS metadata directory is created

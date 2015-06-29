@@ -33,13 +33,14 @@ final JobArchiveProvisioner jobArchiveProvisioner = binding.getVariable("jobArch
 final String outputArchiveName = binding.getVariable("fis.cts.output.archive");
 final String executionHostFileshareLocal = binding.getVariable("execution.host.fileshare.local");
 final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
-final File fisJobWorkingDir = new File(job.getWorkingDirectory())
-final File mifJobWorkingDir = new File(executionHostFileshareLocal, job.getId());
 final ArchiveCreator archiveCreator = binding.getVariable("archiveCreator");
 
 /**
  * Script
  */
+
+final File fisJobWorkingDir = new File(job.getWorkingDirectory())
+final File mifJobWorkingDir = new File(executionHostFileshareLocal, job.getId());
 
 LOG.debug("Job ${job.getId()}, FIS working dir: ${fisJobWorkingDir}, MIF working dir: ${mifJobWorkingDir}");
 

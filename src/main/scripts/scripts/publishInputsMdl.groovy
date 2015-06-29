@@ -46,14 +46,15 @@ final String MDL_FILE_EXT = binding.getVariable("fis.mdl.ext");
 final String PHARMML_FILE_EXT = binding.getVariable("fis.pharmml.ext");
 final String executionHostFileshareLocal = binding.getVariable("execution.host.fileshare.local");
 final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
-final File mockDataDir = new File(scriptFile.getParentFile().getParentFile(),"mockData")
-final File fisJobWorkingDir = new File(job.getWorkingDirectory())
-final File mifJobWorkingDir = new File(executionHostFileshareLocal, job.getId());
 final ArchiveCreator mdlArchiveCreator = binding.getVariable("archiveCreator");
 
 /**
  * Script
  */
+
+final File mockDataDir = new File(scriptFile.getParentFile().getParentFile(),"mockData")
+final File fisJobWorkingDir = new File(job.getWorkingDirectory())
+final File mifJobWorkingDir = new File(executionHostFileshareLocal, job.getId());
 
 LOG.debug("Job ${job.getId()}, fis working dir: ${fisJobWorkingDir}, mif working dir: ${mifJobWorkingDir}");
 

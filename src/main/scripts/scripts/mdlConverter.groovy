@@ -47,6 +47,7 @@ final ArchiveCreator mdlArchiveCreator = binding.getVariable("archiveCreator");
 /**
  * Script
  */
+
 File inputFile = new File(FilenameUtils.normalize(inputFilePath))
 File workingDir = inputFile.parentFile
 // Ensure that the FIS metadata directory is created
