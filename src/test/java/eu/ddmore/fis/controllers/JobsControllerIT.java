@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -69,7 +70,7 @@ public class JobsControllerIT extends SystemPropertiesAware {
         this.savedLocalJob1 = new LocalJob();
         this.savedLocalJob1.setId(this.jobId1);
         this.savedLocalJob1.setExecutionType(EXECUTION_TYPE_1);
-        this.savedLocalJob1.setControlFile(MODEL_FILE_1);
+        this.savedLocalJob1.setExecutionFile(MODEL_FILE_1);
         this.savedLocalJob1.setExtraInputFiles(EXTRA_INPUT_FILES_1);
         this.savedLocalJob1.setCommandParameters(COMMAND_PARAMS);
         this.savedLocalJob1.setWorkingDirectory(WORKING_DIR);
@@ -81,7 +82,7 @@ public class JobsControllerIT extends SystemPropertiesAware {
         this.savedLocalJob2 = new LocalJob();
         this.savedLocalJob2.setId(this.jobId2);
         this.savedLocalJob2.setExecutionType(EXECUTION_TYPE_2);
-        this.savedLocalJob2.setControlFile(MODEL_FILE_2);
+        this.savedLocalJob2.setExecutionFile(MODEL_FILE_2);
         this.savedLocalJob2.setExtraInputFiles(EXTRA_INPUT_FILES_2);
         this.savedLocalJob2.setCommandParameters(COMMAND_PARAMS);
         this.savedLocalJob2.setWorkingDirectory(WORKING_DIR);
@@ -108,10 +109,11 @@ public class JobsControllerIT extends SystemPropertiesAware {
      */
     @Test
     public void testGetJob() {
-        final LocalJob retrievedJob = this.jobsController.getJob(this.jobId1);
-        LOG.info(String.format("Retrieved job: %s (modelfile=%s)", retrievedJob.getId(), retrievedJob.getControlFile()));
-        assertNotNull("Matching Job should be found and retrieved", retrievedJob);
-        verifyJob1(retrievedJob);
+        final ResponseEntity<LocalJob> retrievedJob = this.jobsController.getJob(this.jobId1);
+        LocalJob job = retrievedJob.getBody();
+        LOG.info(String.format("Retrieved job: %s (modelfile=%s)", job.getId(), job.getExecutionFile()));
+        assertNotNull("Matching Job should be found and retrieved", job);
+        verifyJob1(job);
     }
 
     /**
@@ -146,15 +148,15 @@ public class JobsControllerIT extends SystemPropertiesAware {
      */
     @Test
     public void testGetJobStatus() {
-        final LocalJobStatus retrievedJobStatus = this.jobsController.getJobStatus(this.jobId1);
-        assertEquals("Checking the returned job status", LocalJobStatus.RUNNING, retrievedJobStatus);
+        final ResponseEntity<LocalJobStatus> retrievedJobStatus = this.jobsController.getJobStatus(this.jobId1);
+        assertEquals("Checking the returned job status", LocalJobStatus.RUNNING, retrievedJobStatus.getBody());
     }
     
     private void verifyJob1(final LocalJob localJob1) {
         assertEquals("Checking ID of returned job", this.jobId1, localJob1.getId());
         assertEquals("Checking status of returned job", LocalJobStatus.RUNNING, localJob1.getStatus());        
         assertEquals("Checking execution type of returned job", EXECUTION_TYPE_1, localJob1.getExecutionType());
-        assertEquals("Checking model/control file of returned job", MODEL_FILE_1, localJob1.getControlFile());
+        assertEquals("Checking model/control file of returned job", MODEL_FILE_1, localJob1.getExecutionFile());
         assertEquals("Checking extra input files of returned job", EXTRA_INPUT_FILES_1, localJob1.getExtraInputFiles());
         assertEquals("Checking command parameters of returned job", COMMAND_PARAMS, localJob1.getCommandParameters());
         assertEquals("Checking working directory of returned job", WORKING_DIR, localJob1.getWorkingDirectory());
@@ -167,7 +169,7 @@ public class JobsControllerIT extends SystemPropertiesAware {
         assertEquals("Checking ID of returned job", this.jobId2, localJob2.getId());
         assertEquals("Checking status of returned job", LocalJobStatus.NEW, localJob2.getStatus());        
         assertEquals("Checking execution type of returned job", EXECUTION_TYPE_2, localJob2.getExecutionType());
-        assertEquals("Checking model/control file of returned job", MODEL_FILE_2, localJob2.getControlFile());
+        assertEquals("Checking model/control file of returned job", MODEL_FILE_2, localJob2.getExecutionFile());
         assertEquals("Checking extra input files of returned job", EXTRA_INPUT_FILES_2, localJob2.getExtraInputFiles());
         assertEquals("Checking command parameters of returned job", COMMAND_PARAMS, localJob2.getCommandParameters());
         assertEquals("Checking working directory of returned job", WORKING_DIR, localJob2.getWorkingDirectory());

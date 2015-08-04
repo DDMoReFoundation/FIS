@@ -36,8 +36,8 @@ public class InputFilenamePredicate implements Predicate<LocalJob> {
     @Override
     public boolean apply(LocalJob job) {
         Preconditions.checkNotNull(job, "Job can't be null.");
-        Preconditions.checkArgument(StringUtils.isNotBlank(job.getControlFile()),"Job's input file was not set or blank.");
-        return filenamePattern.matcher(job.getControlFile()).matches();
+        Preconditions.checkArgument(StringUtils.isNotBlank(job.getExecutionFile()),"Job's input file was not set or blank.");
+        return filenamePattern.matcher(job.getExecutionFile()).matches();
     }
 
 }

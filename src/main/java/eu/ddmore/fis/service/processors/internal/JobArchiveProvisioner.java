@@ -47,13 +47,13 @@ public class JobArchiveProvisioner {
             if(mifArchiveSupport) {
                 LOG.debug("MIF supports Archive. Copying archive...");
                 mifJobWorkingDir.mkdirs();
-                job.setControlFile(archive.getArchiveFile().getName());
+                job.setExecutionFile(archive.getArchiveFile().getName());
                 FileUtils.copyFileToDirectory(archive.getArchiveFile(),mifJobWorkingDir);
             } else {
                 LOG.debug("MIF does not support Archive. Extracting archive contents...");
                 archive.extractArchiveTo(mifJobWorkingDir);
                 Entry resultEntry = archive.getMainEntries().iterator().next();
-                job.setControlFile(/* we have to remove the leading '/' so the path is relative */toExternalPath(resultEntry.getFilePath()));
+                job.setExecutionFile(/* we have to remove the leading '/' so the path is relative */toExternalPath(resultEntry.getFilePath()));
             }
         } finally {
             archive.close();

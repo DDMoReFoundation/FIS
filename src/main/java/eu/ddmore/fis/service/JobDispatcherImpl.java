@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
+ ******************************************************************************/
 package eu.ddmore.fis.service;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,7 +43,7 @@ public class JobDispatcherImpl implements JobDispatcher {
         
 		// Invoke the publishInputs Groovy script
 		LOGGER.info(String.format("About to publish inputs for job:\n  Execution File = %1$s\n  Working Directory = %2$s\n  Extra Input Files = %3$s",
-		    job.getControlFile(), job.getWorkingDirectory(), job.getExtraInputFiles()
+		    job.getExecutionFile(), job.getWorkingDirectory(), job.getExtraInputFiles()
 		));
 		final LocalJob publishedJob = this.jobResourcePublisher.process(job);
 
@@ -84,7 +87,7 @@ public class JobDispatcherImpl implements JobDispatcher {
 			.setRequestId(job.getId())
 			.setName("FIS Service Job")
 			.setExecutionType(job.getExecutionType())
-			.setExecutionFile(job.getControlFile())
+			.setExecutionFile(job.getExecutionFile())
 			.setSubmitAsUserMode(submitAsUserMode)
 			.setUserName(userName)
 			.setUserPassword(userPassword)

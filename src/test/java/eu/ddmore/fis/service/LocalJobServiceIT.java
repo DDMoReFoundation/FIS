@@ -7,7 +7,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,24 +28,25 @@ public class LocalJobServiceIT extends SystemPropertiesAware {
 	LocalJobService localJobService;
 	
 	@Test
-	public void createLocalJob() {
+	public void initJob() {
 	
-    	LocalJob job = localJobService.newJob();
+    	LocalJob job = new LocalJob();
     	job.setExecutionType("MY_CMD");
-    	job.setControlFile("The test control file");
+    	job.setExecutionFile("The test control file");
         job.setWorkingDirectory("The test working directory");
         job.setCommandParameters("-myparam1 -myparam2");
         job.setExtraInputFiles(Arrays.asList("models/testExtraInputFile1.lst", "../testExtraInputFile2.txt"));
-    	job.setSubmitTime(new DateTime().toString());
     	job.setResultsIncludeRegex("include-pattern");
         job.setResultsExcludeRegex("exclude-pattern");
+        
+        job = localJobService.init(job);
 
     	String jobId = job.getId();
     	localJobService.save(job);
 
     	LocalJob stored = localJobService.getJob(jobId);
     	assertEquals("Checking execution type is set on the returned LocalJob", stored.getExecutionType(), job.getExecutionType());
-    	assertEquals("Checking control file is set on the returned LocalJob", stored.getControlFile(), job.getControlFile());
+    	assertEquals("Checking control file is set on the returned LocalJob", stored.getExecutionFile(), job.getExecutionFile());
     	assertEquals("Checking working directory is set on the returned LocalJob", stored.getWorkingDirectory(), job.getWorkingDirectory());
     	assertEquals("Checking command parameters is set on the returned LocalJob", stored.getCommandParameters(), job.getCommandParameters());
     	assertEquals("Checking extra input files is set on the returned LocalJob", stored.getExtraInputFiles(), job.getExtraInputFiles());

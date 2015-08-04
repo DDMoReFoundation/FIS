@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import eu.ddmore.fis.service.Shutdown;
@@ -18,6 +19,7 @@ import eu.ddmore.fis.service.Shutdown;
 /**
  * Requests a shutdown of a remote CTS instance
  */
+@Component("ctsShutdown")
 public class CTSShutdown implements Shutdown {
     private static final Logger LOG = Logger.getLogger(CTSShutdown.class);
     private final RestTemplate restTemplate;

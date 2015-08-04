@@ -48,7 +48,7 @@ LOG.debug("Job ${job.getId()}, FIS working dir: ${fisJobWorkingDir}, MIF working
 File fisMetadataDir = new File(fisJobWorkingDir,FIS_METADATA_DIR);
 fisMetadataDir.mkdir();
 
-File origControlFile = new File(FilenameUtils.normalize(job.getControlFile()));
+File origControlFile = new File(FilenameUtils.normalize(job.getExecutionFile()));
 
 // TODO: Once TEL is changed to pass in model files as absolute paths, this 'if' statement becomes redundant
 if (!origControlFile.isAbsolute()) {

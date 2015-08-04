@@ -30,8 +30,11 @@ public class LocalJobServiceTest {
 	
 	@Test
 	public void shouldCreateNewJob() {
-    	LocalJob job = localJobService.newJob();
-    	assertEquals(job.getStatus(), LocalJobStatus.NEW);
+    	LocalJob job = mock(LocalJob.class);
+    	localJobService.init(job);
+    	verify(job).setStatus(LocalJobStatus.NEW);
+    	verify(job).setId(any(String.class));
+    	verify(job).setSubmitTime(any(String.class));
 	}
 
     @Test

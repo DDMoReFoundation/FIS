@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Version;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class LocalJob implements Serializable {
@@ -21,16 +22,18 @@ public class LocalJob implements Serializable {
 	private String id;
 
 	@Column(nullable = false)
+	@NotNull
 	private String executionType;
 
 	@Column(nullable = true)
 	private String commandParameters;
 
 	@Column(nullable = false)
+	@NotNull
 	private String workingDirectory;
 
 	@Column(nullable = false)
-	private String controlFile;
+	private String executionFile;
 	
 	@Column(nullable = true)
 	@ElementCollection(fetch=FetchType.EAGER)
@@ -40,6 +43,7 @@ public class LocalJob implements Serializable {
 	private String submitTime;
 
 	@Column(nullable = false)
+	@NotNull
 	private LocalJobStatus status;
 
     @Column(nullable = true)
@@ -76,12 +80,12 @@ public class LocalJob implements Serializable {
 		this.workingDirectory = workingDirectory;
 	}
 
-	public String getControlFile() {
-		return controlFile;
+	public String getExecutionFile() {
+		return executionFile;
 	}
 
-	public void setControlFile(String controlFile) {
-		this.controlFile = controlFile;
+	public void setExecutionFile(String executionFile) {
+		this.executionFile = executionFile;
 	}
 	
     public Collection<String> getExtraInputFiles() {
@@ -145,4 +149,15 @@ public class LocalJob implements Serializable {
     public String getResultsIncludeRegex() {
         return resultsIncludeRegex;
     }
+
+	@Override
+	public String toString() {
+		return String
+				.format("LocalJob [id=%s, executionType=%s, commandParameters=%s, workingDirectory=%s, executionFile=%s, extraInputFiles=%s, submitTime=%s, status=%s, resultsIncludeRegex=%s, resultsExcludeRegex=%s, version=%s]",
+						id, executionType, commandParameters, workingDirectory,
+						executionFile, extraInputFiles, submitTime, status,
+						resultsIncludeRegex, resultsExcludeRegex, version);
+	}
+    
+    
 }

@@ -69,7 +69,7 @@ public class RetrieveOutputsScriptIT {
 
         LocalJob job = mock(LocalJob.class);
         when(job.getWorkingDirectory()).thenReturn(this.fisWorkingDir.getAbsolutePath());
-        when(job.getControlFile()).thenReturn("model.mdl");
+        when(job.getExecutionFile()).thenReturn("model.mdl");
         when(job.getId()).thenReturn("MIF_JOB_ID");
         when(job.getResultsIncludeRegex()).thenReturn(INCLUDE_REGEX);
         when(job.getResultsExcludeRegex()).thenReturn(EXCLUDE_REGEX);
@@ -116,7 +116,7 @@ public class RetrieveOutputsScriptIT {
 
         LocalJob job = mock(LocalJob.class);
         when(job.getWorkingDirectory()).thenReturn(this.fisWorkingDir.getAbsolutePath());
-        when(job.getControlFile()).thenReturn("models/UseCase1.ctl");
+        when(job.getExecutionFile()).thenReturn("models/UseCase1.ctl");
         when(job.getId()).thenReturn("exec_output_from_model_file_in_subdir");
         when(job.getResultsIncludeRegex()).thenReturn(INCLUDE_REGEX);
         when(job.getResultsExcludeRegex()).thenReturn(EXCLUDE_REGEX);

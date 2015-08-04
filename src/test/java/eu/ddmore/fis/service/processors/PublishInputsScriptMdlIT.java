@@ -32,8 +32,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.google.common.collect.Sets;
-
 import eu.ddmore.archive.Archive;
 import eu.ddmore.archive.exception.ArchiveException;
 import eu.ddmore.convertertoolbox.domain.ConversionReport;
@@ -131,7 +129,7 @@ public class PublishInputsScriptMdlIT {
         // Prepare FIS Job
         LocalJob job = mock(LocalJob.class);
         when(job.getWorkingDirectory()).thenReturn(this.testWorkingDir.getAbsolutePath());
-        when(job.getControlFile()).thenReturn(modelFileInSubDir);
+        when(job.getExecutionFile()).thenReturn(modelFileInSubDir);
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
         final Archive archive = mockArchiveCreationAndConversion(this.testWorkingDir, modelFile);
@@ -162,7 +160,7 @@ public class PublishInputsScriptMdlIT {
         // Prepare FIS Job
         LocalJob job = mock(LocalJob.class);
         when(job.getWorkingDirectory()).thenReturn(fisWorkingDir.getPath());
-        when(job.getControlFile()).thenReturn(modelFile.getAbsolutePath());
+        when(job.getExecutionFile()).thenReturn(modelFile.getAbsolutePath());
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
         final Archive archive = mockArchiveCreationAndConversion(fisWorkingDir, modelFile);
@@ -193,7 +191,7 @@ public class PublishInputsScriptMdlIT {
         // Prepare FIS Job
         LocalJob job = mock(LocalJob.class);
         when(job.getWorkingDirectory()).thenReturn(fisWorkingDir.getPath());
-        when(job.getControlFile()).thenReturn(modelFile.getAbsolutePath());
+        when(job.getExecutionFile()).thenReturn(modelFile.getAbsolutePath());
         when(job.getExtraInputFiles()).thenReturn(Arrays.asList("/path/to/other/file/1", "../other/file/2"));
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
@@ -219,7 +217,7 @@ public class PublishInputsScriptMdlIT {
         // Prepare FIS Job
         LocalJob job = mock(LocalJob.class);
         when(job.getWorkingDirectory()).thenReturn(this.testWorkingDir.getAbsolutePath());
-        when(job.getControlFile()).thenReturn(modelFileName);
+        when(job.getExecutionFile()).thenReturn(modelFileName);
         when(job.getId()).thenReturn("MIF_JOB_ID");
         
         final Archive archive = mockArchiveCreationAndConversion(this.testWorkingDir, modelFile);

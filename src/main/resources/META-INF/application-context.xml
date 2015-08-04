@@ -228,10 +228,6 @@
         <property name="converters">
             <set>
                 <bean
-                    class="eu.ddmore.fis.controllers.converters.StringToSubmissionRequestConverter" />
-                <bean
-                    class="eu.ddmore.fis.controllers.converters.SubmissionRequestToStringConverter" />
-                <bean
                     class="eu.ddmore.fis.controllers.converters.StringToWriteMdlRequestConverter" />
                 <bean
                     class="eu.ddmore.fis.controllers.converters.StringToWriteMdlResponseConverter" />
@@ -246,20 +242,6 @@
         <property name="ctsShutdown" ref="ctsShutdown" />
     </bean>
 
-    <bean id="mifHealth" class="eu.ddmore.fis.service.mif.Healthcheck">
-    </bean>
-    
-    <bean id="ctsHealth" class="eu.ddmore.fis.service.cts.Healthcheck">
-    </bean>
-    
-    <bean id="ctsShutdown" class="eu.ddmore.fis.service.cts.CTSShutdown">
-    </bean>
-
-    <bean id="submitController" class="eu.ddmore.fis.controllers.SubmitController">
-        <property name="localJobService" ref="localJobService" />
-        <property name="jobDispatcher" ref="jobDispatcher" />
-    </bean>
-
     <bean id="jobDispatcher" class="eu.ddmore.fis.service.JobDispatcherImpl">
         <property name="mifClient" ref="mifRestClient" />
         <property name="jobResourcePublisher" ref="jobResourcePublisher" />
@@ -270,6 +252,7 @@
 
     <bean id="jobsController" class="eu.ddmore.fis.controllers.JobsController">
         <property name="localJobService" ref="localJobService" />
+        <property name="jobDispatcher" ref="jobDispatcher" />
     </bean>
 
     <bean id="mdlConversionController" class="eu.ddmore.fis.controllers.MdlConversionController">
@@ -283,13 +266,6 @@
 
     <bean id="commandRegistry" class="eu.ddmore.fis.service.CommandRegistryImpl">
         <property name="mifClient" ref="mifRestClient" />
-    </bean>
-
-    <bean id="mifRestClient" class="com.mango.mif.MIFHttpRestClient"
-        scope="singleton">
-        <constructor-arg>
-            <value>${mif.url}</value>
-        </constructor-arg>
     </bean>
 
     <bean id="remoteJobStatusPoller" class="eu.ddmore.fis.service.RemoteJobStatusPoller">

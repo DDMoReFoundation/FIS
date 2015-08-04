@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis.service;
 
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,10 +44,10 @@ public class LocalJobService {
         return getLocalJobRepository().save(localJob);
     }
 
-    public LocalJob newJob() {
-        LocalJob newJob = new LocalJob();
+    public LocalJob init(LocalJob newJob) {
         newJob.setId(UUID.randomUUID().toString());
         newJob.setStatus(LocalJobStatus.NEW);
+        newJob.setSubmitTime(new DateTime().toString());
         return newJob;
     }
 

@@ -21,9 +21,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
-import eu.ddmore.fis.domain.SubmissionRequest;
-import eu.ddmore.fis.domain.SubmissionResponse;
 
 /**
  * Verifies that standalone service fulfils functional requirements.
@@ -32,7 +31,7 @@ public class ServiceAT extends SystemPropertiesAware {
 
     private static final Logger LOG = Logger.getLogger(ServiceAT.class);
     
-    private FISHttpRestClient teisClient;
+    private FISHttpRestClient fisClient;
 
     private static String nonmemCommand;
 
@@ -47,7 +46,7 @@ public class ServiceAT extends SystemPropertiesAware {
 
     @Before
     public void setUp() throws Exception {
-        teisClient = new FISHttpRestClient(System.getProperty("fis.url"), System.getProperty("fis.management.url"));
+        fisClient = new FISHttpRestClient(System.getProperty("fis.url"), System.getProperty("fis.management.url"));
     }
 
     @Test
@@ -142,27 +141,27 @@ public class ServiceAT extends SystemPropertiesAware {
         final File workingDir = new File(userProjectDir.toString().replace("-UserProjectDir", "-WorkingDir"));
         workingDir.mkdir();
 
-        SubmissionRequest submissionRequest = new SubmissionRequest();
-        submissionRequest.setCommand(nonmemCommand);
-        submissionRequest.setExecutionFile(new File(userProjectDir, modelFile).getAbsolutePath());
-        submissionRequest.setWorkingDirectory(workingDir.getAbsolutePath());
-        SubmissionResponse response = teisClient.submitRequest(submissionRequest);
+        LocalJob job = new LocalJob();
+        job.setExecutionFile(new File(userProjectDir, modelFile).getAbsolutePath());
+        job.setExecutionType(nonmemCommand);
+        job.setWorkingDirectory(workingDir.getAbsolutePath());
+        LocalJob submittedJob = fisClient.submitRequest(job);
 
-        assertNotNull("SubmissionResponse should not be null", response);
-        assertNotNull("Request ID should be set on the SubmissionResponse", response.getRequestID());
+        assertNotNull("returned job should not be null", submittedJob);
+        assertNotNull("Job ID should be set", submittedJob.getId());
 
-        String jobId = response.getRequestID();
+        String jobId = submittedJob.getId();
 
-        LOG.debug(String.format("Request ID %s", response.getRequestID()));
+        LOG.debug(String.format("Job ID %s", jobId));
 
-        while (isNotCompleted(teisClient.checkStatus(jobId))) {
-            LOG.debug(String.format("Waiting for %s job to complete. Working directory: %s", response.getRequestID(), workingDir));
+        while (isNotCompleted(fisClient.checkStatus(jobId))) {
+            LOG.debug(String.format("Waiting for %s job to complete. Working directory: %s", jobId, workingDir));
             Thread.sleep(TimeUnit.SECONDS.toMillis(2));
         }
 
         LOG.debug(String.format("Files in working directory: %s", Arrays.toString(workingDir.list())));
         
-        assertEquals("Job should complete with status COMPLETED", LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
+        assertEquals("Job should complete with status COMPLETED", LocalJobStatus.COMPLETED, fisClient.checkStatus(jobId));
 
         assertTrue("NONMEM Control File does not exist in the working directory", new File(workingDir, modelFile.replaceFirst("\\..*", ".ctl")).exists());
         assertTrue("NONMEM Output LST file does not exist in the working directory", new File(workingDir, modelFile.replaceFirst("\\..*", ".lst")).exists());
@@ -170,7 +169,7 @@ public class ServiceAT extends SystemPropertiesAware {
 
         verifyThatFisMetadataFilesExist(workingDir);
 
-        assertEquals("Status of the Job should be COMPLETED", LocalJobStatus.COMPLETED, teisClient.checkStatus(jobId));
+        assertEquals("Status of the Job should be COMPLETED", LocalJobStatus.COMPLETED, fisClient.checkStatus(jobId));
     }
 
     /**

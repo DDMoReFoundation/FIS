@@ -81,7 +81,7 @@ public class JobArchiveProvisionerTest {
         
         provisioner.provision(job, archive, mifJobDirectory);
         
-        verify(job).setControlFile("path/to/control/file"); //job must have a relative path to the control file
+        verify(job).setExecutionFile("path/to/control/file"); //job must have a relative path to the control file
         verify(archive).extractArchiveTo(eq(mifJobDirectory));
         verify(archive).close();
         PowerMockito.verifyStatic(times(0));
@@ -102,7 +102,7 @@ public class JobArchiveProvisionerTest {
         provisioner.setMifArchiveSupport(true);
         
         provisioner.provision(job, archive, mifJobDirectory);
-        verify(job).setControlFile(eq("file.phex"));
+        verify(job).setExecutionFile(eq("file.phex"));
         verify(archive).close();
         
         PowerMockito.verifyStatic(times(1));

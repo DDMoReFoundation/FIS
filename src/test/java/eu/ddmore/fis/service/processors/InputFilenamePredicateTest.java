@@ -43,50 +43,50 @@ public class InputFilenamePredicateTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void apply_shouldThrowExceptionIfInputFileIsEmpty() {
-        when(job.getControlFile()).thenReturn("");
+        when(job.getExecutionFile()).thenReturn("");
         instance.apply(job);
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void apply_shouldThrowExceptionIfInputFileIsNull() {
-        when(job.getControlFile()).thenReturn(null);
+        when(job.getExecutionFile()).thenReturn(null);
         instance.apply(job);
     }
     
     @Test
     public void apply_shouldReturn_TRUE_IfInputFileHas_EXT_extension() {
-        when(job.getControlFile()).thenReturn("my-file-with.EXT");
+        when(job.getExecutionFile()).thenReturn("my-file-with.EXT");
         assertTrue(instance.apply(job));
     }
 
     @Test
     public void apply_shouldReturn_FALSE_IfInputFileHasNot_EXT_extension() {
-        when(job.getControlFile()).thenReturn("my-file-with.NON-EXT");
+        when(job.getExecutionFile()).thenReturn("my-file-with.NON-EXT");
         assertFalse(instance.apply(job));
     }
 
     @Test
     public void apply_shouldReturn_TRUE_IfInputFileHas_EXT_extension_and_no_basename() {
-        when(job.getControlFile()).thenReturn(".EXT");
+        when(job.getExecutionFile()).thenReturn(".EXT");
         assertTrue(instance.apply(job));
     }
 
     @Test
     public void apply_shouldReturn_TRUE_IfInputFileHas_EXT_extension_andDirectoryPath() {
-        when(job.getControlFile()).thenReturn("/this/is/some/directory/structure/filename.EXT");
+        when(job.getExecutionFile()).thenReturn("/this/is/some/directory/structure/filename.EXT");
         assertTrue(instance.apply(job));
     }
 
 
     @Test
     public void apply_shouldReturn_TRUE_IfInputFileHas_EXT_extension_andDirectoryPathWithWindowsFilePathSeparator() {
-        when(job.getControlFile()).thenReturn("c:\\this\\is\\some\\directory\\structure\\filename.EXT");
+        when(job.getExecutionFile()).thenReturn("c:\\this\\is\\some\\directory\\structure\\filename.EXT");
         assertTrue(instance.apply(job));
     }
     
     @Test
     public void apply_shouldReturn_FALSE_IfInputFileHas_DOT_EXT_inBasenameButNotExtension_EXT() {
-        when(job.getControlFile()).thenReturn(".EXT.incorrect");
+        when(job.getExecutionFile()).thenReturn(".EXT.incorrect");
         assertFalse(instance.apply(job));
     }
 }

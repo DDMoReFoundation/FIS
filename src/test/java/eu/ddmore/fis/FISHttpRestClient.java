@@ -12,6 +12,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -19,8 +20,6 @@ import com.google.common.base.Joiner;
 
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
-import eu.ddmore.fis.domain.SubmissionRequest;
-import eu.ddmore.fis.domain.SubmissionResponse;
 import eu.ddmore.fis.domain.WriteMdlRequest;
 import eu.ddmore.fis.domain.WriteMdlResponse;
 
@@ -46,30 +45,34 @@ public class FISHttpRestClient {
     }
 
     /**
-     * Submit an execution request to FIS.
+     * Submit a job to FIS.
      * 
-     * @return submission response 
+     * @return local job
      */
-    public SubmissionResponse submitRequest(SubmissionRequest submissionRequest) {
+    public LocalJob submitRequest(LocalJob job) {
         
-        String endpoint = buildEndpoint("submit");
+        String endpoint = buildEndpoint("jobs");
         PostMethod post = new PostMethod(endpoint);
         
-        post.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
+        post.addRequestHeader("accept", MediaType.APPLICATION_JSON);
         ObjectMapper mapper = new ObjectMapper();
         String json;
         try {
-            json = mapper.writeValueAsString(submissionRequest);
+            json = mapper.writeValueAsString(job);
         } catch (Exception e) {
             throw new RuntimeException("Could not produce json", e);
         }
-        post.setParameter("submissionRequest", json);
+        try {
+			post.setRequestEntity(new StringRequestEntity(json,MediaType.APPLICATION_JSON,"utf-8"));
+		} catch (UnsupportedEncodingException e1) {
+            throw new RuntimeException("Could not create a request.", e1);
+		}
         
         LOG.info(String.format("Sending execution request: %s",json));
         
         String response = executeMethod(endpoint, post);
         try {
-            return mapper.readValue(response, SubmissionResponse.class);
+            return mapper.readValue(response, LocalJob.class);
         } catch (Exception e) {
             throw new RuntimeException(String.format("Could not parse json %s",response), e);
         }
@@ -116,7 +119,7 @@ public class FISHttpRestClient {
     public LocalJob getJob(String jobId) {
         String endpoint = buildEndpoint("jobs", jobId);
         GetMethod get = new GetMethod(endpoint);
-        get.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
+        get.addRequestHeader("accept", MediaType.APPLICATION_JSON);
         ObjectMapper mapper = new ObjectMapper();
         String response = executeMethod(endpoint, get);
         try {
@@ -149,14 +152,14 @@ public class FISHttpRestClient {
         }
         String endpoint = buildEndpoint("readmdl?fileName=" + urlEncodedFilename);
         GetMethod get = new GetMethod(endpoint);
-        get.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
+        get.addRequestHeader("accept", MediaType.APPLICATION_JSON);
         return executeMethod(endpoint,get);
     }
 
     public WriteMdlResponse writeMdl(WriteMdlRequest writeRequest) {
         String endpoint = buildEndpoint("writemdl");
         PostMethod req = new PostMethod(endpoint);
-        req.addRequestHeader("accept", MediaType.MEDIA_TYPE_WILDCARD);
+        req.addRequestHeader("accept", MediaType.APPLICATION_JSON);
 
         ObjectMapper mapper = new ObjectMapper();
         String json;
