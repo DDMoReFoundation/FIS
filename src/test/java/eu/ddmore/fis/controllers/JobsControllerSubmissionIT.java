@@ -47,6 +47,7 @@ import com.mango.mif.domain.ExecutionRequest;
 import eu.ddmore.fis.CommonIntegrationTestContextConfiguration;
 import eu.ddmore.fis.SystemPropertiesAware;
 import eu.ddmore.fis.configuration.RestClientConfiguration;
+import eu.ddmore.fis.controllers.ClientError.JobNotFound;
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
 import eu.ddmore.fis.service.CommandRegistryImpl;
@@ -110,7 +111,7 @@ public class JobsControllerSubmissionIT extends SystemPropertiesAware {
     }
 
     @Test
-    public void shouldSubmitRequest() throws IOException, InterruptedException {
+    public void shouldSubmitRequest() throws IOException, InterruptedException, JobNotFound {
 
         // Copy the files out of the testdata JAR file
 

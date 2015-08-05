@@ -7,9 +7,19 @@ package eu.ddmore.fis.domain;
  * Status of the job
  */
 public enum LocalJobStatus {
-    NEW,
-    RUNNING,
-    COMPLETED,
-    FAILED,
-    CANCELLED;
+    NEW(false),
+    RUNNING(false),
+    CANCELLING(false),
+    COMPLETED(true),
+    FAILED(true),
+    CANCELLED(true);
+
+    private boolean isFinal;
+    private LocalJobStatus(boolean isFinal) {
+        this.isFinal = isFinal;
+    }
+    
+    public boolean isFinal() {
+        return isFinal;
+    }
 }

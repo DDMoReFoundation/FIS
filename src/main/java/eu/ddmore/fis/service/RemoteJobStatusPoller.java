@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.mango.mif.MIFHttpRestClient;
 import com.mango.mif.MIFJobStatusHelper;
 
@@ -36,7 +37,8 @@ public class RemoteJobStatusPoller {
         }
     }
     
-    private void updateJobStatus(final LocalJob job) {
+    @VisibleForTesting
+    void updateJobStatus(final LocalJob job) {
         LOG.debug(String.format("Job [%s] Local status is %s", job.getId(), job.getStatus()));
         String remoteJobStatus = mifClient.checkStatus(job.getId());
         LOG.debug(String.format("Job [%s] TES job status is: %s",job.getId(), remoteJobStatus));
@@ -44,18 +46,22 @@ public class RemoteJobStatusPoller {
         if("NOT_AVAILABLE".equals(remoteJobStatus)) {
             return;
         }
-        LocalJobStatus localJobStatus = toLocalStatus(remoteJobStatus);
+        LocalJobStatus localJobStatus = toLocalStatus(job, remoteJobStatus);
         localJob.setStatus(localJobStatus);
         
-        if(!LocalJobStatus.RUNNING.equals(localJobStatus)) {
+        if(localJobStatus.isFinal()) {
             localJob = jobResourceRetriever.process(localJob);
         }
         
         localJobService.setJobStatus(localJob.getId(),localJob.getStatus());
     }
-
-    private LocalJobStatus toLocalStatus(String remoteJobStatus) {
+    
+    @VisibleForTesting
+    LocalJobStatus toLocalStatus(LocalJob job, String remoteJobStatus) {
         if(MIFJobStatusHelper.running(remoteJobStatus)) {
+            if(LocalJobStatus.CANCELLING.equals(job.getStatus())) {
+                return LocalJobStatus.CANCELLING;
+            }
             return LocalJobStatus.RUNNING;
         }
         if(MIFJobStatusHelper.cancelled(remoteJobStatus)) {

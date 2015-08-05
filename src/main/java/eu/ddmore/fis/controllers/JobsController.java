@@ -8,13 +8,14 @@ import java.util.Set;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.collect.Sets;
 
+import eu.ddmore.fis.controllers.ClientError.JobNotFound;
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
 import eu.ddmore.fis.service.JobDispatcher;
@@ -34,8 +36,9 @@ import eu.ddmore.fis.service.LocalJobService;
 public class JobsController {
     private static final Logger LOG = Logger.getLogger(JobsController.class);
     
+    @Autowired
 	private LocalJobService localJobService;
-	
+    @Autowired
 	private JobDispatcher jobDispatcher;
 	
 	/**
@@ -82,10 +85,10 @@ public class JobsController {
 	 */
     @RequestMapping(value = "status/{jobId}", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
 	@Description("Endpoint returning a job status.")
-    public @ResponseBody ResponseEntity<LocalJobStatus> getJobStatus(@PathVariable("jobId") String jobId) {
+    public @ResponseBody ResponseEntity<LocalJobStatus> getJobStatus(@PathVariable("jobId") String jobId) throws JobNotFound {
     	LocalJob localJob = localJobService.getJob(jobId);
     	if(localJob==null) {
-    		return new ResponseEntity<LocalJobStatus>(HttpStatus.NOT_FOUND);
+            throw new JobNotFound(String.format("Job with id %s does not exist.", jobId));
     	}
         return new ResponseEntity<LocalJobStatus>(localJob.getStatus(), HttpStatus.OK);
     }
@@ -96,20 +99,24 @@ public class JobsController {
      */
     @RequestMapping(value = "{jobId}", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
 	@Description("Endpoint returning a job state.")
-    public @ResponseBody ResponseEntity<LocalJob> getJob(@PathVariable("jobId") String jobId) {
+    public @ResponseBody ResponseEntity<LocalJob> getJob(@PathVariable("jobId") String jobId) throws JobNotFound {
     	LocalJob localJob = localJobService.getJob(jobId);
     	if(localJob==null) {
-    		return new ResponseEntity<LocalJob>(HttpStatus.NOT_FOUND);
+    		throw new JobNotFound(String.format("Job with id %s does not exist.", jobId));
     	}
         return new ResponseEntity<LocalJob>(localJob, HttpStatus.OK);
     }
-    
+
+    @ExceptionHandler(JobNotFound.class)
+    public ResponseEntity<String> handleIOException(JobNotFound ex) {
+      return new ResponseEntity<String>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
         binder.setValidator(new SubmittedLocalJobValidator());
     }
     
-    @Required
     public void setLocalJobService(LocalJobService localJobService) {
         this.localJobService = localJobService;
     }
@@ -118,7 +125,6 @@ public class JobsController {
         return localJobService;
     }
 
-    @Required
     public void setJobDispatcher(JobDispatcher jobDispatcher) {
         this.jobDispatcher = jobDispatcher;
     }

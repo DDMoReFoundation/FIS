@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,12 +17,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
+import org.springframework.boot.test.IntegrationTest;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import eu.ddmore.fis.CommonIntegrationTestContextConfiguration;
 import eu.ddmore.fis.SystemPropertiesAware;
+import eu.ddmore.fis.configuration.RestClientConfiguration;
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
 import eu.ddmore.fis.service.LocalJobService;
@@ -32,10 +39,17 @@ import eu.ddmore.fis.service.LocalJobService;
  * Integration test for {@link JobsController}.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { CommonIntegrationTestContextConfiguration.class })
+@SpringApplicationConfiguration(classes = { CommonIntegrationTestContextConfiguration.class,RestClientConfiguration.class })
+@WebAppConfiguration
+@IntegrationTest({"server.port=0", "management.port=0"}) //let the framework choose the port
 public class JobsControllerIT extends SystemPropertiesAware {
-
     private final Logger LOG = Logger.getLogger(JobsControllerIT.class);
+    private static final String URL = "http://localhost";
+    @Autowired
+    private EmbeddedWebApplicationContext server;
+
+    @Autowired
+    private RestTemplate restTemplate;
     
     private static final String EXECUTION_TYPE_1 = "NONMEM";
     private static final String EXECUTION_TYPE_2 = "MONOLIX";
@@ -104,24 +118,24 @@ public class JobsControllerIT extends SystemPropertiesAware {
         this.localJobService.setJobStatus(this.savedLocalJob2.getId(), LocalJobStatus.COMPLETED);
     }
 
-    /**
-     * Test method for {@link eu.ddmore.fis.controllers.JobsController#getJob(java.lang.String)}.
-     */
     @Test
-    public void testGetJob() {
-        final ResponseEntity<LocalJob> retrievedJob = this.jobsController.getJob(this.jobId1);
+    public void getJob_shouldReturnJob() {
+        final ResponseEntity<LocalJob> retrievedJob = restTemplate.getForEntity(generateEndpoint("jobs/{jobId}"), LocalJob.class, this.jobId1);
         LocalJob job = retrievedJob.getBody();
         LOG.info(String.format("Retrieved job: %s (modelfile=%s)", job.getId(), job.getExecutionFile()));
         assertNotNull("Matching Job should be found and retrieved", job);
         verifyJob1(job);
     }
 
-    /**
-     * Test method for {@link eu.ddmore.fis.controllers.JobsController#getJobs()}.
-     */
+    @Test(expected=HttpClientErrorException.class)
+    public void getJob_shouldResultIn40xStatusIfJobDoesNotExist() {
+        restTemplate.getForEntity(generateEndpoint("jobs/{jobId}"), LocalJob.class, "NON_EXISTING_JOB");
+    }
+
     @Test
-    public void testGetJobs() {
-        final Collection<LocalJob> retrievedJobs = this.jobsController.getJobs();
+    public void getJobs_shouldReturnAllJobs() {
+        final ResponseEntity<List<LocalJob>> retrievedJobsResource = restTemplate.exchange(generateEndpoint("jobs"), HttpMethod.GET, null, new ParameterizedTypeReference<List<LocalJob>>(){} );
+        List<LocalJob> retrievedJobs = retrievedJobsResource.getBody();
         assertTrue("Should be at least two jobs returned (other integration tests may have populated the database with others)", retrievedJobs.size() > 2);
 
         final LocalJob retrievedJob1 = CollectionUtils.find(retrievedJobs, new Predicate<LocalJob>() {
@@ -143,13 +157,15 @@ public class JobsControllerIT extends SystemPropertiesAware {
         verifyJob2(retrievedJob2);
     }
     
-    /**
-     * Test method for {@link eu.ddmore.fis.controllers.JobsController#getJobStatus(java.lang.String)}.
-     */
     @Test
-    public void testGetJobStatus() {
-        final ResponseEntity<LocalJobStatus> retrievedJobStatus = this.jobsController.getJobStatus(this.jobId1);
+    public void getJobStatus_shouldReturnJobStatus() {
+        final ResponseEntity<LocalJobStatus> retrievedJobStatus = restTemplate.getForEntity(generateEndpoint("jobs/status/{jobId}"), LocalJobStatus.class, this.jobId1);
         assertEquals("Checking the returned job status", LocalJobStatus.RUNNING, retrievedJobStatus.getBody());
+    }
+    
+    @Test(expected=HttpClientErrorException.class)
+    public void getJobStatus_shouldResultIn40xStatusIfJobDoesNotExist() {
+        restTemplate.getForEntity(generateEndpoint("jobs/status/{jobId}"), LocalJobStatus.class, "NON_EXISTING_JOB");
     }
     
     private void verifyJob1(final LocalJob localJob1) {
@@ -177,5 +193,7 @@ public class JobsControllerIT extends SystemPropertiesAware {
         assertEquals("Checking results-exclude regex of returned job", RESULTS_EXCLUDE_REGEX, localJob2.getResultsExcludeRegex());
         assertNotNull("Checking submitTime of returned job", localJob2.getSubmitTime());
     }
-
+    private String generateEndpoint(String path) {
+        return URL+":"+server.getEmbeddedServletContainer().getPort()+path;
+    }
 }

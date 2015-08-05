@@ -241,6 +241,10 @@
         <property name="mifClient" ref="mifRestClient" />
         <property name="ctsShutdown" ref="ctsShutdown" />
     </bean>
+    
+    <bean id="jobCancellationController" class="eu.ddmore.fis.controllers.JobCancellationController"/>
+
+    <bean id="jobCanceller" class="eu.ddmore.fis.service.JobCanceller"/>
 
     <bean id="jobDispatcher" class="eu.ddmore.fis.service.JobDispatcherImpl">
         <property name="mifClient" ref="mifRestClient" />

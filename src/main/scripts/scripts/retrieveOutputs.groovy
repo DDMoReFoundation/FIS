@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-import java.util.regex.Pattern
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.regex.Pattern
 
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
 
 import eu.ddmore.fis.domain.LocalJob
-
+import eu.ddmore.fis.domain.LocalJobStatus
 import groovy.transform.Field
 
 /**
@@ -50,6 +50,11 @@ String executionHostFileshareLocal = binding.getVariable("execution.host.filesha
 /**
  * Script
  */
+
+if(LocalJobStatus.CANCELLED == job.getStatus()) {
+    LOG.info("Job ${job.getId()} is in CANCELLED state, skipping results retrieval.");
+    return;
+}
 
 File workingDir = new File(job.getWorkingDirectory())
 File mifWorkingDir = new File(executionHostFileshareLocal, job.getId());
