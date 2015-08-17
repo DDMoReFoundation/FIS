@@ -55,6 +55,7 @@ public class LocalJobService {
     public List<LocalJob> getUncompletedJobs() {
         Preconditions.checkNotNull(localJobRepository, "Local Job Repository must be set");
         List<LocalJob> jobs = Lists.newArrayList();
+        jobs.addAll(getLocalJobRepository().findByStatus(LocalJobStatus.CANCELLING));
         jobs.addAll(getLocalJobRepository().findByStatus(LocalJobStatus.RUNNING));
         jobs.addAll(getLocalJobRepository().findByStatus(LocalJobStatus.NEW));
         return jobs;

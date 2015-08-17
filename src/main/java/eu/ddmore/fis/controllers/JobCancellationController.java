@@ -25,7 +25,8 @@ import eu.ddmore.fis.service.LocalJobService;
 /**
  * Controller handling job cancellation requests
  */
-@Controller("/cmd/jobs/cancel")
+@Controller
+@RequestMapping("/cmd/jobs/cancel")
 public class JobCancellationController {
     @Autowired
     private LocalJobService localJobService;
