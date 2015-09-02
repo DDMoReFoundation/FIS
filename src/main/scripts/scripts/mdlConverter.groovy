@@ -75,7 +75,7 @@ try {
     archive.open();
     if (ConversionReportOutcomeCode.FAILURE.equals(conversionReport.getReturnCode())) {
         LOG.debug("Conversion of ${inputFile} failed.");
-        return ""
+        throw new IllegalStateException(conversionReport.toString())
     }
     Preconditions.checkState(!archive.getMainEntries().isEmpty(), "Archive with the result of conversion had no main entries.");
     Entry resultEntry = archive.getMainEntries().iterator().next();

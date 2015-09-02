@@ -144,7 +144,11 @@ public class MdlConversionProcessorIT {
         when(this.converterToolboxService.convert(same(archive), same(mdlLanguage), same(pharmmlLanguage))).thenReturn(conversionReport);
         
         //when
-        String resultFile = conversionProcessor.process(mdlFile.getAbsolutePath(), outputDir.getAbsolutePath());
+        try {
+            conversionProcessor.process(mdlFile.getAbsolutePath(), outputDir.getAbsolutePath());
+        } catch(RuntimeException ex) {
+            assertTrue("Type of the cause exception should be IllegalStateException", ex.getCause() instanceof IllegalStateException);
+        }
         
         //then
         
@@ -156,8 +160,6 @@ public class MdlConversionProcessorIT {
         verify(this.mockArchiveCreator).buildArchive(new File(fisMetadataDir, PHEX_ARCHIVE), mdlFile);
         verifyNoMoreInteractions(this.mockArchiveCreator);
         
-        // The crucial assertion
-        assertTrue("Conversion Result file path is blank", StringUtils.isBlank(resultFile));
     }
     
     @Test(expected=RuntimeException.class)
