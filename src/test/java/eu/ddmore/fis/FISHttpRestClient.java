@@ -150,7 +150,7 @@ public class FISHttpRestClient {
         } catch (UnsupportedEncodingException e) {
 	        throw new IllegalArgumentException("Unable to URL-encode file path: " + fileName);
         }
-        String endpoint = buildEndpoint("readmdl?fileName=" + urlEncodedFilename);
+        String endpoint = buildEndpoint("readmdl?filePath=" + urlEncodedFilename);
         GetMethod get = new GetMethod(endpoint);
         get.addRequestHeader("accept", MediaType.APPLICATION_JSON);
         return executeMethod(endpoint,get);
@@ -204,7 +204,7 @@ public class FISHttpRestClient {
         } catch (UnsupportedEncodingException e) {
 	        throw new IllegalArgumentException("Unable to URL-encode file path: " + mdlFileFullPath);
         }
-        String endpoint = buildEndpoint("convertmdl?fileName=" + urlEncodedFilename+"&outputDir="+urlEncodedOutputName);
+        String endpoint = buildEndpoint("convertmdl?filePath=" + urlEncodedFilename+"&outputDir="+urlEncodedOutputName);
         PostMethod postMethod = new PostMethod(endpoint);
         postMethod.addRequestHeader("accept", MediaType.APPLICATION_JSON);
         return executeMethod(endpoint,postMethod);

@@ -34,8 +34,8 @@ public class MdlConversionController {
      * @return a full path to the result file or empty string in case of error
      */
     @RequestMapping(value = "convertmdl", method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
-    public @ResponseBody String convertMdlToPharmML(@RequestParam(value="fileName") String filePath, @RequestParam(value="outputDir") String outputDir) {
-        Preconditions.checkArgument(StringUtils.isNotBlank(filePath), "fileName %s can't be blank.");
+    public @ResponseBody String convertMdlToPharmML(@RequestParam(value="filePath") String filePath, @RequestParam(value="outputDir") String outputDir) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(filePath), "filePath %s can't be blank.");
         Preconditions.checkArgument(StringUtils.isNotBlank(outputDir), "outputDir %s can't be blank.");
         Preconditions.checkArgument(new File(filePath).exists(), "File %s must exist.", filePath);
         try {

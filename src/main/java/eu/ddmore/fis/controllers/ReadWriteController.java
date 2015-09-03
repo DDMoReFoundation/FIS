@@ -24,8 +24,8 @@ public class ReadWriteController {
 	private MdlFileWriter writeProcessor;
 
 	@RequestMapping(value = "readmdl", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
-    public @ResponseBody String readMdl(@RequestParam(value="fileName") String fileName) {
-        return readProcessor.process(fileName);
+    public @ResponseBody String readMdl(@RequestParam(value="filePath") String filePath) {
+        return readProcessor.process(filePath);
     }
 
     @RequestMapping(value = "writemdl", method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
