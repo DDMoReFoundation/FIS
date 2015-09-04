@@ -33,6 +33,6 @@ REM  - If a remote MIF is to be used for job execution, then the mif.url propert
 REM    set/overridden in the parameters above (it defaults to localhost in config.properties).
 REM  - The logging level can be overridden via appropriate system property: -Dlogging.level.eu.ddmore=DEBUG
 
-java.exe %params% -DFIS_HOME="%SERVICE_HOME%" -jar "%SERVICE_HOME%"\%SERVICE_BINARY%
+java.exe %JAVA_OPTS% %params% -DFIS_HOME="%SERVICE_HOME%" -jar "%SERVICE_HOME%"\%SERVICE_BINARY%
 
 EXIT
