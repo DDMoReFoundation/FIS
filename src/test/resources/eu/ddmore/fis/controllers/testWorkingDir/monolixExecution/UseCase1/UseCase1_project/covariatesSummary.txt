@@ -1,0 +1,4 @@
+Table: Continuous covariates
+covariate	mean	median	 std	  min	 max
+   logtWT	-0.017	 0.023	0.190	-0.560	0.376
+

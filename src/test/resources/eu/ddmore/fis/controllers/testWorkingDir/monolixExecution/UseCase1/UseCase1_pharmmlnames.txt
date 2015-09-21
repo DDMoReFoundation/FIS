@@ -1,0 +1,16 @@
+CL:beta:logtWT=BETA_CL_WT
+CL:eta=ETA_CL
+CL:omega2=PPV_CL
+CL:pop=POP_CL
+KA:eta=ETA_KA
+KA:omega2=PPV_KA
+KA:pop=POP_KA
+TLAG:eta=ETA_TLAG
+TLAG:omega2=PPV_TLAG
+TLAG:pop=POP_TLAG
+V:beta:logtWT=BETA_V_WT
+V:eta=ETA_V
+V:omega2=PPV_V
+V:pop=POP_V
+Y:errorParameter:a=RUV_ADD
+Y:errorParameter:b=RUV_PROP

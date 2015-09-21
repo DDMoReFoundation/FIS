@@ -8,6 +8,7 @@ import eu.ddmore.fis.domain.LocalJob;
 import groovy.lang.Binding;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -34,13 +35,13 @@ public class RetrieveOutputsScriptIT {
     private JobProcessor jobProcessor;
 
     @Before
-    public void setUp() throws Exception {
-
+    public void setUp() throws IOException {
         // Prepare the MIF execution host fileshare
         this.executionHostFileshareLocal = this.testMifTemporaryFolder.getRoot();
+        LOG.debug(String.format("Test MIF execution host fileshare %s", this.executionHostFileshareLocal));
+        
         final File testDataDir = FileUtils.toFile(RetrieveOutputsScriptIT.class.getResource("/eu/ddmore/fis/controllers/testWorkingDir"));
         FileUtils.copyDirectory(testDataDir, this.executionHostFileshareLocal);
-        LOG.debug(String.format("Test MIF execution host fileshare %s", this.executionHostFileshareLocal));
         
         // Set up the FIS working directory that will receive the retrieved output files from the MIF working directory
         this.fisWorkingDir = this.testFisTemporaryFolder.getRoot();
@@ -56,7 +57,6 @@ public class RetrieveOutputsScriptIT {
 
     @Test
     public void shouldRetrieveResultFilesFromMIFWorkingDirectory() {
-    
         final File mifWorkingDir = new File(this.executionHostFileshareLocal, "MIF_JOB_ID");
 
         final String INCLUDE_REGEX = ".*\\..*";
@@ -94,6 +94,52 @@ public class RetrieveOutputsScriptIT {
     }
     
     /**
+     * This test uses actual result files from TPT execution (currently Monolix), this test is for verification that real-world 
+     * test data is correctly handled by the implementation.
+     */
+    @Test
+    public void shouldRetrieveExpectedTPTResultFiles() {
+        final String jobId = "monolixExecution";
+        
+        final File mifWorkingDir = new File(this.executionHostFileshareLocal, jobId);
+
+        final String INCLUDE_REGEX = ".*";
+        final String EXCLUDE_REGEX = "(converter\\.out|project\\.xmlx)";
+
+        assertTrue("Double-checking that the file that shouldn't be copied back does initially exist in the MIF working dir", new File(
+                mifWorkingDir, "converter.out").exists());
+        assertTrue("Double-checking that the directory that shouldn't be copied back does initially exist in the MIF working dir", new File(
+                mifWorkingDir, "UseCase1/UseCase1_project/project.xmlx").exists());
+
+        LocalJob job = mock(LocalJob.class);
+        when(job.getWorkingDirectory()).thenReturn(this.fisWorkingDir.getAbsolutePath());
+        when(job.getExecutionFile()).thenReturn("UseCase1.xml");
+        when(job.getId()).thenReturn(jobId);
+        when(job.getResultsIncludeRegex()).thenReturn(INCLUDE_REGEX);
+        when(job.getResultsExcludeRegex()).thenReturn(EXCLUDE_REGEX);
+
+        // Invoke the retrieveOutputs script being tested
+        jobProcessor.process(job);
+
+        assertTrue("Output SO should be copied back", new File(this.fisWorkingDir, "UseCase1.SO.xml").exists());
+        assertTrue("FIM resource should be copied back", new File(this.fisWorkingDir, "ddmore_fim.csv").exists());
+        assertTrue("UseCase1/UseCase1_project/fim_lin.txt resource should be copied back", new File(this.fisWorkingDir, "UseCase1/UseCase1_project/fim_lin.txt").exists());
+        assertTrue("CSV resource should be copied back", new File(this.fisWorkingDir, "warfarin_conc.csv").exists());
+        assertFalse("File that matches the regex exclusion pattern should not be copied back",
+                new File(this.fisWorkingDir, "converter.out").exists());
+        assertFalse("File that doesn't match the regex inclusion pattern should not be copied back",
+                new File(this.fisWorkingDir, "UseCase1/UseCase1_project/project.xmlx").exists());
+        assertFalse(".MIF hidden directory should not be copied back", new File(this.fisWorkingDir, ".MIF").exists());
+
+        File fisHiddenDir = new File(this.fisWorkingDir, ".fis");
+        assertTrue(String.format("%s directory should be created", fisHiddenDir), new File(this.fisWorkingDir, ".fis").exists());
+        File stdOut = new File(fisHiddenDir, "stdout");
+        File stdErr = new File(fisHiddenDir, "stderr");
+        assertTrue(String.format("%s file should be created", stdOut), stdOut.exists());
+        assertTrue(String.format("%s file should be created", stdErr), stdErr.exists());
+    }
+
+    /**
      * Model execution takes place within the directory containing the model file. 
      * Therefore where a project has the structure models/mymodel.mdl and data/mydata.csv, the execution
      * directory is the subdirectory "models" of the MIF working directory.
@@ -103,10 +149,9 @@ public class RetrieveOutputsScriptIT {
      */
     @Test
     public void shouldRetrieveResultFilesFromMIFWorkingDirectoryWithDirectoryStructure() {
-    
         final File mifWorkingDir = new File(this.executionHostFileshareLocal, "exec_output_from_model_file_in_subdir");
         
-        final String INCLUDE_REGEX = ".*\\..*"; // Originally: (.*\\.(csv|ctl|lst|ext|grd|phi|shk|fit|SO\\.xml)$)|(^[a-z][a-z]tab[0-9]*)")
+        final String INCLUDE_REGEX = ".*\\..*";
         final String EXCLUDE_REGEX = "(nonmem.exe|temp_dir)";
 
         assertTrue("Double-checking that the file that shouldn't be copied back does initially exist in the MIF working dir", new File(
@@ -143,5 +188,4 @@ public class RetrieveOutputsScriptIT {
         assertTrue(String.format("%s file should be created", stdOut), stdOut.exists());
         assertTrue(String.format("%s file should be created", stdErr), stdErr.exists());
     }
-
 }

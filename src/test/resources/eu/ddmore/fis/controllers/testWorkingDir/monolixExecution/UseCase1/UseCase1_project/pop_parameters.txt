@@ -1,0 +1,65 @@
+******************************************************************
+*      UseCase1_project.mlxtran
+*      September 09, 2015 at 15:06:12
+*      Monolix version: 4.3.2
+******************************************************************
+
+Estimation of the population parameters
+
+                 parameter     s.e. (lin)   r.s.e.(%)   p-value 
+V_pop          :     8.08         0.22           3              
+beta_V_logtWT  :        1          -           -          -     
+KA_pop         :     1.92         0.64          34              
+CL_pop         :    0.134       0.0065           5              
+beta_CL_logtWT :     0.75          -           -          -     
+TLAG_pop       :    0.976        0.021           2              
+
+omega_V        :    0.131        0.023          17              
+omega_KA       :     1.17         0.26          22              
+omega_CL       :    0.265        0.036          13              
+omega_TLAG     :      0.1          -           -                
+corr(V,CL)     :    0.206         0.21         101              
+
+a              :    0.223        0.047          21              
+b              :   0.0658       0.0095          14              
+
+correlation matrix (IIV)
+V         1          
+KA        0       1       
+CL     0.21       0       1    
+TLAG      0       0       0       1 
+
+______________________________________________
+correlation matrix of the estimates(linearization)
+
+V_pop         1          
+KA_pop    -0.06       1       
+CL_pop     0.14   -0.02       1    
+TLAG_pop   0.01    0.02      -0       1 
+
+Eigenvalues (min, max, max/min): 0.85  1.2  1.4
+
+omega_V       1             
+omega_KA  -0.01       1          
+omega_CL   0.02      -0       1       
+a             0   -0.01   -0.02       1    
+b         -0.07   -0.01      -0   -0.78       1 
+
+Eigenvalues (min, max, max/min): 0.22  1.8  8
+
+Numerical covariates
+	logtWT		
+
+
+Population parameters and Fisher Information Matrix estimation...
+
+Elapsed time is 34.2 seconds. 
+CPU time is 67 seconds. 
+______________________________________________________________
+
+Log-likelihood Estimation by linearization
+
+-2 x log-likelihood:                   738.61 
+Akaike Information Criteria   (AIC):   758.61 
+Bayesian Information Criteria (BIC):   773.27 
+______________________________________________________________

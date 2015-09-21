@@ -1,0 +1,25 @@
+INPUT:
+	parameter={V, KA, CL, TLAG}
+
+PK:
+depot(target=GUT)
+
+EQUATION:
+if (t)>=(TLAG)
+
+RATEIN=(GUT)*(KA)
+
+else
+
+RATEIN=0
+
+end
+
+ddt_GUT = -(RATEIN)
+GUT_0 = 0
+ddt_CENTRAL = (RATEIN)-(((CL)*(CENTRAL))/(V))
+CENTRAL_0 = 0
+CC = (CENTRAL)/(V)
+
+OUTPUT:
+	output={CC}
