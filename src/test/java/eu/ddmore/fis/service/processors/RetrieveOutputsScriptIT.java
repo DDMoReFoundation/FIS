@@ -108,7 +108,7 @@ public class RetrieveOutputsScriptIT {
 
         assertTrue("Double-checking that the file that shouldn't be copied back does initially exist in the MIF working dir", new File(
                 mifWorkingDir, "converter.out").exists());
-        assertTrue("Double-checking that the directory that shouldn't be copied back does initially exist in the MIF working dir", new File(
+        assertTrue("Double-checking that file that shouldn't be copied back does initially exist in the MIF working dir", new File(
                 mifWorkingDir, "UseCase1/UseCase1_project/project.xmlx").exists());
 
         LocalJob job = mock(LocalJob.class);
