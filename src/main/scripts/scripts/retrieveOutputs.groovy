@@ -46,6 +46,7 @@ LocalJob job = binding.getVariable("job");
  * Variables
  */
 String executionHostFileshareLocal = binding.getVariable("execution.host.fileshare.local");
+final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
 
 /**
  * Script
@@ -60,20 +61,20 @@ File workingDir = new File(job.getWorkingDirectory())
 File mifWorkingDir = new File(executionHostFileshareLocal, job.getId());
 
 // Ensure that the FIS metadata directory is created
-File fisMetadataDir = new File(workingDir,".fis");
+File fisMetadataDir = new File(workingDir,FIS_METADATA_DIR);
 fisMetadataDir.mkdir();
 
 File mifMetadataDir = new File(mifWorkingDir,".MIF");
 File mifStdErr = new File(mifMetadataDir, "MIF.stderr");
 if (mifStdErr.exists()) {
-    FileUtils.copyFile(mifStdErr,new File(fisMetadataDir, "stderr"));
+    FileUtils.copyFile(mifStdErr,new File(fisMetadataDir, "stderr.txt"));
 } else {
     LOG.error("MIF.stderr file did not exist")
 }
 
 File mifStdOut = new File(mifMetadataDir, "MIF.stdout");
 if(mifStdErr.exists()) {
-    FileUtils.copyFile(mifStdOut,new File(fisMetadataDir, "stdout"));
+    FileUtils.copyFile(mifStdOut,new File(fisMetadataDir, "stdout.txt"));
 } else {
     LOG.error("MIF.stdout file did not exist")
 }
