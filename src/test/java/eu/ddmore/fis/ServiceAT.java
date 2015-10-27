@@ -178,8 +178,8 @@ public class ServiceAT extends SystemPropertiesAware {
     private void verifyThatFisMetadataFilesExist(final File workingDir) {
         File fisHiddenDir = new File(workingDir, ".fis");
         assertTrue(String.format("%s directory should be created", fisHiddenDir), new File(workingDir, ".fis").exists());
-        File stdOut = new File(fisHiddenDir, "stdout");
-        File stdErr = new File(fisHiddenDir, "stderr");
+        File stdOut = new File(fisHiddenDir, "stdout.txt");
+        File stdErr = new File(fisHiddenDir, "stderr.txt");
         assertTrue(String.format("%s file should be created", stdOut), stdOut.exists());
         assertTrue(String.format("%s file should be created", stdErr), stdErr.exists());
     }

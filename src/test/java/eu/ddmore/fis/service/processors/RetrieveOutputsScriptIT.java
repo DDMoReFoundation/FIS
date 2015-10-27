@@ -49,6 +49,7 @@ public class RetrieveOutputsScriptIT {
         
         final Binding binding = new Binding();
         binding.setVariable("execution.host.fileshare.local", this.executionHostFileshareLocal);
+        binding.setVariable("fis.metadata.dir", ".fis");
         
         this.jobProcessor = new JobProcessor(binding);
         this.jobProcessor.setScriptFile(FileUtils.toFile(RetrieveOutputsScriptIT.class.getResource("/scripts/retrieveOutputs.groovy")));
@@ -87,8 +88,8 @@ public class RetrieveOutputsScriptIT {
                 
         File fisHiddenDir = new File(this.fisWorkingDir, ".fis");
         assertTrue(String.format("%s directory should be created", fisHiddenDir), new File(this.fisWorkingDir, ".fis").exists());
-        File stdOut = new File(fisHiddenDir, "stdout");
-        File stdErr = new File(fisHiddenDir, "stderr");
+        File stdOut = new File(fisHiddenDir, "stdout.txt");
+        File stdErr = new File(fisHiddenDir, "stderr.txt");
         assertTrue(String.format("%s file should be created", stdOut), stdOut.exists());
         assertTrue(String.format("%s file should be created", stdErr), stdErr.exists());
     }
@@ -133,8 +134,8 @@ public class RetrieveOutputsScriptIT {
 
         File fisHiddenDir = new File(this.fisWorkingDir, ".fis");
         assertTrue(String.format("%s directory should be created", fisHiddenDir), new File(this.fisWorkingDir, ".fis").exists());
-        File stdOut = new File(fisHiddenDir, "stdout");
-        File stdErr = new File(fisHiddenDir, "stderr");
+        File stdOut = new File(fisHiddenDir, "stdout.txt");
+        File stdErr = new File(fisHiddenDir, "stderr.txt");
         assertTrue(String.format("%s file should be created", stdOut), stdOut.exists());
         assertTrue(String.format("%s file should be created", stdErr), stdErr.exists());
     }
@@ -183,8 +184,8 @@ public class RetrieveOutputsScriptIT {
 
         File fisHiddenDir = new File(this.fisWorkingDir, ".fis");
         assertTrue(String.format("%s directory should be created", fisHiddenDir), new File(this.fisWorkingDir, ".fis").exists());
-        File stdOut = new File(fisHiddenDir, "stdout");
-        File stdErr = new File(fisHiddenDir, "stderr");
+        File stdOut = new File(fisHiddenDir, "stdout.txt");
+        File stdErr = new File(fisHiddenDir, "stderr.txt");
         assertTrue(String.format("%s file should be created", stdOut), stdOut.exists());
         assertTrue(String.format("%s file should be created", stdErr), stdErr.exists());
     }
