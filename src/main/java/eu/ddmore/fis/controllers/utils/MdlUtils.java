@@ -13,8 +13,8 @@ import java.util.Collection;
 public interface MdlUtils {
     /**
      * Retrieves a list of data files referenced by given MDL file.
-     * @param file the MDL File
+     * @param mdlFile the MDL File
      * @return a collection of referenced data files
      */
-    public Collection<File> getDataFileFromMDL(File file);
+    public Collection<File> getDataFileFromMDL(File mdlFile);
 }

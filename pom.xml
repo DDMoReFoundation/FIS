@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.ddmore</groupId>
     <artifactId>fis</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>0.3.0-SNAPSHOT</version>
     <name>Framework Integration Service</name>
 
     <properties>
@@ -377,8 +377,8 @@
                 <version>3.1</version>
                 <configuration>
                     <compilerId>groovy-eclipse-compiler</compilerId>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
                 <dependencies>
                     <dependency>

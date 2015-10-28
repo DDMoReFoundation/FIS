@@ -4,11 +4,6 @@
 package eu.ddmore.fis.controllers.utils
 
 import org.apache.log4j.Logger
-import org.ddmore.mdl.MdlStandaloneSetup
-import org.ddmore.mdl.mdl.DataObjectBlock
-import org.ddmore.mdl.mdl.Mcl
-import org.ddmore.mdl.mdl.MclObject
-import org.ddmore.mdl.mdl.PropertyDeclaration
 import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.resource.Resource
@@ -19,7 +14,13 @@ import org.eclipse.xtext.resource.XtextResourceSet
 
 import com.google.inject.Injector
 
-import eu.ddmore.converter.mdlprinting.MdlPrinter
+import eu.ddmore.mdl.MdlStandaloneSetup
+import eu.ddmore.mdl.mdl.ListDefinition
+import eu.ddmore.mdl.mdl.Mcl
+import eu.ddmore.mdl.mdl.MclObject
+import eu.ddmore.mdl.mdl.ValuePair
+import eu.ddmore.mdl.utils.ExpressionConverter
+import eu.ddmore.mdl.utils.MclUtils
 
 
 /**
@@ -27,33 +28,36 @@ import eu.ddmore.converter.mdlprinting.MdlPrinter
  * is split into two modules - mdl-utils and mdl_json.
  */
 public class MdlUtilsLocal implements MdlUtils {
-    private static final Logger LOG = Logger.getLogger(MdlUtilsLocal.class);
+    private static final Logger LOG = Logger.getLogger(MdlUtilsLocal.class)
+    
+    private static MclUtils MCLUTILS = new MclUtils()
+    private static ExpressionConverter EXPRESSION_CONVERTER = new ExpressionConverter()
     
     @Override
-    public Collection<File> getDataFileFromMDL(File file) {
-        File location = file.getParentFile()
-        Mcl mcl = parseMdl(file)
-        Collection<File> result = []
-        final MdlPrinter mdlPrinter = MdlPrinter.getInstance();
-        for (MclObject mclObj : mcl.getObjects()) {
-            if(mclObj.getDataObject()) {
-                LOG.debug("Data object found in MCL file ${file}.")
-                for (DataObjectBlock block : mclObj.getDataObject().getBlocks()) {
-                    if (block.getSourceBlock()) {
-                        LOG.debug("Source block found in MCL file ${file}.")
-                        result.addAll(block.getSourceBlock().getStatements().find { it.getPropertyName().getName() == 'file' }.collect{ PropertyDeclaration pd ->
-                                def expr = pd.getExpression()
-                                LOG.debug("File reference found ${mdlPrinter.toStr(expr)} in source block.")
-                                return new File(location, mdlPrinter.toStr(expr)).getAbsoluteFile();
-                            })
-                    }
+    public Collection<File> getDataFileFromMDL(final File mdlFile) {
+        
+        final Collection<File> result = []
+
+        final Mcl mcl = parseMdl(mdlFile)
+        final MclObject dataObject = MCLUTILS.getDataObject(mcl)
+        if (dataObject) {
+            LOG.debug("Data object found in MCL file ${mdlFile}")
+            final ListDefinition dataSourceListDefn = MCLUTILS.getDataSourceStmt(dataObject)
+            if (dataSourceListDefn) {
+                LOG.debug("SOURCE block found in MCL file ${mdlFile}")
+                final ValuePair dataFileAttr = dataSourceListDefn.getList().getAttributes().find { "file".equals(it.getArgumentName()) }
+                if (dataFileAttr) {
+                    final String dataFileName = ExpressionConverter.convertToString(dataFileAttr.getExpression())
+                    LOG.info("Found data file referenced in MCL file ${mdlFile}: " + dataFileName)
+                    result.add(new File(mdlFile.getParentFile(), dataFileName).getAbsoluteFile())
                 }
             }
         }
-        if (result.size()==0) {
-            LOG.info("${file} doesn't reference any data files.");
+        
+        if (result.isEmpty()) {
+            LOG.warn("${mdlFile} doesn't reference any data files.")
         }
-        return result;
+        return result
     }
     
     /**
@@ -62,7 +66,7 @@ public class MdlUtilsLocal implements MdlUtils {
      * @return the parsed MDL object
      * @throws ParseException if there were errors when parsing the file
      */
-    private Mcl parseMdl(File mdlFile) {
+    private Mcl parseMdl(final File mdlFile) {
             final Injector injector = new MdlStandaloneSetup().createInjectorAndDoEMFRegistration();
             final XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet.class);
             resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE);
