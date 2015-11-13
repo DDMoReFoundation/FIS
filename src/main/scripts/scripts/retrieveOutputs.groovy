@@ -21,8 +21,8 @@ import groovy.transform.Field
  * to this pair of criteria. Additionally, any hidden files/directories e.g. ".MIF" directory
  * are not copied.
  * <p>
- * Any stdout and stderr output from execution of the job, is copied to files <code>stdout</code>
- * and <code>stderr</code> in a <code>.fis</code> job metadata subdirectory within the FIS
+ * Any stdout and stderr output from execution of the job, is copied to files <code>stdout.txt</code>
+ * and <code>stderr.txt</code> in a <code>.fis</code> job metadata subdirectory within the FIS
  * working directory.
  * <p>
  * <b><i>Note on the regex-based file filtering:</b></i><br>
@@ -106,7 +106,7 @@ if (job.getResultsIncludeRegex() != null) {
 		}
 	});
 } else {
-	FileUtils.write(new File(fisMetadataDir, "stderr"), "\n\nOutput Filenames Regular Expression was not specified in the MIF/TES Connector configuration; no output files will be copied back.\n", true); // true = append
+	FileUtils.write(new File(fisMetadataDir, "stderr.txt"), "\n\nOutput Filenames Regular Expression was not specified in the MIF/TES Connector configuration; no output files will be copied back.\n", true); // true = append
 }
 
 /*
