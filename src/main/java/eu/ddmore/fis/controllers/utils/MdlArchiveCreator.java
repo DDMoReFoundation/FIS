@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 
 import eu.ddmore.archive.ArchiveFactory;
 
@@ -16,6 +17,7 @@ import eu.ddmore.archive.ArchiveFactory;
  * Contains MDL-specific utility methods relating to the Archive functionality within FIS.
  */
 public final class MdlArchiveCreator extends BaseArchiveCreator {
+    private final static Logger LOG = Logger.getLogger(MdlArchiveCreator.class);
 
     private final MdlUtils mdlUtils;
 
@@ -33,7 +35,15 @@ public final class MdlArchiveCreator extends BaseArchiveCreator {
     @Override
     protected Collection<File> gatherDataFilesFromReferencesInModelFile(final File mdlFile) {
         final Collection<File> dataFiles = new ArrayList<File>();
-        for (final File dataFile : this.mdlUtils.getDataFileFromMDL(mdlFile)) {
+        
+        final Collection<File> dataFileReferencesFromMDL = new ArrayList<>();
+        try {
+            dataFileReferencesFromMDL.addAll(this.mdlUtils.getDataFileFromMDL(mdlFile));
+        } catch (org.eclipse.xtext.parser.ParseException pex) {
+            LOG.error("Unable to parse MDL file to extract data file references; no data files will be included in the archive to be passed to the Converter Toolbox Service.");
+        }
+        
+        for (final File dataFile : dataFileReferencesFromMDL) {
             dataFiles.add(new File(FilenameUtils.normalize(dataFile.getAbsolutePath())));
         }
         return dataFiles;

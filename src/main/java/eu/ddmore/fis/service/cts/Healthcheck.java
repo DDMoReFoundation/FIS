@@ -33,7 +33,7 @@ public class Healthcheck implements HealthIndicator {
     @Autowired(required=true)
     public Healthcheck(@Qualifier("ctsRestTemplate") RestTemplate restTemplate, @Value("${fis.cts.management.url}") String ctsUrl, @Value("${fis.cts.management.healthcheck}") String healthcheckEndpoint) {
         Preconditions.checkNotNull(restTemplate, "Rest template can't be null.");
-        Preconditions.checkArgument(StringUtils.isNotEmpty(ctsUrl), "CTS URL can't be blank.");
+        Preconditions.checkArgument(StringUtils.isNotEmpty(ctsUrl), "CTS Management URL can't be blank.");
         Preconditions.checkArgument(StringUtils.isNotEmpty(healthcheckEndpoint), "CTS healthcheck endpoint can't be blank.");
         this.restTemplate = restTemplate;
         this.ctsUrl = ctsUrl;
