@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.ddmore</groupId>
     <artifactId>fis</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.4.0-SNAPSHOT</version>
     <name>Framework Integration Service</name>
 
     <properties>
@@ -35,23 +35,23 @@
         <dependency>
             <groupId>eu.ddmore.testdata</groupId>
             <artifactId>test-models</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <version>0.4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.mango</groupId>
             <artifactId>mif-examples</artifactId>
-            <version>3.0.18-ddmore-SNAPSHOT</version>
+            <version>3.0.19-ddmore-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.ddmore</groupId>
             <artifactId>converter-toolbox-service-domain</artifactId>
-            <version>1.3.0-SNAPSHOT</version>
+            <version>1.4.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.ddmore</groupId>
             <artifactId>phex-archive</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>0.2.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>eu.ddmore.pharmml</groupId>
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>eu.ddmore</groupId>
             <artifactId>eu.ddmore.mdl</artifactId>
-            <version>1.3.0-SNAPSHOT</version>
+            <version>1.4.0-SNAPSHOT</version>
         </dependency>
         
         <!-- Third-Party Dependencies -->
