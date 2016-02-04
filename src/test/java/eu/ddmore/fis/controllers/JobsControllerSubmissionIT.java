@@ -55,7 +55,7 @@ import eu.ddmore.fis.service.JobDispatcherImpl;
 import eu.ddmore.fis.service.RemoteJobStatusPoller;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { CommonIntegrationTestContextConfiguration.class,RestClientConfiguration.class })
+@SpringApplicationConfiguration(classes = { CommonIntegrationTestContextConfiguration.class, RestClientConfiguration.class })
 @WebAppConfiguration
 @IntegrationTest({"server.port=0", "management.port=0"}) //let the framework choose the port
 public class JobsControllerSubmissionIT extends SystemPropertiesAware {

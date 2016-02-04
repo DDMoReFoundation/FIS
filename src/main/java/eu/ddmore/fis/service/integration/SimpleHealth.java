@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.fis.service.cts;
+package eu.ddmore.fis.service.integration;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.mango.mif.MIFHttpRestClient;
-
-import eu.ddmore.fis.service.cts.CTSShutdown;
+import eu.ddmore.fis.service.integration.ShutdownHandler;
 
 @Controller
 @RequestMapping("/shutdown")
@@ -26,9 +24,9 @@ public class ShutdownController {
     @Autowired
     private ShutdownEndpoint shutdownEndpoint;
     
-    private MIFHttpRestClient mifClient;
+    private ShutdownHandler mifShutdown;
 
-    private CTSShutdown ctsShutdown;
+    private ShutdownHandler ctsShutdown;
     /**
      * Kills MIF, CTS and FIS itself. This method will not fail if MIF or CTS communication fails. 
      * @return 'OK' if the request was processed correctly. 
@@ -36,7 +34,7 @@ public class ShutdownController {
     @RequestMapping(method=RequestMethod.POST, produces={MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody String shutdown() {
         try {
-            mifClient.killMif();
+            mifShutdown.invoke();
         } catch(Exception ex) {
             LOG.warn("Exception was thrown when tried to kill MIF", ex);
         }
@@ -50,12 +48,12 @@ public class ShutdownController {
     }
 
     @Required
-    public void setMifClient(MIFHttpRestClient mifClient) {
-        this.mifClient = mifClient;
+    public void setMifShutdown(ShutdownHandler mifShutdown) {
+        this.mifShutdown = mifShutdown;
     }
     
-    public MIFHttpRestClient getMifClient() {
-        return mifClient;
+    public ShutdownHandler getMifShutdown() {
+        return mifShutdown;
     }
     
     public void setShutdownEndpoint(ShutdownEndpoint shutdownEndpoint) {
@@ -63,11 +61,11 @@ public class ShutdownController {
     }
 
     @Required
-    public void setCtsShutdown(CTSShutdown ctsShutdown) {
+    public void setCtsShutdown(ShutdownHandler ctsShutdown) {
         this.ctsShutdown = ctsShutdown;
     }
     
-    public CTSShutdown getCtsShutdown() {
+    public ShutdownHandler getCtsShutdown() {
         return ctsShutdown;
     }
 }

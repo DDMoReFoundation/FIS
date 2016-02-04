@@ -7,7 +7,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
-import eu.ddmore.fis.service.cts.SimpleHealth;
+import eu.ddmore.fis.service.integration.SimpleHealth;
 
 
 @Component

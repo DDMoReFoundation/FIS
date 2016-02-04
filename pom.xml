@@ -41,7 +41,17 @@
         <dependency>
             <groupId>com.mango</groupId>
             <artifactId>mif-examples</artifactId>
-            <version>3.0.19-ddmore-SNAPSHOT</version>
+            <version>4.0.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-jms</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>eu.ddmore</groupId>

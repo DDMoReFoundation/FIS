@@ -238,7 +238,7 @@
     </bean>
 
     <bean id="shutdownController" class="eu.ddmore.fis.controllers.ShutdownController">
-        <property name="mifClient" ref="mifRestClient" />
+        <property name="mifShutdown" ref="mifShutdown" />
         <property name="ctsShutdown" ref="ctsShutdown" />
     </bean>
     

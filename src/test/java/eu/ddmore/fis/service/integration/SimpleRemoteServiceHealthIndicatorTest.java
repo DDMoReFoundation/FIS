@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.fis.service.cts;
+package eu.ddmore.fis.service.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
@@ -20,35 +20,37 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import eu.ddmore.fis.service.HealthDetail;
+import eu.ddmore.fis.service.integration.SimpleHealth;
+import eu.ddmore.fis.service.integration.SimpleRemoteServiceHealthIndicator;
 
 
 /**
- * Tests {@link Healthcheck}
+ * Tests {@link SimpleRemoteServiceHealthIndicator}
  */
 @RunWith(MockitoJUnitRunner.class)
-public class HealthcheckTest {
+public class SimpleRemoteServiceHealthIndicatorTest {
     
     private
     @Mock RestTemplate restTemplate;
     
     @Test(expected=NullPointerException.class)
     public void constructor_shouldThrowNullPointExceptionIfRestTemplateNull() {
-        new Healthcheck(null, "mock-url", "mock-health");
+        new SimpleRemoteServiceHealthIndicator(null, "mock-url", "mock-health");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void constructor_shouldThrowIllegalArgumentExceptionIfCTS_URLIsBlank() {
-        new Healthcheck(restTemplate, "", "mock-health");
+        new SimpleRemoteServiceHealthIndicator(restTemplate, "", "mock-health");
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void constructor_shouldThrowIllegalArgumentExceptionIfCTSHealthEndpointIsBlank() {
-        new Healthcheck(restTemplate, "mock-url", "");
+        new SimpleRemoteServiceHealthIndicator(restTemplate, "mock-url", "");
     }
     
     @Test
     public void health_shouldReturn_UP_HealthIfCTSisUP() {
-        Healthcheck check = new Healthcheck(restTemplate, "mock-url", "mock-health");
+        SimpleRemoteServiceHealthIndicator check = new SimpleRemoteServiceHealthIndicator(restTemplate, "mock-url", "mock-health");
         SimpleHealth healthMock = new SimpleHealth();
         healthMock.setStatus(Status.UP.getCode());
         ResponseEntity<SimpleHealth> healthResponse = new ResponseEntity<SimpleHealth>(healthMock,HttpStatus.OK);
@@ -59,35 +61,35 @@ public class HealthcheckTest {
     
     @Test
     public void health_shouldReturn_DOWN_ifCTSisDOWN() {
-        Healthcheck check = new Healthcheck(restTemplate, "mock-url", "mock-health");
+        SimpleRemoteServiceHealthIndicator check = new SimpleRemoteServiceHealthIndicator(restTemplate, "mock-url", "mock-health");
         SimpleHealth healthMock = new SimpleHealth();
         healthMock.setStatus(Status.DOWN.getCode());
         ResponseEntity<SimpleHealth> healthResponse = new ResponseEntity<SimpleHealth>(healthMock,HttpStatus.OK);
         when(restTemplate.getForEntity(eq("mock-url/mock-health"), same(SimpleHealth.class))).thenReturn(healthResponse);
         Health health = check.health();
         assertEquals("Health status is 'DOWN'", Status.DOWN,health.getStatus());
-        assertEquals("And the health object contains Error message", "CTS is not running", health.getDetails().get(HealthDetail.ERROR));
+        assertEquals("And the health object contains Error message", "Remote service is down.", health.getDetails().get(HealthDetail.ERROR));
         assertEquals("And the health object contains CTS URL", "mock-url", health.getDetails().get(HealthDetail.URL));
     }
     
     @Test
     public void health_shouldReturn_DOWN_IfCTSHasInternalError() {
-        Healthcheck check = new Healthcheck(restTemplate, "mock-url", "mock-health");
+        SimpleRemoteServiceHealthIndicator check = new SimpleRemoteServiceHealthIndicator(restTemplate, "mock-url", "mock-health");
         ResponseEntity<SimpleHealth> healthResponse = new ResponseEntity<SimpleHealth>(HttpStatus.INTERNAL_SERVER_ERROR);
         when(restTemplate.getForEntity(eq("mock-url/mock-health"), same(SimpleHealth.class))).thenReturn(healthResponse);
         Health health = check.health();
         assertEquals("Health status is 'DOWN'", Status.DOWN,health.getStatus());
-        assertEquals("And the health object contains Error message", "CTS is not running", health.getDetails().get(HealthDetail.ERROR));
+        assertEquals("And the health object contains Error message", "Remote service is down.", health.getDetails().get(HealthDetail.ERROR));
         assertEquals("And the health object contains CTS URL", "mock-url", health.getDetails().get(HealthDetail.URL));
     }
 
     @Test
     public void health_shouldReturn_DOWN_InCaseOfAnyError() {
-        Healthcheck check = new Healthcheck(restTemplate, "mock-url", "mock-health");
+        SimpleRemoteServiceHealthIndicator check = new SimpleRemoteServiceHealthIndicator(restTemplate, "mock-url", "mock-health");
         doThrow(RuntimeException.class).when(restTemplate).getForEntity(eq("mock-url/mock-health"), same(SimpleHealth.class));
         Health health = check.health();
         assertEquals("Health status is 'DOWN'", Status.DOWN,health.getStatus());
-        assertEquals("And the health object contains Error message", "CTS is not running", health.getDetails().get(HealthDetail.ERROR));
+        assertEquals("And the health object contains Error message", "Remote service is down.", health.getDetails().get(HealthDetail.ERROR));
         assertEquals("And the health object contains CTS URL", "mock-url", health.getDetails().get(HealthDetail.URL));
     }
 }

@@ -12,11 +12,12 @@ import com.mango.mif.MIFHttpRestClient;
 
 import eu.ddmore.fis.configuration.Languages;
 import eu.ddmore.fis.service.cts.internal.CTSRestClientConfiguration;
+import eu.ddmore.fis.service.mif.internal.RestClientConfiguration;
 
 @Configuration
 @EnableAutoConfiguration
 @ImportResource({"classpath:META-INF/application-context.xml"})
-@Import( value = { Languages.class, CTSRestClientConfiguration.class })
+@Import( value = { Languages.class, CTSRestClientConfiguration.class, RestClientConfiguration.class})
 public class CommonIntegrationTestContextConfiguration {
 	@Bean
 	public MIFHttpRestClient mifRestClient() {

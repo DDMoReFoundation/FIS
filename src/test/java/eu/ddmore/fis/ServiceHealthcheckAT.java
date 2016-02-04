@@ -16,7 +16,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import eu.ddmore.fis.service.cts.SimpleHealth;
+import eu.ddmore.fis.service.integration.SimpleHealth;
 
 /**
  * Verifies that standalone service fulfils functional requirements
