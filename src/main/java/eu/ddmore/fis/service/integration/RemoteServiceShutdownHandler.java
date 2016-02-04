@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,7 +22,12 @@ public class RemoteServiceShutdownHandler implements ShutdownHandler {
     private final String managementUrl;
     private final String shutdownEndpoint;
     
-    @Autowired(required=true)
+    /**
+     * Creates a new instance.
+     * @param restTemplate - template that should be used to invoke REST service
+     * @param managementUrl - url at which the remote service is available
+     * @param shutdownEndpoint - shutdown endpoint name
+     */
     public RemoteServiceShutdownHandler(RestTemplate restTemplate, String managementUrl, String shutdownEndpoint) {
         Preconditions.checkNotNull(restTemplate, "Rest template can't be null.");
         Preconditions.checkArgument(StringUtils.isNotEmpty(managementUrl), "Management URL can't be blank.");

@@ -25,6 +25,12 @@ public class SimpleRemoteServiceHealthIndicator implements HealthIndicator {
     private final String managementUrl;
     private final String healthcheckEndpoint;
     
+    /**
+     * Creates a new instance.
+     * @param restTemplate - template that should be used to invoke REST service
+     * @param managementUrl - url at which the remote service is available
+     * @param shutdownEndpoint - health endpoint name
+     */
     public SimpleRemoteServiceHealthIndicator(RestTemplate restTemplate, String managementUrl, String healthcheckEndpoint) {
         Preconditions.checkNotNull(restTemplate, "Rest template can't be null.");
         Preconditions.checkArgument(StringUtils.isNotEmpty(managementUrl), "Management URL can't be blank.");
