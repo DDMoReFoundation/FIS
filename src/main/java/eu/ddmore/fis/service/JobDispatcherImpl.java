@@ -142,7 +142,7 @@ public class JobDispatcherImpl implements JobDispatcher {
 		return this.executionHostFileshareRemote;
 	}
 	
-	@Value("${mif.userName}")
+	@Value("${fis.mif.userName}")
 	public void setMifUserName(final String mifUserName) {
 	    this.mifUserName = mifUserName;
 	}
@@ -151,7 +151,7 @@ public class JobDispatcherImpl implements JobDispatcher {
 	    return this.mifUserName;
 	}
 	
-    @Value("${mif.userPassword}")
+    @Value("${fis.mif.userPassword}")
     public void setMifUserPassword(final String mifUserPassword) {
         this.mifUserPassword = mifUserPassword;
     }
