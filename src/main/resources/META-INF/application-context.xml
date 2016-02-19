@@ -66,6 +66,8 @@
                 <entry key="execution.host.fileshare.local">
                     <value>${execution.host.fileshare.local}</value>
                 </entry>
+                <entry key="serviceWorkingDirectory" value-ref="serviceWorkingDirectory">
+                </entry>
                 <entry key="archiveFactory" value-ref="archiveFactory">
                 </entry>
                 <entry key="converterToolboxService" value-ref="converterToolboxService">
@@ -283,7 +285,7 @@
 
     <task:executor id="globalExecutor" pool-size="1" />
 
-    <task:scheduler id="globalScheduler" pool-size="1" />
+    <task:scheduler id="globalScheduler" pool-size="2" />
 
     <bean id="dataSource" class="com.jolbox.bonecp.BoneCPDataSource"
         destroy-method="close">

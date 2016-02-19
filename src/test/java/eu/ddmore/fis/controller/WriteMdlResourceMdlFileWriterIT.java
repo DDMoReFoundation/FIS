@@ -38,6 +38,7 @@ import eu.ddmore.fis.controllers.FileProcessor;
 import eu.ddmore.fis.controllers.MdlFileWriter;
 import eu.ddmore.fis.domain.WriteMdlRequest;
 import eu.ddmore.fis.domain.WriteMdlResponse;
+import eu.ddmore.fis.service.ServiceWorkingDirectory;
 import eu.ddmore.fis.service.cts.ConverterToolboxService;
 import eu.ddmore.fis.service.cts.ConverterToolboxServiceException;
 import groovy.lang.Binding;
@@ -66,6 +67,9 @@ public class WriteMdlResourceMdlFileWriterIT {
     
     @Mock
     private ArchiveFactory archiveFactory;
+
+    @Mock
+    private ServiceWorkingDirectory serviceWorkingDirectory;
     
     private MdlFileWriter fileWriter;
     
@@ -75,7 +79,9 @@ public class WriteMdlResourceMdlFileWriterIT {
     @Before
     public void setUp() {
         this.testWorkingDir = this.testDirectory.getRoot();
+        when(serviceWorkingDirectory.newDirectory()).thenReturn(testWorkingDir);
         LOG.debug(String.format("Test working dir %s", this.testWorkingDir));
+
         this.binding = new Binding();
         this.binding.setVariable("converterToolboxService",converterToolboxService);
         this.binding.setVariable("mdlLanguage",mdlLanguage);
@@ -84,6 +90,7 @@ public class WriteMdlResourceMdlFileWriterIT {
         this.binding.setVariable("fis.cts.output.conversionReport", "conversionReport.log");
         this.binding.setVariable("fis.cts.output.archive", "archive.phex");
         this.binding.setVariable("fis.metadata.dir", ".fis");
+        this.binding.setVariable("serviceWorkingDirectory", serviceWorkingDirectory);
         
         this.fileWriter = new MdlFileWriter(this.binding);
         fileWriter.setScriptFile(FileUtils.toFile(WriteMdlResourceMdlFileWriterIT.class.getResource(CONVERTER_SCRIPT)));
@@ -93,12 +100,11 @@ public class WriteMdlResourceMdlFileWriterIT {
     @Test
     public void shouldPerformConversionExtractTheResultFileAndDumpConversionReportToAFile() throws ConverterToolboxServiceException, IOException {
         //Given successful conversion
-        File outputDir = this.testDirectory.newFolder();
-        File fisMetadataDir = new File(outputDir, ".fis");
+        File fisMetadataDir = new File(testWorkingDir, ".fis");
         Archive archive = mock(Archive.class);
         Entry resultEntry = mock(Entry.class);
         File resultEntryFile = new File("/mock/path/to/file.ext");
-        File expectedResultFile = new File(outputDir,"test.mdl");
+        File expectedResultFile = new File(testWorkingDir,"test.mdl");
         when(resultEntry.extractFile(any(File.class))).thenReturn(expectedResultFile);
         when(resultEntry.getFileName()).thenReturn(resultEntryFile.getName());
         List<Entry> mainEntries = Lists.newArrayList(resultEntry);
@@ -125,12 +131,11 @@ public class WriteMdlResourceMdlFileWriterIT {
     @Test
     public void shouldReturnEmptyResultForFailedConversion() throws IOException, ConverterToolboxServiceException {
         //Given failed conversion
-        File outputDir = this.testDirectory.newFolder();
-        File fisMetadataDir = new File(outputDir, ".fis");
+        File fisMetadataDir = new File(testWorkingDir, ".fis");
         Archive archive = mock(Archive.class);
         Entry resultEntry = mock(Entry.class);
         File resultEntryFile = new File("/mock/path/to/file.ext");
-        File expectedResultFile = new File(outputDir,"test.mdl");
+        File expectedResultFile = new File(testWorkingDir,"test.mdl");
         when(resultEntry.extractFile(eq(expectedResultFile))).thenReturn(expectedResultFile);
         when(resultEntry.getFileName()).thenReturn(resultEntryFile.getName());
         List<Entry> mainEntries = Lists.newArrayList(resultEntry);
@@ -156,11 +161,10 @@ public class WriteMdlResourceMdlFileWriterIT {
     @Test
     public void shouldReturnFailedStatusEvenIfExceptionIsThrown() throws IOException, ConverterToolboxServiceException {
         //Given conversion in error
-        File outputDir = this.testDirectory.newFolder();
         Archive archive = mock(Archive.class);
         Entry resultEntry = mock(Entry.class);
         File resultEntryFile = new File("/mock/path/to/file.ext");
-        File expectedResultFile = new File(outputDir,"test.mdl");
+        File expectedResultFile = new File(testWorkingDir,"test.mdl");
         when(resultEntry.extractFile(eq(expectedResultFile))).thenReturn(expectedResultFile);
         when(resultEntry.getFileName()).thenReturn(resultEntryFile.getName());
         List<Entry> mainEntries = Lists.newArrayList(resultEntry);

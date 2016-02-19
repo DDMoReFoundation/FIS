@@ -36,6 +36,7 @@ import eu.ddmore.convertertoolbox.domain.ConversionReport;
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode;
 import eu.ddmore.convertertoolbox.domain.LanguageVersion;
 import eu.ddmore.fis.controllers.FileProcessor;
+import eu.ddmore.fis.service.ServiceWorkingDirectory;
 import eu.ddmore.fis.service.cts.ConverterToolboxService;
 import eu.ddmore.fis.service.cts.ConverterToolboxServiceException;
 import groovy.lang.Binding;
@@ -65,15 +66,21 @@ public class ReadMdlResourceFileProcessorIT {
     @Mock
     private ArchiveFactory archiveFactory;
     
+    @Mock
+    private ServiceWorkingDirectory serviceWorkingDirectory;
+    
     private FileProcessor fileProcessor;
     
     private File testWorkingDir;
+    
     private Binding binding;
     
     @Before
     public void setUp() {
         this.testWorkingDir = this.testDirectory.getRoot();
         LOG.debug(String.format("Test working dir %s", this.testWorkingDir));
+        when(serviceWorkingDirectory.newDirectory()).thenReturn(testWorkingDir);
+        
         this.binding = new Binding();
         this.binding.setVariable("converterToolboxService",converterToolboxService);
         this.binding.setVariable("mdlLanguage",mdlLanguage);
@@ -82,6 +89,7 @@ public class ReadMdlResourceFileProcessorIT {
         this.binding.setVariable("fis.cts.output.conversionReport", "conversionReport.log");
         this.binding.setVariable("fis.cts.output.archive", "archive.phex");
         this.binding.setVariable("fis.metadata.dir", ".fis");
+        this.binding.setVariable("serviceWorkingDirectory", serviceWorkingDirectory);
         
         this.fileProcessor = new FileProcessor(this.binding);
         fileProcessor.setScriptFile(FileUtils.toFile(ReadMdlResourceFileProcessorIT.class.getResource(CONVERTER_SCRIPT)));
@@ -91,8 +99,7 @@ public class ReadMdlResourceFileProcessorIT {
     @Test
     public void shouldPerformConversionExtractTheResultFileAndDumpConversionReportToAFile() throws ConverterToolboxServiceException, IOException {
         //Given successful conversion
-        File outputDir = this.testDirectory.newFolder();
-        File fisMetadataDir = new File(outputDir, ".fis");
+        File fisMetadataDir = new File(testWorkingDir, ".fis");
         Archive archive = mock(Archive.class);
         Entry resultEntry = mock(Entry.class);
         File resultEntryFile = new File("/mock/path/to/file.ext");
@@ -103,7 +110,7 @@ public class ReadMdlResourceFileProcessorIT {
         when(archive.getMainEntries()).thenReturn(mainEntries);
         when(archiveFactory.createArchive(any(File.class))).thenReturn(archive);
         
-        File mdlFile = new File(outputDir, "test.mdl");
+        File mdlFile = new File(testWorkingDir, "test.mdl");
         FileUtils.writeStringToFile(mdlFile, "This is mock MDL file contents");
         File jsonFile = new File(fisMetadataDir, "file.ext");
         FileUtils.writeStringToFile(jsonFile, "This is mock JSON file contents");
@@ -125,8 +132,7 @@ public class ReadMdlResourceFileProcessorIT {
     @Test
     public void shouldReturnEmptyResultForFailedConversion() throws IOException, ConverterToolboxServiceException {
         //Given failed conversion
-        File outputDir = this.testDirectory.newFolder();
-        File fisMetadataDir = new File(outputDir, ".fis");
+        File fisMetadataDir = new File(testWorkingDir, ".fis");
         Archive archive = mock(Archive.class);
         Entry resultEntry = mock(Entry.class);
         File resultEntryFile = new File("/mock/path/to/file.ext");
@@ -137,7 +143,7 @@ public class ReadMdlResourceFileProcessorIT {
         when(archive.getMainEntries()).thenReturn(mainEntries);
         when(archiveFactory.createArchive(any(File.class))).thenReturn(archive);
         
-        File mdlFile = new File(outputDir, "test.mdl");
+        File mdlFile = new File(testWorkingDir, "test.mdl");
         FileUtils.writeStringToFile(mdlFile, "This is mock MDL file contents");
         
         ConversionReport conversionReport = new ConversionReport();
@@ -156,18 +162,17 @@ public class ReadMdlResourceFileProcessorIT {
     @Test(expected=RuntimeException.class)
     public void shouldReThrowExceptionIfErrorHappensAsRuntimeException() throws IOException, ConverterToolboxServiceException {
         //Given conversion in error
-        File outputDir = this.testDirectory.newFolder();
         Archive archive = mock(Archive.class);
         Entry resultEntry = mock(Entry.class);
         File resultEntryFile = new File("/mock/path/to/file.ext");
-        File expectedResultFile = new File(new File(outputDir, ".fis"),"file.ext");
+        File expectedResultFile = new File(new File(testWorkingDir, ".fis"),"file.ext");
         when(resultEntry.extractFile(eq(expectedResultFile))).thenReturn(expectedResultFile);
         when(resultEntry.getFileName()).thenReturn(resultEntryFile.getName());
         List<Entry> mainEntries = Lists.newArrayList(resultEntry);
         when(archive.getMainEntries()).thenReturn(mainEntries);
         when(archiveFactory.createArchive(any(File.class))).thenReturn(archive);
         
-        File mdlFile = new File(outputDir, "test.mdl");
+        File mdlFile = new File(testWorkingDir, "test.mdl");
         FileUtils.writeStringToFile(mdlFile, "This is mock MDL file contents");
         
         ConversionReport conversionReport = new ConversionReport();

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals
 
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.FilenameUtils
@@ -16,9 +16,9 @@ import eu.ddmore.convertertoolbox.domain.ConversionReport
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode
 import eu.ddmore.convertertoolbox.domain.LanguageVersion
 import eu.ddmore.fis.domain.WriteMdlResponse
+import eu.ddmore.fis.service.ServiceWorkingDirectory
 import eu.ddmore.fis.service.cts.ConverterToolboxService
 import groovy.json.JsonOutput
-
 import groovy.transform.Field
 
 /**
@@ -46,13 +46,14 @@ final LanguageVersion to = binding.getVariable("mdlLanguage");
 final String outputArchiveName = binding.getVariable("fis.cts.output.archive");
 final String outputConversionReport = binding.getVariable("fis.cts.output.conversionReport");
 final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
+final ServiceWorkingDirectory serviceWorkingDirectory = binding.getVariable("serviceWorkingDirectory");
 
 /**
  * Script
  */
 
 File outputFile = new File(outputFilePath)
-File workingDir = outputFile.parentFile
+File workingDir = serviceWorkingDirectory.newDirectory()
 // Ensure that the FIS metadata directory is created
 File fisMetadataDir = new File(workingDir,FIS_METADATA_DIR);
 fisMetadataDir.mkdir();
@@ -61,8 +62,6 @@ LOG.debug("Working directory: ${workingDir}");
 
 File jsonFileName = new File(FilenameUtils.removeExtension(outputFilePath) + ".json")
 FileUtils.writeStringToFile(jsonFileName, fileContent)
-
-File outputDirectory = fisMetadataDir;
 
 File archiveFile = new File(fisMetadataDir, outputArchiveName);
 

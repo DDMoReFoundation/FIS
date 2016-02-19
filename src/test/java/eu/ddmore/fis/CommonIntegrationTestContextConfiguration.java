@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ImportResource;
 import com.mango.mif.MIFHttpRestClient;
 
 import eu.ddmore.fis.configuration.Languages;
+import eu.ddmore.fis.service.ServiceWorkingDirectory;
 import eu.ddmore.fis.service.cts.internal.CTSRestClientConfiguration;
 import eu.ddmore.fis.service.mif.internal.RestClientConfiguration;
 
@@ -23,4 +24,9 @@ public class CommonIntegrationTestContextConfiguration {
 	public MIFHttpRestClient mifRestClient() {
 		return mock(MIFHttpRestClient.class);
 	}
+
+    @Bean
+    public ServiceWorkingDirectory serviceWorkingDirectory() {
+    	return new ServiceWorkingDirectory();
+    }
 }

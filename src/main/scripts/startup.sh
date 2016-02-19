@@ -20,7 +20,8 @@ params=" -Dexecution.host.fileshare.local=\"$EXECUTION_HOST_FILESHARE_LOCAL\" \
  -Dexecution.host.fileshare=\"$EXECUTION_HOST_FILESHARE\" \
  -Dexecution.host.fileshare.remote=\"$EXECUTION_HOST_FILESHARE_REMOTE\" \
  -Dmif.userName= -Dmif.userPassword= \
- -DFIS_HOME=\"$SERVICE_HOME\" "
+ -DFIS_HOME=\"$SERVICE_HOME\" \
+ -Dfis.workingDirectory=\"$SERVICE_HOME\tmp\" "
 REM  - If the MIF user credentials are set above then these will be used for MIF job execution,
 REM    otherwise jobs will be executed as the MIF service account user.
 REM  - If a remote MIF is to be used for job execution, then the mif.url property needs to be

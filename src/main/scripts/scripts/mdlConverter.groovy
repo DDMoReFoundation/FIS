@@ -13,6 +13,7 @@ import eu.ddmore.convertertoolbox.domain.ConversionReport
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode
 import eu.ddmore.convertertoolbox.domain.LanguageVersion
 import eu.ddmore.fis.controllers.utils.ArchiveCreator
+import eu.ddmore.fis.service.ServiceWorkingDirectory
 import eu.ddmore.fis.service.cts.ConverterToolboxService
 import groovy.json.JsonOutput
 import groovy.transform.Field
@@ -43,13 +44,14 @@ final String outputArchiveName = binding.getVariable("fis.cts.output.archive");
 final String outputConversionReport = binding.getVariable("fis.cts.output.conversionReport");
 final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
 final ArchiveCreator mdlArchiveCreator = binding.getVariable("archiveCreator");
+final ServiceWorkingDirectory serviceWorkingDirectory = binding.getVariable("serviceWorkingDirectory");
 
 /**
  * Script
  */
 
 File inputFile = new File(FilenameUtils.normalize(inputFilePath))
-File workingDir = inputFile.parentFile
+File workingDir = serviceWorkingDirectory.newDirectory()
 // Ensure that the FIS metadata directory is created
 File fisMetadataDir = new File(workingDir,FIS_METADATA_DIR);
 fisMetadataDir.mkdir();

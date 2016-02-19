@@ -1,21 +1,20 @@
 /*******************************************************************************
  * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
+import org.apache.commons.io.FileUtils
+import org.apache.log4j.Logger
+
+import com.google.common.base.Preconditions
+
 import eu.ddmore.archive.Archive
 import eu.ddmore.archive.ArchiveFactory
 import eu.ddmore.archive.Entry
 import eu.ddmore.convertertoolbox.domain.ConversionReport
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode
 import eu.ddmore.convertertoolbox.domain.LanguageVersion
+import eu.ddmore.fis.service.ServiceWorkingDirectory
 import eu.ddmore.fis.service.cts.ConverterToolboxService
 import groovy.json.JsonOutput
-
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.FilenameUtils
-import org.apache.log4j.Logger
-
-import com.google.common.base.Preconditions
-
 import groovy.transform.Field
 
 /**
@@ -43,13 +42,14 @@ final LanguageVersion to = binding.getVariable("jsonLanguage");
 final String outputArchiveName = binding.getVariable("fis.cts.output.archive");
 final String outputConversionReport = binding.getVariable("fis.cts.output.conversionReport");
 final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
+final ServiceWorkingDirectory serviceWorkingDirectory = binding.getVariable("serviceWorkingDirectory");
 
 /**
  * Script
  */
 
 File inputFile = new File(inputFilePath)
-File workingDir = inputFile.parentFile
+File workingDir = serviceWorkingDirectory.newDirectory()
 // Ensure that the FIS metadata directory is created
 File fisMetadataDir = new File(workingDir,FIS_METADATA_DIR);
 fisMetadataDir.mkdir();

@@ -28,7 +28,9 @@ import com.mango.mif.MIFHttpRestClient;
 
 import eu.ddmore.fis.configuration.Languages;
 import eu.ddmore.fis.controllers.GlobalLoggingRestExceptionHandler;
+import eu.ddmore.fis.service.ServiceWorkingDirectory;
 import eu.ddmore.fis.service.cts.internal.CTSRestClientConfiguration;
+import eu.ddmore.fis.service.internal.WorkingDirectoriesReaper;
 
 @Configuration
 @EnableAutoConfiguration
@@ -75,5 +77,15 @@ public class Application {
     @Bean
     public AnnotationRelProvider annotationRelProvider() {
         return new AnnotationRelProvider();
+    }
+    
+    @Bean
+    public ServiceWorkingDirectory serviceWorkingDirectory() {
+    	return new ServiceWorkingDirectory();
+    }
+    
+    @Bean
+    public WorkingDirectoriesReaper workingDirectoriesReaper() {
+    	return new WorkingDirectoriesReaper();
     }
 } 

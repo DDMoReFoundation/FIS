@@ -40,6 +40,7 @@ import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode;
 import eu.ddmore.convertertoolbox.domain.LanguageVersion;
 import eu.ddmore.fis.controllers.MdlConversionProcessor;
 import eu.ddmore.fis.controllers.utils.ArchiveCreator;
+import eu.ddmore.fis.service.ServiceWorkingDirectory;
 import eu.ddmore.fis.service.cts.ConverterToolboxService;
 import eu.ddmore.fis.service.cts.ConverterToolboxServiceException;
 import groovy.lang.Binding;
@@ -74,6 +75,9 @@ public class MdlConversionProcessorIT {
     @Mock
     private ArchiveCreator mockArchiveCreator;
     
+    @Mock
+    private ServiceWorkingDirectory serviceWorkingDirectory;
+    
     private MdlConversionProcessor conversionProcessor;
     
     private File testWorkingDir;
@@ -92,10 +96,14 @@ public class MdlConversionProcessorIT {
         this.binding.setVariable("fis.cts.output.conversionReport", "conversionReport.log");
         this.binding.setVariable("fis.cts.output.archive", PHEX_ARCHIVE);
         this.binding.setVariable("fis.metadata.dir", ".fis");
+        this.binding.setVariable("serviceWorkingDirectory", serviceWorkingDirectory);
         
         this.binding.setVariable("archiveCreator", this.mockArchiveCreator);
         
         this.outputDir = this.testDirectory.newFolder();
+        
+        when(serviceWorkingDirectory.newDirectory()).thenReturn(outputDir);
+        
         this.expectedResultFile = new File(this.outputDir,"file.ext");
         
         this.conversionProcessor = new MdlConversionProcessor(this.binding);
@@ -125,8 +133,6 @@ public class MdlConversionProcessorIT {
     public void shouldReturnEmptyResultForFailedConversion() throws IOException, ConverterToolboxServiceException, ArchiveException {
     
         //Given failed conversion
-        
-        File outputDir = this.testDirectory.newFolder();
         File fisMetadataDir = new File(outputDir, ".fis");
         
         File mdlFile = new File(outputDir, "test.mdl");
