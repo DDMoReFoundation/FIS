@@ -51,7 +51,7 @@ public class SimpleRemoteServiceHealthIndicator implements HealthIndicator {
                 return Health.up().build();
             }
         } catch (Exception ex) {
-            LOG.error(String.format("Error when trying to check health of remote service at %s", managementUrl));
+            LOG.error(String.format("Error when trying to check health of remote service at %s", managementUrl), ex);
             return buildDownHealth();
         }
     }

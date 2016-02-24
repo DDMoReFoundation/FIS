@@ -39,48 +39,44 @@ public class SimpleRemoteServiceHealthIndicatorTest {
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void constructor_shouldThrowIllegalArgumentExceptionIfCTS_URLIsBlank() {
+    public void constructor_shouldThrowIllegalArgumentExceptionIfRemoteService_URLIsBlank() {
         new SimpleRemoteServiceHealthIndicator(restTemplate, "", "mock-health");
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void constructor_shouldThrowIllegalArgumentExceptionIfCTSHealthEndpointIsBlank() {
+    public void constructor_shouldThrowIllegalArgumentExceptionIfRemoteServiceHealthEndpointIsBlank() {
         new SimpleRemoteServiceHealthIndicator(restTemplate, "mock-url", "");
     }
     
     @Test
-    public void health_shouldReturn_UP_HealthIfCTSisUP() {
+    public void health_shouldReturn_UP_HealthIfRemoteServiceisUP() {
         SimpleRemoteServiceHealthIndicator check = new SimpleRemoteServiceHealthIndicator(restTemplate, "mock-url", "mock-health");
         SimpleHealth healthMock = new SimpleHealth();
         healthMock.setStatus(Status.UP.getCode());
         ResponseEntity<SimpleHealth> healthResponse = new ResponseEntity<SimpleHealth>(healthMock,HttpStatus.OK);
         when(restTemplate.getForEntity(eq("mock-url/mock-health"), same(SimpleHealth.class))).thenReturn(healthResponse);
         Health health = check.health();
-        assertEquals("Health status is 'UP'", Status.UP,health.getStatus());
+        assertEquals("Health status should be 'UP'", Status.UP,health.getStatus());
     }
     
     @Test
-    public void health_shouldReturn_DOWN_ifCTSisDOWN() {
+    public void health_shouldReturn_DOWN_ifRemoteServiceisDOWN() {
         SimpleRemoteServiceHealthIndicator check = new SimpleRemoteServiceHealthIndicator(restTemplate, "mock-url", "mock-health");
         SimpleHealth healthMock = new SimpleHealth();
         healthMock.setStatus(Status.DOWN.getCode());
         ResponseEntity<SimpleHealth> healthResponse = new ResponseEntity<SimpleHealth>(healthMock,HttpStatus.OK);
         when(restTemplate.getForEntity(eq("mock-url/mock-health"), same(SimpleHealth.class))).thenReturn(healthResponse);
         Health health = check.health();
-        assertEquals("Health status is 'DOWN'", Status.DOWN,health.getStatus());
-        assertEquals("And the health object contains Error message", "Remote service is down.", health.getDetails().get(HealthDetail.ERROR));
-        assertEquals("And the health object contains CTS URL", "mock-url", health.getDetails().get(HealthDetail.URL));
+        verifyServiceDown(health);
     }
-    
-    @Test
-    public void health_shouldReturn_DOWN_IfCTSHasInternalError() {
+
+	@Test
+    public void health_shouldReturn_DOWN_IfRemoteServiceSuffersFromInternalError() {
         SimpleRemoteServiceHealthIndicator check = new SimpleRemoteServiceHealthIndicator(restTemplate, "mock-url", "mock-health");
         ResponseEntity<SimpleHealth> healthResponse = new ResponseEntity<SimpleHealth>(HttpStatus.INTERNAL_SERVER_ERROR);
         when(restTemplate.getForEntity(eq("mock-url/mock-health"), same(SimpleHealth.class))).thenReturn(healthResponse);
         Health health = check.health();
-        assertEquals("Health status is 'DOWN'", Status.DOWN,health.getStatus());
-        assertEquals("And the health object contains Error message", "Remote service is down.", health.getDetails().get(HealthDetail.ERROR));
-        assertEquals("And the health object contains CTS URL", "mock-url", health.getDetails().get(HealthDetail.URL));
+        verifyServiceDown(health);
     }
 
     @Test
@@ -88,8 +84,12 @@ public class SimpleRemoteServiceHealthIndicatorTest {
         SimpleRemoteServiceHealthIndicator check = new SimpleRemoteServiceHealthIndicator(restTemplate, "mock-url", "mock-health");
         doThrow(RuntimeException.class).when(restTemplate).getForEntity(eq("mock-url/mock-health"), same(SimpleHealth.class));
         Health health = check.health();
-        assertEquals("Health status is 'DOWN'", Status.DOWN,health.getStatus());
-        assertEquals("And the health object contains Error message", "Remote service is down.", health.getDetails().get(HealthDetail.ERROR));
-        assertEquals("And the health object contains CTS URL", "mock-url", health.getDetails().get(HealthDetail.URL));
+        verifyServiceDown(health);
     }
+    
+    private void verifyServiceDown(Health health) {
+        assertEquals("Health status should be 'DOWN'", Status.DOWN,health.getStatus());
+        assertEquals("Health object should contain error message", "Remote service is down.", health.getDetails().get(HealthDetail.ERROR));
+        assertEquals("Health object should contain remote service URL", "mock-url", health.getDetails().get(HealthDetail.URL));
+	}
 }
