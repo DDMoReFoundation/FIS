@@ -26,8 +26,6 @@ SET MIF_MODE_PARAM=
 
 IF ["%MIF_MODE%"] == ["remoteMIF"] (
     ECHO "The following properties must be set manually: EXECUTION_HOST_FILESHARE_LOCAL, EXECUTION_HOST_FILESHARE, EXECUTION_HOST_FILESHARE_REMOTE!"
-    PAUSE
-    EXIT
 REM Location where the file share location is mounted on the local host. (e.g. Z:\mifshare-win)
     SET EXECUTION_HOST_FILESHARE_LOCAL=
 REM Location where the file share is mounted on MIF host (e.g. /usr/global/mifshare-win)
