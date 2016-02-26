@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
+ ******************************************************************************/
 package eu.ddmore.fis.controllers;
 
 import static org.junit.Assert.assertEquals;
@@ -22,6 +25,9 @@ import eu.ddmore.fis.service.JobDispatcher;
 import eu.ddmore.fis.service.LocalJobService;
 
 
+/**
+ * Tests {@link JobsController}
+ */
 @RunWith(MockitoJUnitRunner.class) 
 public class JobsControllerTest {
 
