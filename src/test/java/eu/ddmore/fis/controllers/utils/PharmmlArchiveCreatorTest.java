@@ -31,8 +31,8 @@ import eu.ddmore.libpharmml.IPharmMLResource;
 import eu.ddmore.libpharmml.dom.PharmML;
 import eu.ddmore.libpharmml.dom.dataset.DataSet;
 import eu.ddmore.libpharmml.dom.dataset.ExternalFile;
-import eu.ddmore.libpharmml.dom.modellingsteps.ExternalDataSet;
-import eu.ddmore.libpharmml.dom.modellingsteps.ModellingSteps;
+import eu.ddmore.libpharmml.dom.trialdesign.ExternalDataSet;
+import eu.ddmore.libpharmml.dom.trialdesign.TrialDesign;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -197,11 +197,11 @@ public class PharmmlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         final ExternalDataSet extDataSet = new ExternalDataSet();
         extDataSet.setDataSet(dataSet);
         
-        final ModellingSteps modellingSteps = new ModellingSteps();
-        modellingSteps.getListOfExternalDataSet().add(extDataSet);
+        final TrialDesign trialDesign = new TrialDesign();
+        trialDesign.getListOfExternalDataSet().add(extDataSet);
         
         final PharmML pharmML = new PharmML();
-        pharmML.setModellingSteps(modellingSteps);
+        pharmML.setTrialDesign(trialDesign);
         
         when(mockPharmmlResource.getDom()).thenReturn(pharmML);
         
