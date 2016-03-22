@@ -24,11 +24,15 @@
             <excludes>
                 <exclude>startup.bat</exclude>
                 <exclude>startup.sh</exclude>
+                <exclude>service.conf</exclude>
             </excludes>
         </fileSet>
         <fileSet>
             <directory>src/main/scripts</directory>
             <outputDirectory>fis</outputDirectory>
+            <excludes>
+                <exclude>service.conf</exclude>
+            </excludes>
             <includes>
                 <include>startup.bat</include>
                 <include>startup.sh</include>
@@ -43,4 +47,11 @@
             </includes>
         </fileSet>
 	</fileSets>
+	<files>
+		<file>
+			<outputDirectory>fis</outputDirectory>
+			<source>src/main/scripts/service.conf</source>
+			<destName>${project.build.finalName}.conf</destName>
+		</file>
+	</files>
 </assembly>
