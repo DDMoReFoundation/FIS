@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -89,9 +88,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     @Test
     public void testBuildArchiveWhereDataFileInDifferentDirectoryToModelFileAndExtraInputFilesBothRelativeAndAbsoluteAreProvided() throws IOException, ArchiveException {
     
-        // Prepare model file, data file and extra input files - note that the model file does
-        // have to exist since it is going to be read in and parsed, but the data file and
-        // extra input files don't need to exist
+        // Prepare model file, data file and extra input files - note that all these files must exist.
         final File controlFile = new File(new File(this.tempFolder.getRoot(), "models"), CTL_FILE_NAME);
         final File dataFile = new File(new File(this.tempFolder.getRoot(), "data"), DATA_FILE_NAME);
         final File extraInputFile1 = new File(new File(this.tempFolder.getRoot(), "models"), "model.lst");
@@ -99,6 +96,9 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         
         // Simulate the data file being associated with the model file
         writeDummyCtlFileContentWithSpecifiedDataStatement(controlFile, "../data/" + DATA_FILE_NAME);
+
+        writeDummyFile(extraInputFile1, "mock-content-1");
+        writeDummyFile(extraInputFile2, "mock-content-2");
         
         final Archive archive = mockArchiveCreation(controlFile, "/models");
         
@@ -177,7 +177,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         final File dataFile = new File(new File(this.tempFolder.getRoot(), "mydir"), DATA_FILE_NAME);
         
         // Simulate the data file being associated with the model file
-        FileUtils.write(controlFile, "$PROBLEM The problem statement\n\t$DATA " + DATA_FILE_NAME + " IGNORE=@\n$INPUT ID TIME WT AMT\n$EST\n");
+        writeDummyFile(controlFile, "$PROBLEM The problem statement\n\t$DATA " + DATA_FILE_NAME + " IGNORE=@\n$INPUT ID TIME WT AMT\n$EST\n");
         
         final Archive archive = mockArchiveCreation(controlFile, "/");
         
@@ -227,7 +227,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         final File dataFile = new File(new File(this.tempFolder.getRoot(), "mydir"), "ThisShouldGetPickedUp.csv");
         
         // Simulate the data file being associated with the model file
-        FileUtils.write(controlFile, "$PROBLEM The problem statement\n;$DATA ThisShouldNotGetPickedUp.csv IGNORE=@\n$INPUT ID TIME WT AMT\n$EST\n$DATA ThisShouldGetPickedUp.csv IGNORE=#\n");
+        writeDummyFile(controlFile, "$PROBLEM The problem statement\n;$DATA ThisShouldNotGetPickedUp.csv IGNORE=@\n$INPUT ID TIME WT AMT\n$EST\n$DATA ThisShouldGetPickedUp.csv IGNORE=#\n");
         
         final Archive archive = mockArchiveCreation(controlFile, "/");
         
@@ -252,7 +252,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         final File dataFile = new File(new File(this.tempFolder.getRoot(), "mydir"), DATA_FILE_NAME);
         
         // Simulate the data file being associated with the model file
-        FileUtils.write(controlFile, "$PROBLEM The problem statement\n  $INFILE " + DATA_FILE_NAME + " IGNORE=@\n$INPUT ID TIME WT AMT\n$EST\n");
+        writeDummyFile(controlFile, "$PROBLEM The problem statement\n  $INFILE " + DATA_FILE_NAME + " IGNORE=@\n$INPUT ID TIME WT AMT\n$EST\n");
         
         final Archive archive = mockArchiveCreation(controlFile, "/");
         
@@ -292,7 +292,7 @@ public class CtlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     }
     
     private void writeDummyCtlFileContentWithSpecifiedDataStatement(final File controlFile, final String dataFileName) throws IOException {
-        FileUtils.write(controlFile, "$PROBLEM The problem statement\n$DATA " + dataFileName + " IGNORE=@\n$INPUT ID TIME WT AMT\n$EST\n");
+        writeDummyFile(controlFile, "$PROBLEM The problem statement\n$DATA " + dataFileName + " IGNORE=@\n$INPUT ID TIME WT AMT\n$EST\n");
     }
 
 }

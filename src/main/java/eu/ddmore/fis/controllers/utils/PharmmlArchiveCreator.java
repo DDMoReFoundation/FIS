@@ -15,7 +15,7 @@ import org.apache.commons.io.FileUtils;
 import eu.ddmore.archive.ArchiveFactory;
 import eu.ddmore.libpharmml.ILibPharmML;
 import eu.ddmore.libpharmml.IPharmMLResource;
-import eu.ddmore.libpharmml.dom.modellingsteps.ExternalDataSet;
+import eu.ddmore.libpharmml.dom.trialdesign.ExternalDataSet;
 
 
 /**
@@ -46,7 +46,7 @@ public final class PharmmlArchiveCreator extends BaseArchiveCreator {
         } catch (final IOException ioe) {
             throw new RuntimeException("Unable to read PharmML file " + pharmmlFile, ioe);
         }
-        final List<ExternalDataSet> extDataSets = pharmMLResource.getDom().getModellingSteps().getListOfExternalDataSet();
+        final List<ExternalDataSet> extDataSets = pharmMLResource.getDom().getTrialDesign().getListOfExternalDataSet();
         if (CollectionUtils.isNotEmpty(extDataSets)) {
             for (final ExternalDataSet extDataSet : extDataSets) {
                 final String dataFilePath = extDataSet.getDataSet().getExternalFile().getPath();

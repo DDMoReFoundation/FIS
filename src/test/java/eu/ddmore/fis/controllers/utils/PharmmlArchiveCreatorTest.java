@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -31,8 +30,8 @@ import eu.ddmore.libpharmml.IPharmMLResource;
 import eu.ddmore.libpharmml.dom.PharmML;
 import eu.ddmore.libpharmml.dom.dataset.DataSet;
 import eu.ddmore.libpharmml.dom.dataset.ExternalFile;
-import eu.ddmore.libpharmml.dom.modellingsteps.ExternalDataSet;
-import eu.ddmore.libpharmml.dom.modellingsteps.ModellingSteps;
+import eu.ddmore.libpharmml.dom.trialdesign.ExternalDataSet;
+import eu.ddmore.libpharmml.dom.trialdesign.TrialDesign;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -66,7 +65,8 @@ public class PharmmlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         // Prepare model file and data file - note that data file doesn't need to exist but PharmML file does (but can have dummy data)
         final File pharmmlFile = new File(new File(this.tempFolder.getRoot(), "mydir"), PHARMML_FILE_NAME);
         final File dataFile = new File(new File(this.tempFolder.getRoot(), "mydir"), DATA_FILE_NAME);
-        FileUtils.write(pharmmlFile, DUMMY_PHARMML_FILE_CONTENT);
+        writeDummyFile(pharmmlFile, DUMMY_PHARMML_FILE_CONTENT);
+        writeDummyFile(dataFile, "data");
         
         // Simulate the data file being associated with the model file
         final IPharmMLResource mockPharmmlResource = mock(IPharmMLResource.class);
@@ -93,10 +93,11 @@ public class PharmmlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     @Test
     public void testBuildArchiveWhereDataFileInDifferentDirectoryToModelFile() throws IOException, ArchiveException {
     
-        // Prepare model file and data file - note that data file doesn't need to exist but PharmML file does (but can have dummy data)
+        // Prepare model file and data file - all these must exist
         final File pharmmlFile = new File(new File(this.tempFolder.getRoot(), "models"), PHARMML_FILE_NAME);
         final File dataFile = new File(new File(this.tempFolder.getRoot(), "data"), DATA_FILE_NAME);
-        FileUtils.write(pharmmlFile, DUMMY_PHARMML_FILE_CONTENT);
+        writeDummyFile(pharmmlFile, DUMMY_PHARMML_FILE_CONTENT);
+        writeDummyFile(dataFile, "data");
         
         // Simulate the data file being associated with the model file
         final IPharmMLResource mockPharmmlResource = mock(IPharmMLResource.class);
@@ -123,13 +124,16 @@ public class PharmmlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     @Test
     public void testBuildArchiveWhereDataFileInDifferentDirectoryToModelFileAndExtraInputFilesBothRelativeAndAbsoluteAreProvided() throws IOException, ArchiveException {
     
-        // Prepare model file, data file and extra input files - note that data file and extra input files
-        // don't need to exist but PharmML file does (but can have dummy data)
+        // Prepare model file, data file and extra input files - all these must exist
         final File pharmmlFile = new File(new File(this.tempFolder.getRoot(), "models"), PHARMML_FILE_NAME);
         final File dataFile = new File(new File(this.tempFolder.getRoot(), "data"), DATA_FILE_NAME);
         final File extraInputFile1 = new File(new File(this.tempFolder.getRoot(), "models"), "model.lst");
         final File extraInputFile2 = new File(this.tempFolder.getRoot(), "model.txt");
-        FileUtils.write(pharmmlFile, DUMMY_PHARMML_FILE_CONTENT);
+        writeDummyFile(pharmmlFile, DUMMY_PHARMML_FILE_CONTENT);
+        writeDummyFile(dataFile, "data");
+        writeDummyFile(extraInputFile1, "extra-1");
+        writeDummyFile(extraInputFile2, "extra-2");
+        
         
         // Simulate the data file being associated with the model file
         final IPharmMLResource mockPharmmlResource = mock(IPharmMLResource.class);
@@ -161,10 +165,11 @@ public class PharmmlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     @Test(expected=IllegalArgumentException.class)
     public void testBuildArchiveWhereDataFileIsReferencedButNotExists() throws IOException, ArchiveException {
     
-        // Prepare model file and data file - note that data file doesn't need to exist but PharmML file does (but can have dummy data)
+        // Prepare model file and data file - all these must exist
         final File pharmmlFile = new File(new File(this.tempFolder.getRoot(), "mydir"), PHARMML_FILE_NAME);
         final File dataFile = new File(new File(this.tempFolder.getRoot(), "mydir"), DATA_FILE_NAME);
-        FileUtils.write(pharmmlFile, DUMMY_PHARMML_FILE_CONTENT);
+        writeDummyFile(pharmmlFile, DUMMY_PHARMML_FILE_CONTENT);
+        writeDummyFile(dataFile, "data");
         
         // Simulate the data file being associated with the model file
         final IPharmMLResource mockPharmmlResource = mock(IPharmMLResource.class);
@@ -197,11 +202,11 @@ public class PharmmlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         final ExternalDataSet extDataSet = new ExternalDataSet();
         extDataSet.setDataSet(dataSet);
         
-        final ModellingSteps modellingSteps = new ModellingSteps();
-        modellingSteps.getListOfExternalDataSet().add(extDataSet);
+        final TrialDesign trialDesign = new TrialDesign();
+        trialDesign.getListOfExternalDataSet().add(extDataSet);
         
         final PharmML pharmML = new PharmML();
-        pharmML.setModellingSteps(modellingSteps);
+        pharmML.setTrialDesign(trialDesign);
         
         when(mockPharmmlResource.getDom()).thenReturn(pharmML);
         

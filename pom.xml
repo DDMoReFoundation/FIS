@@ -71,7 +71,7 @@
         <dependency>
             <groupId>eu.ddmore.pharmml</groupId>
             <artifactId>libPharmML</artifactId>
-            <version>0.4.4-b1</version>
+            <version>0.6.1-1</version>
             <exclusions>
                 <exclusion>
                     <groupId>junit</groupId>
@@ -219,7 +219,6 @@
         <dependency>
             <groupId>org.springframework.plugin</groupId>
             <artifactId>spring-plugin-core</artifactId>
-            <version>1.1.0.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>

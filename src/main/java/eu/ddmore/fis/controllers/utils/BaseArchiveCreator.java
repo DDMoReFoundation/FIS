@@ -14,6 +14,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Preconditions;
+
 import eu.ddmore.archive.Archive;
 import eu.ddmore.archive.ArchiveFactory;
 import eu.ddmore.archive.Entry;
@@ -74,22 +76,22 @@ abstract class BaseArchiveCreator implements ArchiveCreator {
      * @throws ArchiveException - if something fatal occurred during the addition of files to the archive 
      */
     public final Archive buildArchive(final File archiveFile, final File modelFile, final Collection<File> extraInputFiles) throws ArchiveException {
-    
         if (archiveFile.exists()) {
             LOG.warn(String.format("Archive file %1$s already exists, removed", archiveFile));
             FileUtils.deleteQuietly(archiveFile);
         }
-        
+        Preconditions.checkArgument(modelFile.exists(), String.format("Model file %s does not exist.", modelFile));
         final Collection<File> allInputFiles = gatherDataFilesFromReferencesInModelFile(modelFile);
         // Process the extra input files to make paths absolute and add the resulting Files
         // to the list of data files to produce the list of all input files
         if (CollectionUtils.isNotEmpty(extraInputFiles)) {
             for (final File extraInputFile : extraInputFiles) {
-                if (extraInputFile.isAbsolute()) {
-                    allInputFiles.add(extraInputFile);
-                } else {
-                    allInputFiles.add(resolveRelativePathAgainstDirectoryOfModelFile(modelFile, extraInputFile.getPath()));
+                File absoluteLocation = extraInputFile;
+                if (!extraInputFile.isAbsolute()) {
+                    absoluteLocation = resolveRelativePathAgainstDirectoryOfModelFile(modelFile, extraInputFile.getPath());
                 }
+                Preconditions.checkArgument(absoluteLocation.exists(), String.format("Extra input file %s does not exist.", absoluteLocation));
+                allInputFiles.add(absoluteLocation);
             }
         }
         

@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.xtext.util.Files;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
@@ -138,4 +139,8 @@ public abstract class AbstractArchiveCreatorTestBase {
         });
     }
 
+    protected static void writeDummyFile(File file, String content) {
+        file.getParentFile().mkdirs();
+        Files.writeStringIntoFile(file.getAbsolutePath(), content);
+    }
 }

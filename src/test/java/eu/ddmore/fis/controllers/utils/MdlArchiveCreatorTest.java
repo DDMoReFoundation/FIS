@@ -9,8 +9,9 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import org.apache.commons.io.FileUtils;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -25,6 +26,9 @@ public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     
     private final static String MDL_FILE_NAME = "model.mdl";
     private final static String DATA_FILE_NAME = "model_data.csv";
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
     
     @Mock
     private MdlUtils mockMdlUtils;
@@ -42,10 +46,13 @@ public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
      */
     @Test
     public void testBuildArchiveWhereDataFileInSameDirectoryAsModelFile() throws IOException, ArchiveException {
-    
-        // Prepare model file and data file - note that they don't actually need to exist
-        final File modelFile = Paths.get(FileUtils.getTempDirectoryPath(), "mydir", MDL_FILE_NAME).toFile();
-        final File dataFile = Paths.get(FileUtils.getTempDirectoryPath(), "mydir", DATA_FILE_NAME).toFile();
+
+        // Prepare model file and data file - note that they must exist
+        final File modelFile = Paths.get(tempFolder.getRoot().getAbsolutePath(), "mydir", MDL_FILE_NAME).toFile();
+        final File dataFile = Paths.get(tempFolder.getRoot().getAbsolutePath(), "mydir", DATA_FILE_NAME).toFile();
+
+        writeDummyFile(modelFile, "model");
+        writeDummyFile(dataFile, "data");
         
         // Simulate the data file being associated with the model file
         when(this.mockMdlUtils.getDataFileFromMDL(modelFile)).thenReturn(Arrays.asList(dataFile));
@@ -69,9 +76,12 @@ public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     @Test
     public void testBuildArchiveWhereDataFileInDifferentDirectoryToModelFile() throws IOException, ArchiveException {
     
-        // Prepare model file and data file - note that they don't actually need to exist
-        final File modelFile = Paths.get(FileUtils.getTempDirectoryPath(), "models", MDL_FILE_NAME).toFile();
-        final File dataFile = Paths.get(FileUtils.getTempDirectoryPath(), "data", DATA_FILE_NAME).toFile();
+        // Prepare model file and data file - note that they must exist
+        final File modelFile = Paths.get(tempFolder.getRoot().getAbsolutePath(), "models", MDL_FILE_NAME).toFile();
+        final File dataFile = Paths.get(tempFolder.getRoot().getAbsolutePath(), "data", DATA_FILE_NAME).toFile();
+
+        writeDummyFile(modelFile, "model");
+        writeDummyFile(dataFile, "data");
         
         // Simulate the data file being associated with the model file
         when(this.mockMdlUtils.getDataFileFromMDL(modelFile)).thenReturn(Arrays.asList(dataFile));
@@ -95,11 +105,16 @@ public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     @Test
     public void testBuildArchiveWhereDataFileInDifferentDirectoryToModelFileAndExtraInputFilesBothRelativeAndAbsoluteAreProvided() throws IOException, ArchiveException {
     
-        // Prepare model file, data file and extra input files - note that they don't actually need to exist
-        final File modelFile = Paths.get(FileUtils.getTempDirectoryPath(), "models", MDL_FILE_NAME).toFile();
-        final File dataFile = Paths.get(FileUtils.getTempDirectoryPath(), "data", DATA_FILE_NAME).toFile();
-        final File extraInputFile1 = new File(new File(FileUtils.getTempDirectoryPath(), "models"), "model.lst");
-        final File extraInputFile2 = new File(FileUtils.getTempDirectoryPath(), "model.txt");
+        // Prepare model file, data file and extra input files - note that they must exist
+        final File modelFile = Paths.get(tempFolder.getRoot().getAbsolutePath(), "models", MDL_FILE_NAME).toFile();
+        final File dataFile = Paths.get(tempFolder.getRoot().getAbsolutePath(), "data", DATA_FILE_NAME).toFile();
+        final File extraInputFile1 = new File(new File(tempFolder.getRoot().getAbsolutePath(), "models"), "model.lst");
+        final File extraInputFile2 = new File(tempFolder.getRoot().getAbsolutePath(), "model.txt");
+
+        writeDummyFile(modelFile, "model");
+        writeDummyFile(dataFile, "data");
+        writeDummyFile(extraInputFile1, "mock-content-1");
+        writeDummyFile(extraInputFile2, "mock-content-2");
         
         // Simulate the data file being associated with the model file
         when(this.mockMdlUtils.getDataFileFromMDL(modelFile)).thenReturn(Arrays.asList(dataFile));
@@ -128,10 +143,11 @@ public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
     @Test(expected=IllegalArgumentException.class)
     public void testBuildArchiveWhereDataFileIsReferencedButNotExists() throws IOException, ArchiveException {
     
-        // Prepare model file and data file - note that they don't actually need to exist
-        final File modelFile = Paths.get(FileUtils.getTempDirectoryPath(), "mydir", MDL_FILE_NAME).toFile();
-        final File dataFile = Paths.get(FileUtils.getTempDirectoryPath(), "mydir", DATA_FILE_NAME).toFile();
-    
+        // Prepare model file and data file - note that they must exist
+        final File modelFile = Paths.get(tempFolder.getRoot().getAbsolutePath(), "mydir", MDL_FILE_NAME).toFile();
+        final File dataFile = Paths.get(tempFolder.getRoot().getAbsolutePath(), "mydir", DATA_FILE_NAME).toFile();
+        writeDummyFile(modelFile, "model");
+        writeDummyFile(dataFile, "data");
         // Simulate the data file being associated with the model file
         when(this.mockMdlUtils.getDataFileFromMDL(modelFile)).thenReturn(Arrays.asList(dataFile));
         
@@ -141,5 +157,4 @@ public class MdlArchiveCreatorTest extends AbstractArchiveCreatorTestBase {
         invokeBuildArchive(modelFile);
 
     }
-
 }
