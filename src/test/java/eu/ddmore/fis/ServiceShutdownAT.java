@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis;
 
@@ -10,7 +10,7 @@ import org.junit.Test;
 /**
  * Verifies that standalone service fulfils functional requirements
  */
-public class ServiceShutdownAT extends SystemPropertiesAware {
+public class ServiceShutdownAT extends AcceptanceTestParent {
     
     @Test
     public void shouldShutDownService() {

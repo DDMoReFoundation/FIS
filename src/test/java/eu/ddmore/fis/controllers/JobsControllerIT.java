@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
+ ******************************************************************************/
 package eu.ddmore.fis.controllers;
 
 import static org.junit.Assert.assertEquals;
@@ -15,22 +18,17 @@ import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import eu.ddmore.fis.CommonIntegrationTestContextConfiguration;
-import eu.ddmore.fis.SystemPropertiesAware;
-import eu.ddmore.fis.configuration.RestClientConfiguration;
+import eu.ddmore.fis.IntegrationTestParent;
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
 import eu.ddmore.fis.service.LocalJobService;
@@ -38,11 +36,9 @@ import eu.ddmore.fis.service.LocalJobService;
 /**
  * Integration test for {@link JobsController}.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { CommonIntegrationTestContextConfiguration.class,RestClientConfiguration.class })
 @WebAppConfiguration
 @IntegrationTest({"server.port=0", "management.port=0"}) //let the framework choose the port
-public class JobsControllerIT extends SystemPropertiesAware {
+public class JobsControllerIT extends IntegrationTestParent {
     private final Logger LOG = Logger.getLogger(JobsControllerIT.class);
     private static final String URL = "http://localhost";
     @Autowired

@@ -25,7 +25,7 @@ import com.google.common.base.Preconditions;
 public class ServiceWorkingDirectory {
     private static final Logger LOG = Logger.getLogger(ServiceWorkingDirectory.class);
     
-    @Value("${fis.workingDirectory}")
+    @Value("${fis.workingDirectory.path}")
     private File workingDirectory;
 
     @Value("${fis.workingDirectory.identityFile:.fis_wd}")
@@ -36,8 +36,8 @@ public class ServiceWorkingDirectory {
      */
     @PostConstruct
     public void initialise() {
-        Preconditions.checkNotNull(workingDirectory, "Working directory can't be null, use 'fis.workingDirectory' property to set it.");
-        Preconditions.checkState(StringUtils.isNotBlank(workingDirectory.getPath()),"Working directory can't be blank, use 'fis.workingDirectory' property to set it");
+        Preconditions.checkNotNull(workingDirectory, "Working directory can't be null, use 'fis.workingDirectory.path' property to set it.");
+        Preconditions.checkState(StringUtils.isNotBlank(workingDirectory.getPath()),"Working directory can't be blank, use 'fis.workingDirectory.path' property to set it");
         Preconditions.checkState(StringUtils.isNotBlank(identityFileName),"Identity file can't be blank");
         File identityFile = new File(workingDirectory,identityFileName);
         if(workingDirectory.exists()) {

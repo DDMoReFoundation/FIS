@@ -8,6 +8,7 @@ import org.apache.commons.io.FilenameUtils
 import org.apache.log4j.Logger
 
 import eu.ddmore.archive.Archive
+import eu.ddmore.fis.configuration.Fileshare
 import eu.ddmore.fis.controllers.utils.ArchiveCreator
 import eu.ddmore.fis.domain.LocalJob
 import eu.ddmore.fis.domain.LocalJobStatus
@@ -31,7 +32,7 @@ final LocalJob job = binding.getVariable("job");
 final File scriptFile = binding.getVariable("scriptFile");
 final JobArchiveProvisioner jobArchiveProvisioner = binding.getVariable("jobArchiveProvisioner");
 final String outputArchiveName = binding.getVariable("fis.cts.output.archive");
-final String executionHostFileshareLocal = binding.getVariable("execution.host.fileshare.local");
+final Fileshare fileshare = binding.getVariable("fileshare");
 final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
 final ArchiveCreator archiveCreator = binding.getVariable("archiveCreator");
 
@@ -40,7 +41,7 @@ final ArchiveCreator archiveCreator = binding.getVariable("archiveCreator");
  */
 
 final File fisJobWorkingDir = new File(job.getWorkingDirectory())
-final File mifJobWorkingDir = new File(executionHostFileshareLocal, job.getId());
+final File mifJobWorkingDir = new File(fileshare.getFisHostPath(), job.getId());
 
 LOG.debug("Job ${job.getId()}, FIS working dir: ${fisJobWorkingDir}, MIF working dir: ${mifJobWorkingDir}");
 

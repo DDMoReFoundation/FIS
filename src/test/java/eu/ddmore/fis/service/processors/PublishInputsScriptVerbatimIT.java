@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis.service.processors;
 
@@ -30,6 +30,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import eu.ddmore.archive.Archive;
 import eu.ddmore.archive.exception.ArchiveException;
+import eu.ddmore.fis.configuration.Fileshare;
 import eu.ddmore.fis.controllers.utils.ArchiveCreator;
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.service.cts.ConverterToolboxServiceException;
@@ -79,8 +80,10 @@ public class PublishInputsScriptVerbatimIT {
         final File testExecutionHostFileshareLocal = this.testWorkingDir;
         this.mifJobWorkingDir = new File(testExecutionHostFileshareLocal, "MIF_JOB_ID");
 
+        final Fileshare fileshare = new Fileshare();
+        fileshare.setFisHostPath(testExecutionHostFileshareLocal.getAbsolutePath());
         this.binding = new Binding();
-        this.binding.setVariable("execution.host.fileshare.local", testExecutionHostFileshareLocal);
+        this.binding.setVariable("fileshare", fileshare);
         this.binding.setVariable("fis.cts.output.archive", PHEX_ARCHIVE);
         this.binding.setVariable("fis.metadata.dir", ".fis");
         this.binding.setVariable("jobArchiveProvisioner", this.jobArchiveProvisioner);

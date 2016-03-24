@@ -20,7 +20,7 @@ import org.junit.rules.TemporaryFolder;
 /**
  * Verifies that MDL to PharmML HTTP endpoint conforms to API.
  */
-public class MdlToPharmMLConverterServiceAT extends SystemPropertiesAware {
+public class MdlToPharmMLConverterServiceAT extends AcceptanceTestParent {
 	private static final String TEST_DATA_DIR = "/test-models/%s/7.0.0/";
 	private static final String MDL_FILE_NAME = "UseCase1.mdl";
 	private static final String PHARMML_FILE_NAME = "UseCase1.xml";

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis.service.cts;
 
@@ -147,7 +147,7 @@ public class ConverterToolboxServiceProxyTest {
         ResponseEntity<ServiceDescriptorResource> mockResponse = new ResponseEntity<ServiceDescriptorResource>(
                 mockServiceDescriptorResource, HttpStatus.OK);
         when(restTemplate.getForEntity(eq(MOCK_HOME_URL), same(ServiceDescriptorResource.class))).thenReturn(mockResponse);
-        File archiveFile = tempArchiveLocation.newFile();
+        File archiveFile = tempArchiveLocation.newFile("mockArchive");
         Archive archive = mock(Archive.class);
         when(archive.getArchiveFile()).thenReturn(archiveFile);
         Entry mainEntry = mock(Entry.class);
@@ -273,7 +273,7 @@ public class ConverterToolboxServiceProxyTest {
     @Test(expected = ConverterToolboxServiceException.class)
     public void submit_shouldThrowConverterToolboxServiceExceptionIfHTTPError() throws ConverterToolboxServiceException, ArchiveException, IOException {
         ServiceDescriptorResource mockServiceDescriptorResource = createMockServiceDescriptorResource();
-        File archiveFile = tempArchiveLocation.newFile();
+        File archiveFile = tempArchiveLocation.newFile("mockArchive");
         Archive archive = mock(Archive.class);
         when(archive.getArchiveFile()).thenReturn(archiveFile);
         Entry mainEntry = mock(Entry.class);
@@ -291,7 +291,7 @@ public class ConverterToolboxServiceProxyTest {
 
     @Test(expected = ConverterToolboxServiceException.class)
     public void retrieveResult_shouldThrowConverterToolboxServiceExceptionIfHTTPError() throws ConverterToolboxServiceException, ArchiveException, IOException {
-        File archiveFile = tempArchiveLocation.newFile();
+        File archiveFile = tempArchiveLocation.newFile("mockArchive");
         Archive archive = mock(Archive.class);
         when(archive.getArchiveFile()).thenReturn(archiveFile);
         Entry mainEntry = mock(Entry.class);

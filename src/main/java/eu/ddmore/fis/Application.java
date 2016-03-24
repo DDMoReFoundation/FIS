@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis;
 
@@ -14,6 +14,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.hateoas.RelProvider;
 import org.springframework.hateoas.core.AnnotationRelProvider;
@@ -26,18 +27,20 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mango.mif.MIFHttpRestClient;
 
-import eu.ddmore.fis.configuration.Languages;
 import eu.ddmore.fis.controllers.GlobalLoggingRestExceptionHandler;
 import eu.ddmore.fis.service.ServiceWorkingDirectory;
 import eu.ddmore.fis.service.cts.internal.CTSRestClientConfiguration;
 import eu.ddmore.fis.service.internal.WorkingDirectoriesReaper;
 
+
 @Configuration
 @EnableAutoConfiguration
-@Import(value = { RepositoryRestMvcConfiguration.class, CTSRestClientConfiguration.class, Languages.class})
+@EnableJpaRepositories("eu.ddmore.fis.repository")
+@Import(value = { RepositoryRestMvcConfiguration.class, CTSRestClientConfiguration.class})
+@ComponentScan({"eu.ddmore.fis.service.mif", "eu.ddmore.fis.configuration"} )
 @ImportResource("classpath:META-INF/application-context.xml")
-@ComponentScan({"eu.ddmore.fis.service.mif"} )
 public class Application {
+    
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }

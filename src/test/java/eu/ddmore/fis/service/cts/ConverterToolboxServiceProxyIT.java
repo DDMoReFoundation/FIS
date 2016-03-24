@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis.service.cts;
 
@@ -12,7 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import eu.ddmore.fis.CommonIntegrationTestContextConfiguration;
-import eu.ddmore.fis.SystemPropertiesAware;
+import eu.ddmore.fis.IntegrationTestParent;
 
 
 /**
@@ -26,7 +26,7 @@ import eu.ddmore.fis.SystemPropertiesAware;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { CommonIntegrationTestContextConfiguration.class })
-public class ConverterToolboxServiceProxyIT extends SystemPropertiesAware {
+public class ConverterToolboxServiceProxyIT extends IntegrationTestParent {
 
     @Autowired
     private ConverterToolboxService converterToolboxService;

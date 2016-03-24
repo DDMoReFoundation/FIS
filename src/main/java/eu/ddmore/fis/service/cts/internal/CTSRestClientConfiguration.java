@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import eu.ddmore.fis.service.cts.ConverterToolboxServiceSettings;
 import eu.ddmore.fis.service.integration.RemoteServiceShutdownHandler;
 import eu.ddmore.fis.service.integration.ShutdownHandler;
 import eu.ddmore.fis.service.integration.SimpleRemoteServiceHealthIndicator;
@@ -34,14 +35,17 @@ import eu.ddmore.fis.service.integration.SimpleRemoteServiceHealthIndicator;
 @ComponentScan("eu.ddmore.fis.service.cts")
 public class CTSRestClientConfiguration {
     
+    @Autowired(required=true)
+    private ConverterToolboxServiceSettings ctsSettings;
+    
     @Bean
-    public HealthIndicator ctsHealth(@Qualifier("ctsRestTemplate") RestTemplate restTemplate, @Value("${fis.cts.management.url}") String managementUrl, @Value("${fis.cts.management.healthcheck}") String healthcheckEndpoint) {
-        return new SimpleRemoteServiceHealthIndicator(restTemplate, managementUrl, healthcheckEndpoint);
+    public HealthIndicator ctsHealth(@Qualifier("ctsRestTemplate") RestTemplate restTemplate) {
+        return new SimpleRemoteServiceHealthIndicator(restTemplate, ctsSettings.getManagement().getUrl(), ctsSettings.getManagement().getHealthcheck());
     }
 
     @Bean
-    public ShutdownHandler ctsShutdown(@Qualifier("ctsRestTemplate") RestTemplate restTemplate, @Value("${fis.cts.management.url}") String managementUrl, @Value("${fis.cts.management.shutdown}") String shutdownEndpoint) {
-        return new RemoteServiceShutdownHandler(restTemplate, managementUrl, shutdownEndpoint);
+    public ShutdownHandler ctsShutdown(@Qualifier("ctsRestTemplate") RestTemplate restTemplate) {
+        return new RemoteServiceShutdownHandler(restTemplate, ctsSettings.getManagement().getUrl(), ctsSettings.getManagement().getShutdown());
     }
     
     @Bean

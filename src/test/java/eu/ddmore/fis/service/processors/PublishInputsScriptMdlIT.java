@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis.service.processors;
 
@@ -37,6 +37,7 @@ import eu.ddmore.archive.exception.ArchiveException;
 import eu.ddmore.convertertoolbox.domain.ConversionReport;
 import eu.ddmore.convertertoolbox.domain.ConversionReportOutcomeCode;
 import eu.ddmore.convertertoolbox.domain.LanguageVersion;
+import eu.ddmore.fis.configuration.Fileshare;
 import eu.ddmore.fis.controllers.utils.ArchiveCreator;
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.service.cts.ConverterToolboxService;
@@ -94,11 +95,12 @@ public class PublishInputsScriptMdlIT {
         LOG.debug(String.format("Test working dir %s", this.testWorkingDir));
         final File testExecutionHostFileshareLocal = this.testWorkingDir;
         this.mifJobWorkingDir = new File(testExecutionHostFileshareLocal, "MIF_JOB_ID");
-        
+        final Fileshare fileshare = new Fileshare();
+        fileshare.setFisHostPath(testExecutionHostFileshareLocal.getAbsolutePath());
         this.binding = new Binding();
         this.binding.setVariable("fis.mdl.ext", "mdl");
         this.binding.setVariable("fis.pharmml.ext", "xml");
-        this.binding.setVariable("execution.host.fileshare.local", testExecutionHostFileshareLocal);
+        this.binding.setVariable("fileshare", fileshare);
         this.binding.setVariable("converterToolboxService",converterToolboxService);
         this.binding.setVariable("mdlLanguage",mdlLanguage);
         this.binding.setVariable("pharmmlLanguage",pharmmlLanguage);

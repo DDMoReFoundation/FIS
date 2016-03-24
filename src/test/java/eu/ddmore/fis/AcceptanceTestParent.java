@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
+ ******************************************************************************/
 package eu.ddmore.fis;
 
 import java.io.IOException;
@@ -8,13 +11,16 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 
-public class SystemPropertiesAware {
+/**
+ * Parent class for acceptance tests that ensures that sets up test properties.
+ */
+public class AcceptanceTestParent {
     private static final Properties initialProperties = new Properties();
     @BeforeClass
     public static void setUpClass() throws IOException  {
         initialProperties.putAll(System.getProperties());
         Properties props = new Properties();
-        props.load(SystemPropertiesAware.class.getResource("/tests.properties").openStream());
+        props.load(AcceptanceTestParent.class.getResource("/acceptance-tests.properties").openStream());
         
         for(Entry<Object, Object> en : props.entrySet()) {
             if(System.getProperty((String) en.getKey())==null) {

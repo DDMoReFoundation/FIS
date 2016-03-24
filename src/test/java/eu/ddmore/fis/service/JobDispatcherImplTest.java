@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis.service;
 
@@ -29,6 +29,7 @@ import com.mango.mif.MIFHttpRestClient;
 import com.mango.mif.domain.ClientAvailableConnectorDetails;
 import com.mango.mif.domain.ExecutionRequest;
 
+import eu.ddmore.fis.configuration.Fileshare;
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
 
@@ -47,8 +48,8 @@ public class JobDispatcherImplTest {
     private MIFHttpRestClient mifClient;
     
     private File testWorkingDir;
-    private String testExecutionHostFileshare;
-    private String dummyExecutionHostFileshareRemote = "V:\\mifshare";
+    private String mifFilesharePath;
+    private String executionHostFilesharePath = "V:\\mifshare";
 
     @InjectMocks
     private JobDispatcherImpl jobDispatcher = new JobDispatcherImpl();
@@ -56,9 +57,11 @@ public class JobDispatcherImplTest {
     @Before
     public void setUp() {
     	this.testWorkingDir = this.testDirectory.getRoot();
-    	this.testExecutionHostFileshare = this.testWorkingDir.toString();
-    	this.jobDispatcher.setExecutionHostFileshare(this.testExecutionHostFileshare);
-    	this.jobDispatcher.setExecutionHostFileshareRemote(this.dummyExecutionHostFileshareRemote);
+    	this.mifFilesharePath = this.testWorkingDir.toString();
+    	Fileshare fileshare = new Fileshare();
+    	fileshare.setMifHostPath(mifFilesharePath);
+        fileshare.setExecutionHostPath(executionHostFilesharePath);
+    	this.jobDispatcher.setFileshare(fileshare);
     }
     
     @Test
@@ -87,9 +90,9 @@ public class JobDispatcherImplTest {
             capturedExecRequest.getGridHostPreamble());
         final Map<String, String> execRequestAttrs = capturedExecRequest.getRequestAttributes();
         assertEquals("Checking the \"execution host fileshare\" Execution Request Parameter on the MIF Client Execution Request",
-            this.testExecutionHostFileshare, execRequestAttrs.get("EXECUTION_HOST_FILESHARE"));
+            this.mifFilesharePath, execRequestAttrs.get("EXECUTION_HOST_FILESHARE"));
         assertEquals("Checking the \"execution host fileshare remote\" Execution Request Parameter on the MIF Client Execution Request",
-            this.dummyExecutionHostFileshareRemote, execRequestAttrs.get("EXECUTION_HOST_FILESHARE_REMOTE"));
+            this.executionHostFilesharePath, execRequestAttrs.get("EXECUTION_HOST_FILESHARE_REMOTE"));
         
     }
     
@@ -126,9 +129,9 @@ public class JobDispatcherImplTest {
             capturedExecRequest.getGridHostPreamble());
         final Map<String, String> execRequestAttrs = capturedExecRequest.getRequestAttributes();
         assertEquals("Checking the \"execution host fileshare\" Execution Request Parameter on the MIF Client Execution Request",
-            this.testExecutionHostFileshare, execRequestAttrs.get("EXECUTION_HOST_FILESHARE"));
+            this.mifFilesharePath, execRequestAttrs.get("EXECUTION_HOST_FILESHARE"));
         assertEquals("Checking the \"execution host fileshare remote\" Execution Request Parameter on the MIF Client Execution Request",
-            this.dummyExecutionHostFileshareRemote, execRequestAttrs.get("EXECUTION_HOST_FILESHARE_REMOTE"));
+            this.executionHostFilesharePath, execRequestAttrs.get("EXECUTION_HOST_FILESHARE_REMOTE"));
         
     }
     

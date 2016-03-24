@@ -6,8 +6,8 @@ package eu.ddmore.fis.service.mif.internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +26,7 @@ import com.mango.mif.MIFHttpRestClient;
 import eu.ddmore.fis.service.integration.RemoteServiceShutdownHandler;
 import eu.ddmore.fis.service.integration.ShutdownHandler;
 import eu.ddmore.fis.service.integration.SimpleRemoteServiceHealthIndicator;
+import eu.ddmore.fis.service.mif.MIFServiceSettings;
 
 /**
  * Configuration which prepares MIF REST client components
@@ -75,14 +76,17 @@ public class RestClientConfiguration {
     @Configuration
     @Profile( {MIF_LOCAL} )
     public static class LocalMIF {
+        @Autowired(required=true)
+        private MIFServiceSettings mifServiceSettings;
+        
         @Bean
-        public HealthIndicator mifHealth(@Qualifier("mifRestTemplate") RestTemplate restTemplate, @Value("${fis.mif.management.url}") String managementUrl, @Value("${fis.mif.management.healthcheck}") String healthcheckEndpoint) {
-            return new SimpleRemoteServiceHealthIndicator(restTemplate, managementUrl, healthcheckEndpoint);
+        public HealthIndicator mifHealth(@Qualifier("mifRestTemplate") RestTemplate restTemplate) {
+            return new SimpleRemoteServiceHealthIndicator(restTemplate, mifServiceSettings.getManagement().getUrl(), mifServiceSettings.getManagement().getHealthcheck());
         }
 
         @Bean
-        public ShutdownHandler mifShutdown(@Qualifier("mifRestTemplate") RestTemplate restTemplate, @Value("${fis.mif.management.url}") String managementUrl, @Value("${fis.mif.management.shutdown}") String shutdownEndpoint) {
-            return new RemoteServiceShutdownHandler(restTemplate, managementUrl, shutdownEndpoint);
+        public ShutdownHandler mifShutdown(@Qualifier("mifRestTemplate") RestTemplate restTemplate) {
+            return new RemoteServiceShutdownHandler(restTemplate, mifServiceSettings.getManagement().getUrl(), mifServiceSettings.getManagement().getShutdown());
         }
     }
     

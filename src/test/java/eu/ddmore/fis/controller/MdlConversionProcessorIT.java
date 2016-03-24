@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2015 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis.controller;
 
@@ -100,7 +100,7 @@ public class MdlConversionProcessorIT {
         
         this.binding.setVariable("archiveCreator", this.mockArchiveCreator);
         
-        this.outputDir = this.testDirectory.newFolder();
+        this.outputDir = this.testDirectory.newFolder("outputDir");
         
         when(serviceWorkingDirectory.newDirectory()).thenReturn(outputDir);
         
@@ -173,7 +173,7 @@ public class MdlConversionProcessorIT {
     
         //Given conversion in error
         
-        File outputDir = this.testDirectory.newFolder();
+        File outputDir = this.testDirectory.newFolder("shouldReThrowExceptionIfRuntimeExceptionOccurs");
         File fisMetadataDir = new File(outputDir, ".fis");
         
         File mdlFile = new File(outputDir, "test.mdl");
@@ -199,7 +199,7 @@ public class MdlConversionProcessorIT {
     
         //Given conversion in error
         
-        File outputDir = this.testDirectory.newFolder();
+        File outputDir = this.testDirectory.newFolder("shouldThrowRuntimeExceptionIfConversionIsNotSupported");
         File fisMetadataDir = new File(outputDir, ".fis");
         
         File mdlFile = new File(outputDir, "test.mdl");

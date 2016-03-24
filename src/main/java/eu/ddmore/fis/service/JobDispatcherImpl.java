@@ -14,6 +14,7 @@ import com.mango.mif.domain.ClientAvailableConnectorDetails;
 import com.mango.mif.domain.ExecutionRequest;
 import com.mango.mif.domain.ExecutionRequestBuilder;
 
+import eu.ddmore.fis.configuration.Fileshare;
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
 
@@ -25,14 +26,12 @@ public class JobDispatcherImpl implements JobDispatcher {
     private final static Logger LOGGER = Logger.getLogger(JobDispatcherImpl.class);
 
     final static String DEFAULT_MIF_USERNAME = "tel-user";
-
 	private MIFHttpRestClient mifClient;
 	private String mifUserName;
 	private String mifUserPassword;
 	private JobResourceProcessor jobResourcePublisher;
 	private CommandRegistry commandRegistry;
-	private String executionHostFileshare;
-	private String executionHostFileshareRemote;
+	private Fileshare fileshare;
 
 	public LocalJob dispatch(LocalJob job) {
 	    Preconditions.checkNotNull(job, "Job can't be null.");
@@ -92,8 +91,8 @@ public class JobDispatcherImpl implements JobDispatcher {
 			.setUserName(userName)
 			.setUserPassword(userPassword)
 			.setExecutionParameters(job.getCommandParameters());
-		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE", getExecutionHostFileshare());
-		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE_REMOTE", getExecutionHostFileshareRemote());
+		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE", fileshare.getMifHostPath());
+		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE_REMOTE", fileshare.getExecutionHostPath());
 		return requestBuilder.getExecutionRequest();
 	}
 
@@ -124,23 +123,14 @@ public class JobDispatcherImpl implements JobDispatcher {
 		return this.commandRegistry;
 	}
 
-	@Required
-	public void setExecutionHostFileshare(String executionHostFileshare) {
-		this.executionHostFileshare = executionHostFileshare;
-	}
-	
-	public String getExecutionHostFileshare() {
-		return this.executionHostFileshare;
-	}
-	
-	@Required
-	public void setExecutionHostFileshareRemote(String executionHostFileshareRemote) {
-		this.executionHostFileshareRemote = executionHostFileshareRemote;
-	}
-	
-	public String getExecutionHostFileshareRemote() {
-		return this.executionHostFileshareRemote;
-	}
+    @Required
+    public void setFileshare(Fileshare fileshare) {
+        this.fileshare = fileshare;
+    }
+    
+    public Fileshare getFileshare() {
+        return fileshare;
+    }
 	
 	@Value("${fis.mif.userName}")
 	public void setMifUserName(final String mifUserName) {

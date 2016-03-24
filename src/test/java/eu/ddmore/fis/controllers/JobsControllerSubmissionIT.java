@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis.controllers;
 
@@ -27,15 +27,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.EmbeddedWebApplicationContext;
 import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -44,9 +40,8 @@ import com.mango.mif.MIFHttpRestClient;
 import com.mango.mif.domain.ClientAvailableConnectorDetails;
 import com.mango.mif.domain.ExecutionRequest;
 
-import eu.ddmore.fis.CommonIntegrationTestContextConfiguration;
-import eu.ddmore.fis.SystemPropertiesAware;
-import eu.ddmore.fis.configuration.RestClientConfiguration;
+import eu.ddmore.fis.IntegrationTestParent;
+import eu.ddmore.fis.configuration.Fileshare;
 import eu.ddmore.fis.controllers.ClientError.JobNotFound;
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
@@ -54,11 +49,13 @@ import eu.ddmore.fis.service.CommandRegistryImpl;
 import eu.ddmore.fis.service.JobDispatcherImpl;
 import eu.ddmore.fis.service.RemoteJobStatusPoller;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = { CommonIntegrationTestContextConfiguration.class, RestClientConfiguration.class })
+
+/**
+ * Integration test for submission endpoints of the {@link JobsController}.
+ */
 @WebAppConfiguration
 @IntegrationTest({"server.port=0", "management.port=0"}) //let the framework choose the port
-public class JobsControllerSubmissionIT extends SystemPropertiesAware {
+public class JobsControllerSubmissionIT extends IntegrationTestParent {
     private static final Logger LOG = Logger.getLogger(JobsControllerSubmissionIT.class);
     private static final String URL = "http://localhost";
     
@@ -73,16 +70,13 @@ public class JobsControllerSubmissionIT extends SystemPropertiesAware {
     // This is where the output from FIS and MIF can be found
     private File workingDir;
 
-    @Value("${execution.host.fileshare}")
-    private String executionHostFileshare;
-    @Value("${execution.host.fileshare.remote}")
-    private String executionHostFileshareRemote;
+    @Autowired
+    private Fileshare fileshare;
     
     @Autowired
     private JobsController jobsController;
 
-    @Value("${commandline.execute.command}")
-    private String command;
+    private String command = "mock-command";
 
     @Autowired
     private RemoteJobStatusPoller remoteJobStatusPoller;
@@ -147,7 +141,7 @@ public class JobsControllerSubmissionIT extends SystemPropertiesAware {
 
         final String jobId = submittedJob.getId();
         LOG.debug(String.format("Job ID = %s", jobId));
-        final File mifWorkingDir = new File(this.executionHostFileshare, jobId);
+        final File mifWorkingDir = new File(this.fileshare.getFisHostPath(), jobId);
         
         verify(this.mockMifClient).getClientAvailableConnectorDetails();
     	final ArgumentCaptor<ExecutionRequest> execRequestArgCaptor = ArgumentCaptor.forClass(ExecutionRequest.class);
@@ -158,9 +152,9 @@ public class JobsControllerSubmissionIT extends SystemPropertiesAware {
         assertEquals("Checking the value of ExecutionRequest.executionFile", job.getExecutionFile(), executionRequest.getExecutionFile());
         assertEquals("Checking the value of ExecutionRequest.executionParameters", job.getCommandParameters(), executionRequest.getExecutionParameters());
         assertEquals("Checking the value of ExecutionRequest.requestAttributes['EXECUTION_HOST_FILESHARE']",
-        	this.executionHostFileshare, executionRequest.getRequestAttributes().get("EXECUTION_HOST_FILESHARE"));
+        	this.fileshare.getMifHostPath(), executionRequest.getRequestAttributes().get("EXECUTION_HOST_FILESHARE"));
         assertEquals("Checking the value of ExecutionRequest.requestAttributes['EXECUTION_HOST_FILESHARE_REMOTE']",
-        	this.executionHostFileshareRemote, executionRequest.getRequestAttributes().get("EXECUTION_HOST_FILESHARE_REMOTE"));
+            this.fileshare.getExecutionHostPath(), executionRequest.getRequestAttributes().get("EXECUTION_HOST_FILESHARE_REMOTE"));
         assertEquals("Checking the value of ExecutionRequest.userName", "tel-user", executionRequest.getUserName());
         assertNull("Checking the value of ExecutionRequest.userPassword", executionRequest.getUserPassword());
 

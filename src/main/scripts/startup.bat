@@ -44,9 +44,9 @@ REM  this directory creation should be removed and the directory created manuall
     )
 )
 
-SET params= -Dexecution.host.fileshare.local="%EXECUTION_HOST_FILESHARE_LOCAL%" ^
- -Dexecution.host.fileshare="%EXECUTION_HOST_FILESHARE%" ^
- -Dexecution.host.fileshare.remote="%EXECUTION_HOST_FILESHARE_REMOTE%" ^
+SET params= -Dfis.fileshare.fisHostPath="%EXECUTION_HOST_FILESHARE_LOCAL%" ^
+ -Dfis.fileshare.mifHostPath="%EXECUTION_HOST_FILESHARE%" ^
+ -Dfis.fileshare.executionHostPath="%EXECUTION_HOST_FILESHARE_REMOTE%" ^
  %MIF_URL_PARAM% ^
  %MIF_MODE_PARAM% ^
  -Dfis.mif.userName= ^
@@ -58,6 +58,6 @@ REM  - If a remote MIF is to be used for job execution, then the fis.mif.url pro
 REM    set/overridden in the parameters above (it defaults to localhost in config.properties).
 REM  - The logging level can be overridden via appropriate system property: -Dlogging.level.eu.ddmore=DEBUG
 
-java.exe %JAVA_OPTS% %params% -DFIS_HOME="%SERVICE_HOME%" -Dfis.workingDirectory="%SERVICE_HOME%\tmp" -jar "%SERVICE_HOME%"\%SERVICE_BINARY%
+java.exe %JAVA_OPTS% %params% -DFIS_HOME="%SERVICE_HOME%" -Dfis.workingDirectory.path="%SERVICE_HOME%\tmp" -jar "%SERVICE_HOME%"\%SERVICE_BINARY%
 
 EXIT

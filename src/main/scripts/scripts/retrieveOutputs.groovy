@@ -8,6 +8,7 @@ import java.util.regex.Pattern
 import org.apache.commons.io.FileUtils
 import org.apache.log4j.Logger
 
+import eu.ddmore.fis.configuration.Fileshare
 import eu.ddmore.fis.domain.LocalJob
 import eu.ddmore.fis.domain.LocalJobStatus
 import groovy.transform.Field
@@ -45,7 +46,7 @@ LocalJob job = binding.getVariable("job");
 /**
  * Variables
  */
-String executionHostFileshareLocal = binding.getVariable("execution.host.fileshare.local");
+final Fileshare fileshare = binding.getVariable("fileshare");
 final String FIS_METADATA_DIR = binding.getVariable("fis.metadata.dir");
 
 /**
@@ -58,7 +59,7 @@ if(LocalJobStatus.CANCELLED == job.getStatus()) {
 }
 
 File workingDir = new File(job.getWorkingDirectory())
-File mifWorkingDir = new File(executionHostFileshareLocal, job.getId());
+File mifWorkingDir = new File(fileshare.getFisHostPath(), job.getId());
 
 // Ensure that the FIS metadata directory is created
 File fisMetadataDir = new File(workingDir,FIS_METADATA_DIR);

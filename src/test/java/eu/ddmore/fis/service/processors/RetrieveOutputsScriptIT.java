@@ -1,9 +1,13 @@
+/*******************************************************************************
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
+ ******************************************************************************/
 package eu.ddmore.fis.service.processors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import eu.ddmore.fis.configuration.Fileshare;
 import eu.ddmore.fis.domain.LocalJob;
 import groovy.lang.Binding;
 
@@ -46,9 +50,11 @@ public class RetrieveOutputsScriptIT {
         // Set up the FIS working directory that will receive the retrieved output files from the MIF working directory
         this.fisWorkingDir = this.testFisTemporaryFolder.getRoot();
         LOG.debug(String.format("Test FIS working dir %s", this.fisWorkingDir));
-        
+
+        final Fileshare fileshare = new Fileshare();
+        fileshare.setFisHostPath(executionHostFileshareLocal.getAbsolutePath());
         final Binding binding = new Binding();
-        binding.setVariable("execution.host.fileshare.local", this.executionHostFileshareLocal);
+        binding.setVariable("fileshare", fileshare);
         binding.setVariable("fis.metadata.dir", ".fis");
         
         this.jobProcessor = new JobProcessor(binding);

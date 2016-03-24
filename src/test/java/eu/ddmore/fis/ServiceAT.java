@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2002 Mango Solutions Ltd - All rights reserved.
+ * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
 package eu.ddmore.fis;
 
@@ -27,7 +27,7 @@ import eu.ddmore.fis.domain.LocalJobStatus;
 /**
  * Verifies that standalone service fulfils functional requirements.
  */
-public class ServiceAT extends SystemPropertiesAware {
+public class ServiceAT extends AcceptanceTestParent {
 
     private static final Logger LOG = Logger.getLogger(ServiceAT.class);
     
