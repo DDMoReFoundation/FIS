@@ -1,0 +1,5 @@
+This directory contains default keystore with:
+* self-signed certificate used for securing HTTP with SSL
+* cacerts file that accepts the service that is secured with the default certificate
+
+Notice: these keys are not to be used in production!

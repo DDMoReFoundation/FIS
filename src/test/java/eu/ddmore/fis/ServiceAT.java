@@ -30,7 +30,7 @@ import eu.ddmore.fis.domain.LocalJobStatus;
 public class ServiceAT extends AcceptanceTestParent {
 
     private static final Logger LOG = Logger.getLogger(ServiceAT.class);
-    
+
     private FISHttpRestClient fisClient;
 
     private static String nonmemCommand;
