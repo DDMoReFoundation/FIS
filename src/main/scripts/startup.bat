@@ -51,6 +51,10 @@ SET params= -Dfis.fileshare.fisHostPath="%EXECUTION_HOST_FILESHARE_LOCAL%" ^
  %MIF_MODE_PARAM% ^
  -Dfis.mif.userName= ^
  -Dfis.mif.userPassword=
+
+REM Add these properties to 'params' variable if FIS is to integrate with CTS and/or MIF via SSL using self-signed key
+REM -Djavax.net.ssl.trustStore="%SERVICE_HOME%/keystore/cacerts" ^
+REM -Djavax.net.ssl.trustStorePassword=ddmore
  
 REM  - If the MIF user credentials are set above then these will be used for MIF job execution,
 REM    otherwise jobs will be executed as the MIF service account user.
