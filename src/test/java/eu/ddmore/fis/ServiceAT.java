@@ -21,7 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import eu.ddmore.fis.domain.LocalJob;
+import eu.ddmore.fis.ExternalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
 
 /**
@@ -141,11 +141,12 @@ public class ServiceAT extends AcceptanceTestParent {
         final File workingDir = new File(userProjectDir.toString().replace("-UserProjectDir", "-WorkingDir"));
         workingDir.mkdir();
 
-        LocalJob job = new LocalJob();
+        ExternalJob job = new ExternalJob();
         job.setExecutionFile(new File(userProjectDir, modelFile).getAbsolutePath());
         job.setExecutionType(nonmemCommand);
         job.setWorkingDirectory(workingDir.getAbsolutePath());
-        LocalJob submittedJob = fisClient.submitRequest(job);
+        job.setUserInfo(getUserInfo());
+        ExternalJob submittedJob = fisClient.submitRequest(job);
 
         assertNotNull("returned job should not be null", submittedJob);
         assertNotNull("Job ID should be set", submittedJob.getId());

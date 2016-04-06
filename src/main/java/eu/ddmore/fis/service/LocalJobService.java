@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -18,6 +19,7 @@ import com.google.common.collect.Lists;
 
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
+import eu.ddmore.fis.domain.UserInfo;
 import eu.ddmore.fis.repository.LocalJobRepository;
 /**
  * Service responsible for handling job entities
@@ -28,6 +30,9 @@ public class LocalJobService {
 
 	@Autowired
     private LocalJobRepository localJobRepository;
+	
+	@Autowired
+	private UserInfo userInfo;
 	
 	@Transactional(readOnly=true)
     public Iterable<LocalJob> getAll() {
@@ -48,6 +53,9 @@ public class LocalJobService {
         newJob.setId(UUID.randomUUID().toString());
         newJob.setStatus(LocalJobStatus.NEW);
         newJob.setSubmitTime(new DateTime().toString());
+        if(newJob.getUserInfo()==null) {
+            newJob.setUserInfo(userInfo);
+        }
         return newJob;
     }
 

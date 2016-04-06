@@ -18,12 +18,17 @@ import com.google.common.collect.Lists;
 
 import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
+import eu.ddmore.fis.domain.UserInfo;
 import eu.ddmore.fis.repository.LocalJobRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LocalJobServiceTest {
     
-    @Mock LocalJobRepository localJobRepository;
+    @Mock 
+    private LocalJobRepository localJobRepository;
+    
+    @Mock 
+    private UserInfo userInfo;
     
     @InjectMocks
 	private LocalJobService localJobService = new LocalJobService();
@@ -35,6 +40,7 @@ public class LocalJobServiceTest {
     	verify(job).setStatus(LocalJobStatus.NEW);
     	verify(job).setId(any(String.class));
     	verify(job).setSubmitTime(any(String.class));
+        verify(job).setUserInfo(any(UserInfo.class));
 	}
 
     @Test

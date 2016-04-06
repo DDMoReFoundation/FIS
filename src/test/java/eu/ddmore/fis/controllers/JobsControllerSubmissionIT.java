@@ -6,7 +6,6 @@ package eu.ddmore.fis.controllers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.stub;
@@ -22,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Rule;
@@ -155,8 +155,8 @@ public class JobsControllerSubmissionIT extends IntegrationTestParent {
         	this.fileshare.getMifHostPath(), executionRequest.getRequestAttributes().get("EXECUTION_HOST_FILESHARE"));
         assertEquals("Checking the value of ExecutionRequest.requestAttributes['EXECUTION_HOST_FILESHARE_REMOTE']",
             this.fileshare.getExecutionHostPath(), executionRequest.getRequestAttributes().get("EXECUTION_HOST_FILESHARE_REMOTE"));
-        assertEquals("Checking the value of ExecutionRequest.userName", "tel-user", executionRequest.getUserName());
-        assertNull("Checking the value of ExecutionRequest.userPassword", executionRequest.getUserPassword());
+        assertEquals("Checking the value of ExecutionRequest.userName", "fis", executionRequest.getUserName());
+        assertTrue("The value of the ExecutionRequest.userPassword should be empty", StringUtils.isEmpty(executionRequest.getUserPassword()));
 
         // Simulate the Job completing - the RemoteJobStatusPoller will pick this up imminently
         when(this.mockMifClient.checkStatus(jobId)).thenReturn("COMPLETED");

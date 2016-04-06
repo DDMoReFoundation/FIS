@@ -203,12 +203,16 @@
         class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <set>
-                <bean
+               <bean
                     class="eu.ddmore.fis.controllers.converters.StringToWriteMdlRequestConverter" />
                 <bean
                     class="eu.ddmore.fis.controllers.converters.StringToWriteMdlResponseConverter" />
                 <bean
                     class="eu.ddmore.fis.controllers.converters.LocalJobToStringConverter" />
+                <bean
+                    class="eu.ddmore.fis.controllers.converters.UserInfoToInvokerParametersConverter">
+                    <property name="jschAuthenticationProtocols" value="${fis.core.user.identityFileAuthenticationProtocols:publickey}"/>
+                    </bean>
             </set>
         </property>
     </bean>
@@ -227,6 +231,7 @@
         <property name="jobResourcePublisher" ref="jobResourcePublisher" />
         <property name="commandRegistry" ref="commandRegistry" />
         <property name="fileshare" ref="fileshare" />
+        <property name="conversionService" ref="conversionService" />
     </bean>
 
     <bean id="jobsController" class="eu.ddmore.fis.controllers.JobsController">

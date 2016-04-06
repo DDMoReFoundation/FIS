@@ -18,7 +18,6 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.common.base.Joiner;
 
-import eu.ddmore.fis.domain.LocalJob;
 import eu.ddmore.fis.domain.LocalJobStatus;
 import eu.ddmore.fis.domain.WriteMdlRequest;
 import eu.ddmore.fis.domain.WriteMdlResponse;
@@ -47,9 +46,9 @@ public class FISHttpRestClient {
     /**
      * Submit a job to FIS.
      * 
-     * @return local job
+     * @return fis job
      */
-    public LocalJob submitRequest(LocalJob job) {
+    public ExternalJob submitRequest(ExternalJob job) {
         
         String endpoint = buildEndpoint("jobs");
         PostMethod post = new PostMethod(endpoint);
@@ -72,7 +71,7 @@ public class FISHttpRestClient {
         
         String response = executeMethod(endpoint, post);
         try {
-            return mapper.readValue(response, LocalJob.class);
+            return mapper.readValue(response, ExternalJob.class);
         } catch (Exception e) {
             throw new RuntimeException(String.format("Could not parse json %s",response), e);
         }
@@ -116,14 +115,14 @@ public class FISHttpRestClient {
      * Retrieve a job from the FIS service.
      * @param job id
      */
-    public LocalJob getJob(String jobId) {
+    public ExternalJob getJob(String jobId) {
         String endpoint = buildEndpoint("jobs", jobId);
         GetMethod get = new GetMethod(endpoint);
         get.addRequestHeader("accept", MediaType.APPLICATION_JSON);
         ObjectMapper mapper = new ObjectMapper();
         String response = executeMethod(endpoint, get);
         try {
-            return mapper.readValue(response, LocalJob.class);
+            return mapper.readValue(response, ExternalJob.class);
         } catch (Exception e) {
             throw new RuntimeException(String.format("Could not parse json %s",response), e);
         }

@@ -3,13 +3,13 @@
  ******************************************************************************/
 package eu.ddmore.fis.service;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.convert.ConversionService;
 
 import com.google.common.base.Preconditions;
 import com.mango.mif.MIFHttpRestClient;
+import com.mango.mif.core.exec.invoker.InvokerParameters;
 import com.mango.mif.domain.ClientAvailableConnectorDetails;
 import com.mango.mif.domain.ExecutionRequest;
 import com.mango.mif.domain.ExecutionRequestBuilder;
@@ -23,131 +23,111 @@ import eu.ddmore.fis.domain.LocalJobStatus;
  */
 public class JobDispatcherImpl implements JobDispatcher {
 
-    private final static Logger LOGGER = Logger.getLogger(JobDispatcherImpl.class);
+    private final static Logger LOG = Logger.getLogger(JobDispatcherImpl.class);
 
-    final static String DEFAULT_MIF_USERNAME = "tel-user";
-	private MIFHttpRestClient mifClient;
-	private String mifUserName;
-	private String mifUserPassword;
-	private JobResourceProcessor jobResourcePublisher;
-	private CommandRegistry commandRegistry;
-	private Fileshare fileshare;
+    private MIFHttpRestClient mifClient;
+    private JobResourceProcessor jobResourcePublisher;
+    private CommandRegistry commandRegistry;
+    private Fileshare fileshare;
+    private ConversionService conversionService;
 
-	public LocalJob dispatch(LocalJob job) {
-	    Preconditions.checkNotNull(job, "Job can't be null.");
-        final ClientAvailableConnectorDetails clientAvailableConnectorDetails =
-                this.commandRegistry.resolveClientAvailableConnectorDetailsFor(job.getExecutionType());
-        
-        Preconditions.checkNotNull(clientAvailableConnectorDetails, String.format("Could not retrieve connector details for execution type %s.", job.getExecutionType()));
-        
-		// Invoke the publishInputs Groovy script
-		LOGGER.info(String.format("About to publish inputs for job:\n  Execution File = %1$s\n  Working Directory = %2$s\n  Extra Input Files = %3$s",
-		    job.getExecutionFile(), job.getWorkingDirectory(), job.getExtraInputFiles()
-		));
-		final LocalJob publishedJob = this.jobResourcePublisher.process(job);
+    public LocalJob dispatch(LocalJob job) {
+        Preconditions.checkNotNull(job, "Job can't be null.");
+        final ClientAvailableConnectorDetails clientAvailableConnectorDetails = this.commandRegistry
+                .resolveClientAvailableConnectorDetailsFor(job.getExecutionType());
 
-		if (publishedJob.getStatus() != LocalJobStatus.FAILED) {
-			final ExecutionRequest executionRequest = buildExecutionRequest(publishedJob);
+        Preconditions.checkNotNull(clientAvailableConnectorDetails,
+            String.format("Could not retrieve connector details for execution type %s.", job.getExecutionType()));
 
-			// The retrieveOutputs Groovy script needs to know the (MIF-connector-specific) file patterns it needs to copy back
-			// from the MIF working directory to the FIS working directory. Ideally there would be a cleaner way than bunging
-			// these in the LocalJob object, but this is the easiest solution since the LocalJob gets passed all the way through
-			// to the Groovy script itself (as a bound variable).
-			// Also, this would allow TEL-R (or another FIS client) to access the output filenames regex if it needed to for
-			// whatever reason, such as copying files back from the FIS working directory to a user source directory.
-			publishedJob.setResultsIncludeRegex(clientAvailableConnectorDetails.getResultsIncludeRegex());
-			publishedJob.setResultsExcludeRegex(clientAvailableConnectorDetails.getResultsExcludeRegex());
+        // Invoke the publishInputs Groovy script
+        LOG.info(String.format(
+            "About to publish inputs for job:  Execution File = %s  Working Directory = %s  Extra Input Files = %s",
+            job.getExecutionFile(), job.getWorkingDirectory(), job.getExtraInputFiles()));
+        final LocalJob publishedJob = this.jobResourcePublisher.process(job);
 
-	        LOGGER.info(
-	            String.format("About to submit job execution request:\n  Type = %1$s\n  Execution File = %2$s\n  Execution Parameters = %3$s\n  Submit As User Mode = %4$s\n  User Name = %5$s\n  User Password (Encrypted) = %6$s\n  Request ID = %7$s",
-	            executionRequest.getType(), executionRequest.getExecutionFile(), executionRequest.getExecutionParameters(), executionRequest.getSubmitAsUserMode(), executionRequest.getUserName(), executionRequest.getUserPassword(), executionRequest.getRequestId()
-            ));
+        LOG.info(String.format(
+            "Published inputs for job:  Execution File = %s  Working Directory = %s  Extra Input Files = %s",
+            job.getExecutionFile(), job.getWorkingDirectory(), job.getExtraInputFiles()));
+        if (publishedJob.getStatus() != LocalJobStatus.FAILED) {
+            final ExecutionRequest executionRequest = buildExecutionRequest(publishedJob);
 
-			this.mifClient.executeJob(executionRequest);
-		}
+            // The retrieveOutputs Groovy script needs to know the (MIF-connector-specific) file patterns it needs to copy back
+            // from the MIF working directory to the FIS working directory. Ideally there would be a cleaner way than bunging
+            // these in the LocalJob object, but this is the easiest solution since the LocalJob gets passed all the way through
+            // to the Groovy script itself (as a bound variable).
+            // Also, this would allow TEL-R (or another FIS client) to access the output filenames regex if it needed to for
+            // whatever reason, such as copying files back from the FIS working directory to a user source directory.
+            publishedJob.setResultsIncludeRegex(clientAvailableConnectorDetails.getResultsIncludeRegex());
+            publishedJob.setResultsExcludeRegex(clientAvailableConnectorDetails.getResultsExcludeRegex());
+            
+            LOG.info(String
+                    .format(
+                        "About to submit job execution request: Request ID = %s Type = %s Execution File = %s Execution Parameters = %s  Submit As User Mode = %s  User Name = %s",
+                        executionRequest.getRequestId(), executionRequest.getType(), executionRequest.getExecutionFile(), executionRequest.getExecutionParameters(),
+                        executionRequest.getSubmitAsUserMode(), executionRequest.getUserName()
+                        ));
 
-		return publishedJob;
-	}
+            this.mifClient.executeJob(executionRequest);
+        }
 
-	private ExecutionRequest buildExecutionRequest(LocalJob job) {
-		Preconditions.checkNotNull(job, "Job can't be null");
-		
-		// Determine whether to execute the job with specific user credentials
-		boolean submitAsUserMode = false;
-		String userName = DEFAULT_MIF_USERNAME;
-		String userPassword = null;
-		if (StringUtils.isNotBlank(this.mifUserName)) {
-		    submitAsUserMode = true;
-		    userName = this.mifUserName;
-		    userPassword = this.mifUserPassword;
-		}
-		
-		final ExecutionRequestBuilder requestBuilder = new ExecutionRequestBuilder()
-			.setRequestId(job.getId())
-			.setName("FIS Service Job")
-			.setExecutionType(job.getExecutionType())
-			.setExecutionFile(job.getExecutionFile())
-			.setSubmitAsUserMode(submitAsUserMode)
-			.setUserName(userName)
-			.setUserPassword(userPassword)
-			.setExecutionParameters(job.getCommandParameters());
-		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE", fileshare.getMifHostPath());
-		requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE_REMOTE", fileshare.getExecutionHostPath());
-		return requestBuilder.getExecutionRequest();
-	}
+        return publishedJob;
+    }
 
-	public MIFHttpRestClient getMifClient() {
-		return mifClient;
-	}
+    private ExecutionRequest buildExecutionRequest(LocalJob job) {
+        Preconditions.checkNotNull(job, "Job can't be null");
+        final ExecutionRequestBuilder requestBuilder = new ExecutionRequestBuilder().setRequestId(job.getId()).setName("FIS Service Job")
+                .setExecutionType(job.getExecutionType()).setExecutionFile(job.getExecutionFile())
+                .setSubmitAsUserMode(job.getUserInfo().isExecuteAsUser()).setUserName(job.getUserInfo().getUserName())
+                .setUserPassword(job.getUserInfo().getPassword()).setExecutionParameters(job.getCommandParameters())
+                .setInvokerParameters(conversionService.convert(job.getUserInfo(), InvokerParameters.class));
+        requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE", fileshare.getMifHostPath());
+        requestBuilder.addAttribute("EXECUTION_HOST_FILESHARE_REMOTE", fileshare.getExecutionHostPath());
+        return requestBuilder.getExecutionRequest();
+    }
 
-	@Required
-	public void setMifClient(MIFHttpRestClient mifClient) {
-		this.mifClient = mifClient;
-	}
+    public MIFHttpRestClient getMifClient() {
+        return mifClient;
+    }
 
-	public JobResourceProcessor getJobResourcePublisher() {
-		return jobResourcePublisher;
-	}
+    @Required
+    public void setMifClient(MIFHttpRestClient mifClient) {
+        this.mifClient = mifClient;
+    }
 
-	@Required
-	public void setJobResourcePublisher(JobResourceProcessor jobResourcePublisher) {
-		this.jobResourcePublisher = jobResourcePublisher;
-	}
+    public JobResourceProcessor getJobResourcePublisher() {
+        return jobResourcePublisher;
+    }
 
-	@Required
-	public void setCommandRegistry(CommandRegistry commandRegistry) {
-		this.commandRegistry = commandRegistry;
-	}
+    @Required
+    public void setJobResourcePublisher(JobResourceProcessor jobResourcePublisher) {
+        this.jobResourcePublisher = jobResourcePublisher;
+    }
 
-	public CommandRegistry getCommandRegistry() {
-		return this.commandRegistry;
-	}
+    @Required
+    public void setCommandRegistry(CommandRegistry commandRegistry) {
+        this.commandRegistry = commandRegistry;
+    }
+
+    public CommandRegistry getCommandRegistry() {
+        return this.commandRegistry;
+    }
 
     @Required
     public void setFileshare(Fileshare fileshare) {
         this.fileshare = fileshare;
     }
-    
+
     public Fileshare getFileshare() {
         return fileshare;
     }
-	
-	@Value("${fis.mif.userName}")
-	public void setMifUserName(final String mifUserName) {
-	    this.mifUserName = mifUserName;
-	}
-	
-	public String getMifUserName() {
-	    return this.mifUserName;
-	}
-	
-    @Value("${fis.mif.userPassword}")
-    public void setMifUserPassword(final String mifUserPassword) {
-        this.mifUserPassword = mifUserPassword;
+
+    @Required
+    public void setConversionService(ConversionService conversionService) {
+        this.conversionService = conversionService;
     }
-    
-    public String getMifUserPassword() {
-        return this.mifUserPassword;
+
+    public ConversionService getConversionService() {
+        return conversionService;
     }
-	
+
 }

@@ -1,83 +1,54 @@
 /*******************************************************************************
  * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-package eu.ddmore.fis.domain;
+package eu.ddmore.fis;
 
-import java.io.Serializable;
 import java.util.Collection;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
-import javax.persistence.Version;
-import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import eu.ddmore.fis.domain.LocalJobStatus;
+import eu.ddmore.fis.domain.UserInfo;
 
-@Entity
-public class LocalJob implements Serializable {
 
-    @Id
-    @Column(nullable = false)
+/**
+ * 'External' Job representation that doesn't include JPA nor JSON annotations.
+ */
+public class ExternalJob {
+
     private String id;
-
-    @Column(nullable = false)
-    @NotNull
-    private String executionType;
-
-    @Column(nullable = true)
-    private String commandParameters;
-
-    @Column(nullable = false)
-    @NotNull
-    private String workingDirectory;
-
-    @Column(nullable = false)
-    private String executionFile;
-
-    @Column(nullable = true)
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Collection<String> extraInputFiles;
-
-    @Transient
-    private UserInfo userInfo;
     
-    @OneToOne(cascade = CascadeType.ALL)
-    @JsonIgnore
-    private UserInfo userInfoHidden;
-
-    @Column(nullable = false)
-    private String submitTime;
-
-    @Column(nullable = false)
-    @NotNull
-    private LocalJobStatus status;
-
-    @Column(nullable = true)
-    private String resultsIncludeRegex;
-
-    @Column(nullable = true)
-    private String resultsExcludeRegex;
-
-    @Version
-    @Column
     private long version;
 
+    private String executionType;
+
+    private String commandParameters;
+
+    private String workingDirectory;
+
+    private String executionFile;
+
+    private Collection<String> extraInputFiles;
+
+    private UserInfo userInfo;
+
+    private String submitTime;
+
+    private LocalJobStatus status;
+
+    private String resultsIncludeRegex;
+
+    private String resultsExcludeRegex;
+
     public UserInfo getUserInfo() {
-        return userInfoHidden;
+        return userInfo;
     }
     
     public void setUserInfo(UserInfo userInfo) {
-        this.userInfoHidden = userInfo;
+        this.userInfo = userInfo;
     }
-
+    
+    
     public String getExecutionType() {
         return executionType;
     }
@@ -142,14 +113,6 @@ public class LocalJob implements Serializable {
         this.id = id;
     }
 
-    public void setVersion(long version) {
-        this.version = version;
-    }
-
-    public long getVersion() {
-        return version;
-    }
-
     public void setResultsExcludeRegex(String resultsExcludeRegex) {
         this.resultsExcludeRegex = resultsExcludeRegex;
     }
@@ -171,7 +134,11 @@ public class LocalJob implements Serializable {
     public String getResultsIncludeRegex() {
         return resultsIncludeRegex;
     }
-
+    
+    public long getVersion() {
+        return version;
+    }
+    
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);

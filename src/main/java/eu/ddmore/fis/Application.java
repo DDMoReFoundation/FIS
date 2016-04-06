@@ -6,6 +6,7 @@ package eu.ddmore.fis;
 
 import java.util.Arrays;
 
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mango.mif.MIFHttpRestClient;
 
+import eu.ddmore.fis.configuration.Core;
 import eu.ddmore.fis.controllers.GlobalLoggingRestExceptionHandler;
 import eu.ddmore.fis.service.ServiceWorkingDirectory;
 import eu.ddmore.fis.service.cts.internal.CTSRestClientConfiguration;
@@ -36,8 +38,8 @@ import eu.ddmore.fis.service.internal.WorkingDirectoriesReaper;
 @Configuration
 @EnableAutoConfiguration
 @EnableJpaRepositories("eu.ddmore.fis.repository")
-@Import(value = { RepositoryRestMvcConfiguration.class, CTSRestClientConfiguration.class})
-@ComponentScan({"eu.ddmore.fis.service.mif", "eu.ddmore.fis.configuration"} )
+@Import(value = { RepositoryRestMvcConfiguration.class, CTSRestClientConfiguration.class, Core.class})
+@ComponentScan({"eu.ddmore.fis.service.mif", "eu.ddmore.fis.configuration", "eu.ddmore.fis.controllers.converters" } )
 @ImportResource("classpath:META-INF/application-context.xml")
 public class Application {
     

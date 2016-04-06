@@ -89,6 +89,7 @@ if (job.getResultsIncludeRegex() != null) {
     // and which aren't "hidden" e.g. .MIF directory.
     // Note the distinction between the *execution folder* and the *working directory" as described in
     // the script comment at the top of this file.
+    LOG.debug("Recursively copying contents from ${mifWorkingDir} to ${workingDir}")
     final Path executionDirectoryPath = mifWorkingDir.toPath().resolve( Paths.get(job.getExecutionFile()).getParent() ?: "" )
     LOG.debug("Recursively copying contents from ${mifWorkingDir} to ${workingDir}; applying filtering to ${executionDirectoryPath}")
 	FileUtils.copyDirectory(mifWorkingDir, workingDir, new FileFilter() {
