@@ -52,6 +52,9 @@ SET params= -Dfis.fileshare.fisHostPath="%EXECUTION_HOST_FILESHARE_LOCAL%" ^
  -Dfis.mif.userName= ^
  -Dfis.mif.userPassword=
 
+#Increase permGen size
+SET JAVA_OPTS=%JAVA_OPTS% -XX:MaxPermSize=128m
+
 REM Add these properties to 'params' variable if FIS is to integrate with CTS and/or MIF via SSL using self-signed key
 REM -Djavax.net.ssl.trustStore="%SERVICE_HOME%/keystore/cacerts" ^
 REM -Djavax.net.ssl.trustStorePassword=ddmore

@@ -7,9 +7,11 @@ package eu.ddmore.fis;
 import java.util.Arrays;
 
 
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +38,7 @@ import eu.ddmore.fis.service.internal.WorkingDirectoriesReaper;
 
 
 @Configuration
-@EnableAutoConfiguration
+@EnableAutoConfiguration(exclude=ActiveMQAutoConfiguration.class)
 @EnableJpaRepositories("eu.ddmore.fis.repository")
 @Import(value = { RepositoryRestMvcConfiguration.class, CTSRestClientConfiguration.class, Core.class})
 @ComponentScan({"eu.ddmore.fis.service.mif", "eu.ddmore.fis.configuration", "eu.ddmore.fis.controllers.converters" } )
