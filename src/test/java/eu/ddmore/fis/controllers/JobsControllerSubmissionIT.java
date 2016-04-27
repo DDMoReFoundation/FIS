@@ -199,42 +199,34 @@ public class JobsControllerSubmissionIT extends SystemPropertiesAware {
     
     @Test
     public void shouldRejectSubmittedJobIfIdSet() {
-        final LocalJob job = new LocalJob();
-        job.setExecutionType(this.command);
-        job.setCommandParameters("MOCK PARAMETERS");
-        job.setExecutionFile("MOCK");
-        job.setWorkingDirectory(this.workingDir.getAbsolutePath());
+        final LocalJob job = createValidJobForSubmission(); 
         job.setId("MOCK_ID");
-        try {
-            restTemplate.postForEntity(generateEndpoint("/jobs"), job, LocalJob.class);
-        } catch(HttpClientErrorException ex) {
-            assertEquals(HttpStatus.BAD_REQUEST,ex.getStatusCode());
-        }
+        verifyBadRequestForInvalidJobSubmission(job);
     }
+
 
     @Test
     public void shouldRejectSubmittedJobIfSubmissionTimeSet() {
-        final LocalJob job = new LocalJob();
-        job.setExecutionType(this.command);
-        job.setCommandParameters("MOCK PARAMETERS");
-        job.setExecutionFile("MOCK");
-        job.setWorkingDirectory(this.workingDir.getAbsolutePath());
+        final LocalJob job = createValidJobForSubmission(); 
         job.setSubmitTime("MOCK_TIME");
-        try {
-            restTemplate.postForEntity(generateEndpoint("/jobs"), job, LocalJob.class);
-        } catch(HttpClientErrorException ex) {
-            assertEquals(HttpStatus.BAD_REQUEST,ex.getStatusCode());
-        }
+        verifyBadRequestForInvalidJobSubmission(job);
     }
     
     @Test
     public void shouldRejectSubmittedJobIfVersionNonZero() {
-        final LocalJob job = new LocalJob();
-        job.setExecutionType(this.command);
-        job.setCommandParameters("MOCK PARAMETERS");
-        job.setExecutionFile("MOCK");
-        job.setWorkingDirectory(this.workingDir.getAbsolutePath());
+        final LocalJob job = createValidJobForSubmission(); 
         job.setVersion(1);
+        verifyBadRequestForInvalidJobSubmission(job);
+    }
+    
+    @Test
+    public void shouldRejectSubmittedJobIfStatusNotNull() {
+        final LocalJob job = createValidJobForSubmission(); 
+        job.setStatus(LocalJobStatus.NEW);
+        verifyBadRequestForInvalidJobSubmission(job);
+    }
+
+    private void verifyBadRequestForInvalidJobSubmission(LocalJob job) {
         try {
             restTemplate.postForEntity(generateEndpoint("/jobs"), job, LocalJob.class);
         } catch(HttpClientErrorException ex) {
@@ -242,19 +234,13 @@ public class JobsControllerSubmissionIT extends SystemPropertiesAware {
         }
     }
     
-    @Test
-    public void shouldRejectSubmittedJobIfStatusNotNull() {
+    private LocalJob createValidJobForSubmission() {
         final LocalJob job = new LocalJob();
         job.setExecutionType(this.command);
         job.setCommandParameters("MOCK PARAMETERS");
         job.setExecutionFile("MOCK");
         job.setWorkingDirectory(this.workingDir.getAbsolutePath());
-        job.setStatus(LocalJobStatus.NEW);
-        try {
-            restTemplate.postForEntity(generateEndpoint("/jobs"), job, LocalJob.class);
-        } catch(HttpClientErrorException ex) {
-            assertEquals(HttpStatus.BAD_REQUEST,ex.getStatusCode());
-        }
+        return job;
     }
     
     private boolean isNotCompleted(final LocalJobStatus jobStatus) {
