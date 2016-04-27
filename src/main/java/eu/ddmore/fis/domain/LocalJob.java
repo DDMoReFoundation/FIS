@@ -13,13 +13,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
-import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 @Entity
 public class LocalJob implements Serializable {
@@ -46,13 +46,10 @@ public class LocalJob implements Serializable {
     @ElementCollection(fetch = FetchType.EAGER)
     private Collection<String> extraInputFiles;
 
-    @Transient
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonProperty(access = Access.WRITE_ONLY)
     private UserInfo userInfo;
     
-    @OneToOne(cascade = CascadeType.ALL)
-    @JsonIgnore
-    private UserInfo userInfoHidden;
-
     @Column(nullable = false)
     private String submitTime;
 
@@ -71,11 +68,11 @@ public class LocalJob implements Serializable {
     private long version;
 
     public UserInfo getUserInfo() {
-        return userInfoHidden;
+        return userInfo;
     }
     
     public void setUserInfo(UserInfo userInfo) {
-        this.userInfoHidden = userInfo;
+        this.userInfo = userInfo;
     }
 
     public String getExecutionType() {
