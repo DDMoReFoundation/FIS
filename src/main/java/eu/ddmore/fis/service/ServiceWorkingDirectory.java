@@ -55,7 +55,7 @@ public class ServiceWorkingDirectory {
 
     private void createIdentityFile(File identityFile) {
         try {
-            FileUtils.writeStringToFile(identityFile, "Converter toolbox identify file");
+            FileUtils.writeStringToFile(identityFile, "FIS identify file");
         } catch (IOException e) {
             throw new RuntimeException(String.format("Can't write to %s", workingDirectory));
         }
@@ -102,7 +102,7 @@ public class ServiceWorkingDirectory {
         Preconditions.checkNotNull(name, "Directory name can't be null");
         File result = new File(workingDirectory,name);
         if(result.exists()) {
-        	throw new IllegalStateException(String.format("Woring directory with name %s already exists.",name));
+        	throw new IllegalStateException(String.format("Working directory with name %s already exists.",name));
         }
         result.mkdir();
         return result;
