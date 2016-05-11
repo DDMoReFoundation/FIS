@@ -1,9 +1,6 @@
 /*******************************************************************************
  * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
  ******************************************************************************/
-/*******************************************************************************
- * Copyright (C) 2016 Mango Solutions Ltd - All rights reserved.
- ******************************************************************************/
 package eu.ddmore.fis.service.cts;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
