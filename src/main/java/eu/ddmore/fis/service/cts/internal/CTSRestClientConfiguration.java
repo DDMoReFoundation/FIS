@@ -13,6 +13,7 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -34,18 +35,53 @@ import eu.ddmore.fis.service.integration.SimpleRemoteServiceHealthIndicator;
 @Configuration
 @ComponentScan("eu.ddmore.fis.service.cts")
 public class CTSRestClientConfiguration {
-    
-    @Autowired(required=true)
-    private ConverterToolboxServiceSettings ctsSettings;
-    
-    @Bean
-    public HealthIndicator ctsHealth(@Qualifier("ctsRestTemplate") RestTemplate restTemplate) {
-        return new SimpleRemoteServiceHealthIndicator(restTemplate, ctsSettings.getManagement().getUrl(), ctsSettings.getManagement().getHealthcheck());
-    }
+    private static final String CTS_LOCAL = "!remoteCTS";
+    private static final String CTS_REMOTE = "remoteCTS";
+    /**
+     * Configuration enabled only when FIS integrates with remote CTS instance which life-cycle it should
+     * not control.
+     */
+    @Configuration
+    @Profile( {CTS_REMOTE} )
+    public static class RemoteMIF {
 
-    @Bean
-    public ShutdownHandler ctsShutdown(@Qualifier("ctsRestTemplate") RestTemplate restTemplate) {
-        return new RemoteServiceShutdownHandler(restTemplate, ctsSettings.getManagement().getUrl(), ctsSettings.getManagement().getShutdown());
+        @Autowired(required=true)
+        private ConverterToolboxServiceSettings ctsSettings;
+
+        @Bean
+        public HealthIndicator ctsHealth(@Qualifier("ctsRestTemplate") RestTemplate restTemplate) {
+            return new SimpleRemoteServiceHealthIndicator(restTemplate, ctsSettings.getManagement().getUrl(), ctsSettings.getManagement().getHealthcheck());
+        }
+        
+        @Bean
+        public ShutdownHandler ctsShutdown() {
+            return new ShutdownHandler() {
+
+                @Override
+                public void invoke() {
+                    //Do nothing
+                }
+            };
+        }
+    }
+    /**
+     * Configuration enabled only if FIS integrates with a local CTS instance. In such scenario FIS manages life-cycle of CTS.
+     */
+    @Configuration
+    @Profile( {CTS_LOCAL} )
+    public static class LocalMIF {
+        @Autowired(required=true)
+        private ConverterToolboxServiceSettings ctsSettings;
+
+        @Bean
+        public HealthIndicator ctsHealth(@Qualifier("ctsRestTemplate") RestTemplate restTemplate) {
+            return new SimpleRemoteServiceHealthIndicator(restTemplate, ctsSettings.getManagement().getUrl(), ctsSettings.getManagement().getHealthcheck());
+        }
+
+        @Bean
+        public ShutdownHandler ctsShutdown(@Qualifier("ctsRestTemplate") RestTemplate restTemplate) {
+            return new RemoteServiceShutdownHandler(restTemplate, ctsSettings.getManagement().getUrl(), ctsSettings.getManagement().getShutdown());
+        }
     }
     
     @Bean
