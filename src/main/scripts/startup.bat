@@ -12,7 +12,7 @@ CD %SERVICE_HOME%
 
 SET SERVICE_BINARY=${project.build.finalName}.${project.packaging}
 
-# Holds FIS command-line parameters that modify the modes of remote services integration
+REM Holds FIS command-line parameters that modify the modes of remote services integration
 SET FIS_MODES=
 
 REM Possible modes are ("localMIF" - MIF running on local host, "remoteMIF" - MIF running on a remote host)
@@ -73,9 +73,9 @@ SET params= -Dfis.fileshare.fisHostPath="%EXECUTION_HOST_FILESHARE_LOCAL%" ^
 REM Increase permGen size
 SET JAVA_OPTS=%JAVA_OPTS% -XX:MaxPermSize=128m
 
-REM Add these properties to 'params' variable if FIS is to integrate with CTS and/or MIF via SSL using self-signed key
+REM Add these properties to 'params' variable if FIS is to integrate with CTS and/or MIF via SSL
 REM -Djavax.net.ssl.trustStore="%SERVICE_HOME%/keystore/cacerts" ^
-REM -Djavax.net.ssl.trustStorePassword=ddmore
+REM -Djavax.net.ssl.trustStorePassword=ddmore ^
  
 REM  - If the MIF user credentials are set above then these will be used for MIF job execution,
 REM    otherwise jobs will be executed as the MIF service account user.
