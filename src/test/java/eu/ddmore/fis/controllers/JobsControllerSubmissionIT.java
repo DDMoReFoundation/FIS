@@ -148,15 +148,15 @@ public class JobsControllerSubmissionIT extends IntegrationTestParent {
         verify(this.mockMifClient).executeJob(execRequestArgCaptor.capture());
         
         final ExecutionRequest executionRequest = execRequestArgCaptor.getValue();
-        assertEquals("Checking the value of ExecutionRequest.type", this.command, executionRequest.getType());
-        assertEquals("Checking the value of ExecutionRequest.executionFile", job.getExecutionFile(), executionRequest.getExecutionFile());
-        assertEquals("Checking the value of ExecutionRequest.executionParameters", job.getCommandParameters(), executionRequest.getExecutionParameters());
-        assertEquals("Checking the value of ExecutionRequest.requestAttributes['EXECUTION_HOST_FILESHARE']",
+        assertEquals("ExecutionRequest.type should be correct.", this.command, executionRequest.getType());
+        assertEquals("ExecutionRequest.executionFile should be correct.", job.getExecutionFile(), executionRequest.getExecutionFile());
+        assertEquals("ExecutionRequest.executionParameters should be correct.", job.getCommandParameters(), executionRequest.getExecutionParameters());
+        assertEquals("ExecutionRequest.requestAttributes['EXECUTION_HOST_FILESHARE'] should be correct.",
         	this.fileshare.getMifHostPath(), executionRequest.getRequestAttributes().get("EXECUTION_HOST_FILESHARE"));
-        assertEquals("Checking the value of ExecutionRequest.requestAttributes['EXECUTION_HOST_FILESHARE_REMOTE']",
+        assertEquals("ExecutionRequest.requestAttributes['EXECUTION_HOST_FILESHARE_REMOTE'] should be correct.",
             this.fileshare.getExecutionHostPath(), executionRequest.getRequestAttributes().get("EXECUTION_HOST_FILESHARE_REMOTE"));
-        assertEquals("Checking the value of ExecutionRequest.userName", "fis", executionRequest.getUserName());
-        assertTrue("The value of the ExecutionRequest.userPassword should be empty", StringUtils.isEmpty(executionRequest.getUserPassword()));
+        assertEquals("ExecutionRequest.userName should be correct.", "fis", executionRequest.getUserName());
+        assertTrue("ExecutionRequest.userPassword should be empty", StringUtils.isEmpty(executionRequest.getUserPassword()));
 
         // Simulate the Job completing - the RemoteJobStatusPoller will pick this up imminently
         when(this.mockMifClient.checkStatus(jobId)).thenReturn("COMPLETED");

@@ -53,7 +53,7 @@ public class LocalJobObjectMapperTest {
         
         LOG.info(String.format("Serialized job %s ", serialized));
         assertEquals("Password should be populated.", MOCK_PASSWORD, job.getUserInfo().getPassword());
-        assertEquals("Password should be populated.", MOCK_PASSPHRASE, job.getUserInfo().getIdentityFilePassphrase());
+        assertEquals("Passphrase should be populated.", MOCK_PASSPHRASE, job.getUserInfo().getIdentityFilePassphrase());
         
     }
 }
