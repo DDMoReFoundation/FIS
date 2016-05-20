@@ -20,8 +20,6 @@ import eu.ddmore.mdl.mdl.Mcl
 import eu.ddmore.mdl.mdl.MclObject
 import eu.ddmore.mdl.mdl.ValuePair
 import eu.ddmore.mdl.utils.ExpressionConverter
-import eu.ddmore.mdl.utils.MclUtils
-
 
 /**
  * FIXME This implementation is based on code existing in mdl_json converter, this duplication could be avoided if mdl_json
@@ -30,7 +28,7 @@ import eu.ddmore.mdl.utils.MclUtils
 public class MdlUtilsLocal implements MdlUtils {
     private static final Logger LOG = Logger.getLogger(MdlUtilsLocal.class)
     
-    private static MclUtils MCLUTILS = new MclUtils()
+    private static eu.ddmore.mdl.utils.MdlUtils MDLUTILS = new eu.ddmore.mdl.utils.MdlUtils()
     private static ExpressionConverter EXPRESSION_CONVERTER = new ExpressionConverter()
     
     @Override
@@ -39,10 +37,10 @@ public class MdlUtilsLocal implements MdlUtils {
         final Collection<File> result = []
 
         final Mcl mcl = parseMdl(mdlFile)
-        final MclObject dataObject = MCLUTILS.getDataObject(mcl)
+        final MclObject dataObject = MDLUTILS.getDataObject(mcl)
         if (dataObject) {
             LOG.debug("Data object found in MCL file ${mdlFile}")
-            final ListDefinition dataSourceListDefn = MCLUTILS.getDataSourceStmt(dataObject)
+            final ListDefinition dataSourceListDefn = MDLUTILS.getDataSourceStmt(dataObject)
             if (dataSourceListDefn) {
                 LOG.debug("SOURCE block found in MCL file ${mdlFile}")
                 final ValuePair dataFileAttr = dataSourceListDefn.getList().getAttributes().find { "file".equals(it.getArgumentName()) }

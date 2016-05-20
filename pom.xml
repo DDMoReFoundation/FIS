@@ -15,7 +15,7 @@
         <mockito.version>1.9.5</mockito.version>
         <commons-compress.version>1.9</commons-compress.version>
         <xtend.repo.url>http://build.eclipse.org/common/xtend/maven/</xtend.repo.url>
-        <xtend.version>2.7.3</xtend.version>
+        <xtend.version>2.9.1</xtend.version>
         
         
         <failsafe.args>-Xmx1024m -XX:MaxPermSize=256m</failsafe.args>
@@ -56,7 +56,7 @@
         <dependency>
             <groupId>eu.ddmore.pharmml</groupId>
             <artifactId>libPharmML</artifactId>
-            <version>0.6.1-1</version>
+            <version>0.7-1</version>
         </dependency>
         <!-- end DDMoRe and Mango packages -->
         
@@ -85,7 +85,7 @@
         <dependency>
             <groupId>eu.ddmore</groupId>
             <artifactId>eu.ddmore.mdl</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
+            <version>1.5.0-SNAPSHOT</version>
         </dependency>
         
         <!-- Third-Party Dependencies -->
