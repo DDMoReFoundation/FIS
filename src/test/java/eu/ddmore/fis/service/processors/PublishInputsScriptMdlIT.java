@@ -208,7 +208,7 @@ public class PublishInputsScriptMdlIT {
     public void shouldMockConversionIfConversionResultsAvailable() throws IOException, ConverterToolboxServiceException, ArchiveException {
         
         // Prepare FIS Job working directory
-        final String modelFileName = "MockGeneratedPharmML.mdl";
+        final String modelFileName = "UseCase2.mdl";
         final String testDataDir = "/test-models/MDL_with_mock_PharmML/";
         final URL scriptFile = PublishInputsScriptMdlIT.class.getResource(testDataDir + modelFileName);
         final File modelFile = new File(this.testWorkingDir, modelFileName);

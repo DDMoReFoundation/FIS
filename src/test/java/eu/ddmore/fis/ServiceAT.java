@@ -79,7 +79,7 @@ public class ServiceAT extends SystemPropertiesAware {
         final String MODEL_FILE_NAME = "UseCase1.xml";
         final String DATA_FILE_NAME = "warfarin_conc.csv";
         
-        final String testDataDir = "/test-models/PharmML/0.6.0/";
+        final String testDataDir = "/test-models/PharmML/0.8.1/";
 
         FileUtils.copyURLToFile( ServiceAT.class.getResource(testDataDir + MODEL_FILE_NAME), new File(userProjectDir, MODEL_FILE_NAME) );
         FileUtils.copyURLToFile( ServiceAT.class.getResource(testDataDir + DATA_FILE_NAME), new File(userProjectDir, DATA_FILE_NAME) );
@@ -99,7 +99,7 @@ public class ServiceAT extends SystemPropertiesAware {
         final String MODEL_FILE_NAME = "UseCase1.mdl";
         final String DATA_FILE_NAME = "warfarin_conc.csv";
 
-        final String testDataDir = "/test-models/MDL/7.0.0/";
+        final String testDataDir = "/test-models/MDL/8.0.0/";
 
         FileUtils.copyURLToFile( ServiceAT.class.getResource(testDataDir + MODEL_FILE_NAME), new File(userProjectDir, MODEL_FILE_NAME) );
         FileUtils.copyURLToFile( ServiceAT.class.getResource(testDataDir + DATA_FILE_NAME), new File(userProjectDir, DATA_FILE_NAME) );
@@ -119,7 +119,7 @@ public class ServiceAT extends SystemPropertiesAware {
         final String MODEL_FILE = "models/UseCase1.mdl";
         final String DATA_FILE = "data/warfarin_conc.csv";
 
-        final String testDataDir = "/test-models/MDL/7.0.0/";
+        final String testDataDir = "/test-models/MDL/8.0.0/";
 
         final File modelFile = new File(userProjectDir, MODEL_FILE);
         final File dataFile = new File(userProjectDir, DATA_FILE);

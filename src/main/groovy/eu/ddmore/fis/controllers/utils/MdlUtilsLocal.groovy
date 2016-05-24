@@ -7,6 +7,7 @@ import org.apache.log4j.Logger
 import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecore.resource.URIConverter
 import org.eclipse.emf.ecore.resource.Resource.Diagnostic
 import org.eclipse.xtext.parser.ParseException
 import org.eclipse.xtext.resource.XtextResource
@@ -19,6 +20,7 @@ import eu.ddmore.mdl.mdl.ListDefinition
 import eu.ddmore.mdl.mdl.Mcl
 import eu.ddmore.mdl.mdl.MclObject
 import eu.ddmore.mdl.mdl.ValuePair
+import eu.ddmore.mdl.scoping.MdlImportURIGlobalScopeProvider
 import eu.ddmore.mdl.utils.ExpressionConverter
 
 /**
@@ -65,10 +67,14 @@ public class MdlUtilsLocal implements MdlUtils {
      * @throws ParseException if there were errors when parsing the file
      */
     private Mcl parseMdl(final File mdlFile) {
+            new eu.ddmore.mdllib.MdlLibStandaloneSetup().createInjectorAndDoEMFRegistration();
             final Injector injector = new MdlStandaloneSetup().createInjectorAndDoEMFRegistration();
             final XtextResourceSet resourceSet = injector.getInstance(XtextResourceSet.class);
             resourceSet.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE);
+            registerURIMappingsForImplicitImports(resourceSet);
+
             final Resource resource = resourceSet.getResource(URI.createURI("file:///" + mdlFile.getAbsolutePath()), true)
+            
             EList<Diagnostic> errors = resource.getErrors()
             EList<Diagnostic> warnings = resource.getWarnings()
             if (errors) {
@@ -90,4 +96,21 @@ public class MdlUtilsLocal implements MdlUtils {
             return (Mcl) resource.getContents().get(0);
     }
     
+    private static void registerURIMappingsForImplicitImports(XtextResourceSet resourceSet) {
+        URIConverter uriConverter = resourceSet.getURIConverter();
+        Map<URI, URI> uriMap = uriConverter.getURIMap();
+        registerPlatformToFileURIMapping(MdlImportURIGlobalScopeProvider.HEADER_URI, uriMap);
+    }
+ 
+    private static void registerPlatformToFileURIMapping(URI uri, Map<URI, URI> uriMap) {
+        final URI newURI = createClasspathURIForHeaderFile(uri);
+        uriMap.put(uri, newURI);
+    }
+    
+    private static URI createClasspathURIForHeaderFile(URI uri) {
+        String path = uri.path().replace("/plugin/", ""); // Eclipse RCP platform URL to a plugin resource starts with "/plugin/" so strip this off
+        path = path.substring(path.indexOf("/")); // This skips past the plugin name, i.e. eu.ddmore.mdl.definitions/
+        // Now we're just left with the path to the resource within the plugin; the built plugin JAR is available on the classpath, so create a classpath URI pointing at this resource
+        return URI.createURI("classpath:" + path);
+    }
 }

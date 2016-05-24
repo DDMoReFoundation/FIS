@@ -24,7 +24,7 @@ import eu.ddmore.fis.domain.WriteMdlResponse;
  */
 public class ReadWriteAT extends SystemPropertiesAware {
     private static final Logger LOG = Logger.getLogger(ReadWriteAT.class);
-	private static final String TEST_DATA_DIR = "/test-models/%s/7.0.0/";
+	private static final String TEST_DATA_DIR = "/test-models/%s/8.0.0/";
 	private static final String MDL_FILE_NAME = "UseCase1.mdl";
 	private static final String JSON_FILE_NAME = "UseCase1.json";
 
