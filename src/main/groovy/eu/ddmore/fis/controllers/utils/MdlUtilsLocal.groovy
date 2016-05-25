@@ -20,6 +20,7 @@ import eu.ddmore.mdl.mdl.ListDefinition
 import eu.ddmore.mdl.mdl.Mcl
 import eu.ddmore.mdl.mdl.MclObject
 import eu.ddmore.mdl.mdl.ValuePair
+import eu.ddmore.mdl.provider.MogDefinitionProvider
 import eu.ddmore.mdl.scoping.MdlImportURIGlobalScopeProvider
 import eu.ddmore.mdl.utils.ExpressionConverter
 
@@ -30,7 +31,8 @@ import eu.ddmore.mdl.utils.ExpressionConverter
 public class MdlUtilsLocal implements MdlUtils {
     private static final Logger LOG = Logger.getLogger(MdlUtilsLocal.class)
     
-    private static eu.ddmore.mdl.utils.MdlUtils MDLUTILS = new eu.ddmore.mdl.utils.MdlUtils()
+    private static MogDefinitionProvider UTILS = new MogDefinitionProvider();
+
     private static ExpressionConverter EXPRESSION_CONVERTER = new ExpressionConverter()
     
     @Override
@@ -39,7 +41,7 @@ public class MdlUtilsLocal implements MdlUtils {
         final Collection<File> result = []
 
         final Mcl mcl = parseMdl(mdlFile)
-        final MclObject dataObject = MDLUTILS.getDataObject(mcl)
+        final MclObject dataObject = UTILS.getDataObject(mcl)
         if (dataObject) {
             LOG.debug("Data object found in MCL file ${mdlFile}")
             final ListDefinition dataSourceListDefn = MDLUTILS.getDataSourceStmt(dataObject)
