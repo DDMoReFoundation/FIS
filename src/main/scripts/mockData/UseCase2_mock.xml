@@ -399,7 +399,7 @@
 					<Column columnId="logtWT" columnType="undefined" valueType="real" columnNum="8"/>
 				</Definition>
 				<ExternalFile oid="id">
-					<path>UseCase2_data.csv</path>
+					<path>UseCase2_mock_data.csv</path>
 					<format>CSV</format>
 					<delimiter>COMMA</delimiter>
 				</ExternalFile>

@@ -23,8 +23,8 @@ public class MdlConversionControllerTest {
 
     private static final String TEST_DATA_DIR = "/test-models/MDL_with_mock_PharmML/";
     private static final String MOCK_OUTPUT_DIR = "/MockOutputDir/";
-    private static final String MDL_FILE_NAME = "UseCase2.mdl";
-    private static final String PHARMML_FILE_NAME = "UseCase2.xml";
+    private static final String MDL_FILE_NAME = "UseCase2_mock.mdl";
+    private static final String PHARMML_FILE_NAME = "UseCase2_mock.xml";
 
     private static final String INVALID_TEST_DATA_DIR = "INVALID_TEST_DATA_DIR";
 
