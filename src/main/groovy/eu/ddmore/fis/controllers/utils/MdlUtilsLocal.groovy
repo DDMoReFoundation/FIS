@@ -23,6 +23,7 @@ import eu.ddmore.mdl.mdl.ValuePair
 import eu.ddmore.mdl.provider.MogDefinitionProvider
 import eu.ddmore.mdl.scoping.MdlImportURIGlobalScopeProvider
 import eu.ddmore.mdl.utils.ExpressionConverter
+import eu.ddmore.mdl.validation.MdlValidator
 
 /**
  * FIXME This implementation is based on code existing in mdl_json converter, this duplication could be avoided if mdl_json
@@ -31,8 +32,8 @@ import eu.ddmore.mdl.utils.ExpressionConverter
 public class MdlUtilsLocal implements MdlUtils {
     private static final Logger LOG = Logger.getLogger(MdlUtilsLocal.class)
     
-    private static MogDefinitionProvider UTILS = new MogDefinitionProvider();
-
+    private static MogDefinitionProvider MOG_DEF_PROVIDER = new MogDefinitionProvider();
+    private static eu.ddmore.mdl.utils.MdlUtils MDL_UTILS = new eu.ddmore.mdl.utils.MdlUtils();
     private static ExpressionConverter EXPRESSION_CONVERTER = new ExpressionConverter()
     
     @Override
@@ -41,10 +42,11 @@ public class MdlUtilsLocal implements MdlUtils {
         final Collection<File> result = []
 
         final Mcl mcl = parseMdl(mdlFile)
-        final MclObject dataObject = UTILS.getDataObject(mcl)
-        if (dataObject) {
-            LOG.debug("Data object found in MCL file ${mdlFile}")
-            final ListDefinition dataSourceListDefn = MDLUTILS.getDataSourceStmt(dataObject)
+        final MclObject dataObject = MOG_DEF_PROVIDER.getFirstObjectOfType(mcl, MdlValidator.DATAOBJ)
+            LOG.debug("Data object retrieved ${dataObject}")
+        if (dataObject && MDL_UTILS.isDataObject(dataObject)) {
+            LOG.debug("Data object found in MCL file ${mdlFile}, contents ${dataObject}")
+            final ListDefinition dataSourceListDefn = MDL_UTILS.getDataSourceStmt(dataObject)
             if (dataSourceListDefn) {
                 LOG.debug("SOURCE block found in MCL file ${mdlFile}")
                 final ValuePair dataFileAttr = dataSourceListDefn.getList().getAttributes().find { "file".equals(it.getArgumentName()) }
@@ -54,6 +56,8 @@ public class MdlUtilsLocal implements MdlUtils {
                     result.add(new File(mdlFile.getParentFile(), dataFileName).getAbsoluteFile())
                 }
             }
+        } else {
+            LOG.debug("Data object not found in MCL file ${mdlFile}")
         }
         
         if (result.isEmpty()) {
