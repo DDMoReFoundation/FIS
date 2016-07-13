@@ -52,8 +52,8 @@ public class LocalJobObjectMapperTest {
         LocalJob job = objectMapper.readValue(serialized, LocalJob.class);
         
         LOG.info(String.format("Serialized job %s ", serialized));
-        assertEquals("Password should be populated.", MOCK_PASSWORD, job.getUserInfo().getPassword());
-        assertEquals("Passphrase should be populated.", MOCK_PASSPHRASE, job.getUserInfo().getIdentityFilePassphrase());
+        assertEquals("Password should be correct.", MOCK_PASSWORD, job.getUserInfo().getPassword());
+        assertEquals("Passphrase should be correct.", MOCK_PASSPHRASE, job.getUserInfo().getIdentityFilePassphrase());
         
     }
 }
