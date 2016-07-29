@@ -56,7 +56,7 @@
         <dependency>
             <groupId>eu.ddmore.pharmml</groupId>
             <artifactId>libPharmML</artifactId>
-            <version>0.7-1</version>
+            <version>0.7.3-1</version>
         </dependency>
         <!-- end DDMoRe and Mango packages -->
         
@@ -589,4 +589,11 @@
         <url>http://www.mango-solutions.com</url>
     </organization>
     <inceptionYear>2014</inceptionYear>
+    <licenses>
+      <license>
+        <name>GNU Affero General Public License</name>
+        <url>https://www.gnu.org/licenses/agpl-3.0.txt</url>
+        <distribution>repo</distribution>
+      </license>
+    </licenses>
 </project>
